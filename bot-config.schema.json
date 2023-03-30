@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "type": "object",
+  "required": [ "bot", "database" ],
+  "properties": {
+    "bot": {
+      "description": "Discord bot information",
+      "type": "object",
+      "required": [ "token" ],
+      "properties": {
+        "token": {
+          "description": "Discord bot token",
+          "type": "string"
+        }
+      }
+    },
+    "database": {
+      "type": "object",
+      "description": "SQL database information",
+      "required": [ "host", "user", "password" ],
+      "properties": {
+        "host": {
+          "description": "SQL database host",
+          "type": "string"
+        },
+        "user": {
+          "description": "SQL database user",
+          "type": "string"
+        },
+        "password": {
+          "description": "SQL database password",
+          "type": "string"
+        },
+        "port": {
+          "description": "SQL database port",
+          "type": "string"
+        },
+        "database": {
+          "description": "SQL database name",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

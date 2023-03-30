@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "discord.js": "^14.8.0",
+    "mysql": "^2.18.1",
+    "typescript": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/mysql": "^2.15.21"
+  },
+  "type": "commonjs",
+  "scripts": {
+    "start": "npm run build && npm run run",
+    "build": "npx tsc",
+    "run": "node ."
+  }
+}
