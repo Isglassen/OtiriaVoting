@@ -2,7 +2,9 @@
   "compilerOptions": {
     "module": "commonjs",
     "outDir": "compiled",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "lib": ["ES2022"],
+    "target": "ES2022"
   },
   "exclude": [
     "node_modules"
