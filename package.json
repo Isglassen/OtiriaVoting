@@ -10,7 +10,7 @@
   },
   "type": "commonjs",
   "scripts": {
-    "start": "npm run build && npm run run",
+    "start": "npm install && npm run build && npm run run",
     "build": "npx tsc",
     "run": "node ."
   }
