@@ -128,3 +128,6 @@ dist
 
 # Vurnable discord bot info
 bot-config.json
+
+# Typescript builds
+compiled
