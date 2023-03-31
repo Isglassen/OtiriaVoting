@@ -6,10 +6,22 @@
     "bot": {
       "description": "Discord bot information",
       "type": "object",
-      "required": [ "token" ],
+      "required": [ "token", "clientId", "ownerId" ],
       "properties": {
         "token": {
           "description": "Discord bot token",
+          "type": "string"
+        },
+        "clientId": {
+          "description": "Discord bot client id",
+          "type": "string"
+        },
+        "guildId": {
+          "description": "Discord guild id",
+          "type": "string"
+        },
+        "ownerId": {
+          "description": "Discord bot owner user id",
           "type": "string"
         }
       }

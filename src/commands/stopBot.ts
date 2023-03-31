@@ -1,15 +1,15 @@
 import { SlashCommandBuilder, Team, EmbedBuilder } from "discord.js";
-import { CustomCommandInteraction } from "../customClient";
+import { CommandData, CustomCommandInteraction } from "../customClient";
 import * as util from 'util'
 
-module.exports = {
-  data: new SlashCommandBuilder()
-    .setName("stopBot")
+module.exports = new CommandData(
+  new SlashCommandBuilder()
+    .setName("stop-bot")
     .setDescription("Safely stops the bot")
-    .setNameLocalization("sv-SE", "stannaBot")
+    .setNameLocalization("sv-SE", "stanna-bot")
     .setDescriptionLocalization("sv-SE", "Stannar boten på ett säkert sätt")
     .setDefaultMemberPermissions('0'),
-  async execute(interaction: CustomCommandInteraction) {
+  async function(interaction: CustomCommandInteraction) {
     async function noPermission() {
       let embed = new EmbedBuilder()
       .setTitle("Stop!")
@@ -19,16 +19,7 @@ module.exports = {
       await interaction.reply({ embeds: [embed], ephemeral: true });
     }
 
-    if (interaction.client.application.owner instanceof Team) {
-      let fromOwner = false;
-
-      interaction.client.application.owner.members.forEach((_, id) => {
-        if (interaction.user.id == id) fromOwner = true;
-      })
-
-      if (!fromOwner) { await noPermission(); return; }
-    }
-    else if (interaction.user.id != interaction.client.application.owner.id) { await noPermission(); return; }
+    if (interaction.user.id != interaction.client.config.bot.ownerId) { await noPermission(); return; }
 
     let embed = new EmbedBuilder()
       .setTitle("Stannar!")
@@ -44,4 +35,4 @@ module.exports = {
     await interaction.client.database.saveAll(interaction.client.customData);
     await interaction.client.database.end();
   }
-}
+);
