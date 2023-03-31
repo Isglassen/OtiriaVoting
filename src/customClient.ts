@@ -1,11 +1,18 @@
-import { Client, ClientOptions, Collection, CommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { Client, ClientOptions, Collection, CommandInteraction, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
 import BotDatabase, { DatabaseData } from './databaseActions';
 import * as mySQL from 'mysql';
 
+type GeneralCommandBuilder =
+  | SlashCommandBuilder
+  | SlashCommandSubcommandBuilder
+  | SlashCommandOptionsOnlyBuilder
+  | SlashCommandSubcommandGroupBuilder
+  | SlashCommandSubcommandsOnlyBuilder
+
 export class CommandData {
-  data: SlashCommandBuilder;
+  data: GeneralCommandBuilder;
   execute: (interaction: CustomCommandInteraction) => Promise<void>;
-  constructor(data: SlashCommandBuilder, execute: (interaction: CustomCommandInteraction) => Promise<void>) {
+  constructor(data: GeneralCommandBuilder, execute: (interaction: CustomCommandInteraction) => Promise<void>) {
     this.data = data;
     this.execute = execute;
   }
