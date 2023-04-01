@@ -6,7 +6,9 @@
     "typescript": "^5.0.2"
   },
   "devDependencies": {
-    "@types/mysql": "^2.15.21"
+    "@types/mysql": "^2.15.21",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0"
   },
   "type": "commonjs",
   "scripts": {

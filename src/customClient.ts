@@ -3,28 +3,28 @@ import BotDatabase, { DatabaseData } from './databaseActions';
 import * as mySQL from 'mysql';
 
 type GeneralCommandBuilder =
-  | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
+  | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
   | SlashCommandSubcommandBuilder
   | SlashCommandOptionsOnlyBuilder
   | SlashCommandSubcommandGroupBuilder
   | SlashCommandSubcommandsOnlyBuilder
 
 export class CommandData {
-  data: GeneralCommandBuilder;
-  execute: (interaction: CustomCommandInteraction) => Promise<void>;
-  constructor(data: GeneralCommandBuilder, execute: (interaction: CustomCommandInteraction) => Promise<void>) {
-    this.data = data;
-    this.execute = execute;
-  }
+	data: GeneralCommandBuilder;
+	execute: (interaction: CustomCommandInteraction) => Promise<void>;
+	constructor(data: GeneralCommandBuilder, execute: (interaction: CustomCommandInteraction) => Promise<void>) {
+		this.data = data;
+		this.execute = execute;
+	}
 }
 
 export class ButtonData {
-  name: string;
-  execute: (interaction: CustomButtomInteraction) => Promise<void>;
-  constructor(name: string, execute: (interaction: CustomButtomInteraction) => Promise<void>) {
-    this.name = name;
-    this.execute = execute;
-  }
+	name: string;
+	execute: (interaction: CustomButtomInteraction) => Promise<void>;
+	constructor(name: string, execute: (interaction: CustomButtomInteraction) => Promise<void>) {
+		this.name = name;
+		this.execute = execute;
+	}
 }
 
 export type BotConfig = {
@@ -38,18 +38,18 @@ export type BotConfig = {
 }
 
 export class CustomClient extends Client {
-  database: BotDatabase;
-  customData: DatabaseData = new DatabaseData();
-  botData: { commands: Collection<string, CommandData>, buttons: Collection<string, ButtonData> };
-  config: BotConfig
+	database: BotDatabase;
+	customData: DatabaseData = new DatabaseData();
+	botData: { commands: Collection<string, CommandData>, buttons: Collection<string, ButtonData> };
+	config: BotConfig;
 
-  constructor(options: ClientOptions, config: BotConfig) {
-    super(options);
+	constructor(options: ClientOptions, config: BotConfig) {
+		super(options);
 
-    this.config = config;
-    this.database = new BotDatabase(config.database);
-    this.botData = { commands: new Collection, buttons: new Collection }
-  }
+		this.config = config;
+		this.database = new BotDatabase(config.database);
+		this.botData = { commands: new Collection, buttons: new Collection };
+	}
 }
 
 export type CustomInteraction = Interaction & {
