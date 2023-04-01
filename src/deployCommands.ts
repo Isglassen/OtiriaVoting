@@ -35,7 +35,7 @@ const rest = new REST({ version: '10' }).setToken(bot.token);
       { body: commands },
     );
 
-    if (typeof data == "object" && 'length' in data) console.log(`Successfully reloaded ${data.length} application (/) commands.`);
+    if (typeof data == "object" && data != null && 'length' in data) console.log(`Successfully reloaded ${data.length} application (/) commands.`);
   } catch (error) {
     // And of course, make sure you catch and log any errors!
     console.error(error);

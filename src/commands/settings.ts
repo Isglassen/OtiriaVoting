@@ -7,13 +7,20 @@ module.exports = new CommandData(
     .setDescription('Change the server settings')
     .setNameLocalization('sv-SE', 'inställningar')
     .setDescriptionLocalization('sv-SE', 'Ändra på serverns inställningar')
-    .setDefaultMemberPermissions(new PermissionsBitField(["ManageChannels", "Administrator", "ManageRoles", "MentionEveryone"]).bitfield)
+    .setDefaultMemberPermissions(new PermissionsBitField(["Administrator", "ManageRoles"]).bitfield)
     .addSubcommand(subcommand => subcommand
-      .setName('annuncements')
+      .setName('announcements')
       .setDescription('Sets the bot announcement channel')
       .addChannelOption(option => option
         .setName('channel')
         .setDescription('The channel to announce votes in')
+        .setRequired(true)))
+    .addSubcommand(subcommand => subcommand
+      .setName('log')
+      .setDescription('Sets the bot log channel')
+      .addChannelOption(option => option
+        .setName('channel')
+        .setDescription('The channel to log information in')
         .setRequired(true))),
   async function(interaction: CustomCommandInteraction) {
 

@@ -1,12 +1,76 @@
-import { Snowflake } from "discord.js";
 import * as mySQL from "mysql";
 import * as util from "util";
 
-export class DatabaseData {
-  config: { guild_id: string, announcement_id: string, log_id: string, can_vote_id: string, mention_role_id: string }[] = [];
-  votes: { guild_id: string, name: string, time: number, candidates: string[], active: boolean }[] = []
+export class ServerConfigs {
+  data: {
+    guild_id: string,
+    announcement_id: string,
+    log_id: string,
+    can_vote_id: string,
+    mention_role_id: string
+  }[] = [];
 
-  constructor() { }
+  async saveAll(database: BotDatabase) {
+
+  }
+}
+
+export type serverVoteData = {
+  name: string,
+  channel_id?: string,
+  message_id?: string,
+  create_message_id: string,
+  create_message_channel_id: string,
+  creation_time: number,
+  candidates: string[],
+  started: boolean,
+  ended: boolean
+}
+
+export class ServerVotes {
+  data: {
+    [guild_id: string]: serverVoteData[]
+  } = {};
+
+  async saveAll(database: BotDatabase) {
+
+  }
+
+  async createVote(database: BotDatabase, guild_id, voteData: serverVoteData) {
+    // TODO: Fetch other command data first
+    let votesArray = this.data[guild_id]
+    if (!Array.isArray(votesArray)) votesArray = []
+    votesArray.push(voteData);
+  }
+}
+
+export class VoteDatas {
+  data: {
+    [guild_id: string]: {
+      [creation_time: string]: {
+        user_id: string,
+        voted_for: string
+      }[]
+    }
+  } = {};
+
+  async saveAll(database: BotDatabase) {
+
+  }
+}
+
+export class DatabaseData {
+  config: ServerConfigs = new ServerConfigs();
+  votes: ServerVotes = new ServerVotes();
+  voteData: VoteDatas = new VoteDatas();
+
+  async saveAll(database: BotDatabase) {
+    await Promise.all([
+      this.config.saveAll(database),
+      this.votes.saveAll(database),
+      this.voteData.saveAll(database)
+    ]);
+  }
 }
 
 export default class BotDatabase {
@@ -27,7 +91,7 @@ export default class BotDatabase {
   }
 
   async saveAll(data: DatabaseData) {
-
+    await data.saveAll(this)
   }
 
   async firstData() {

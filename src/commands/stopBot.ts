@@ -28,10 +28,14 @@ module.exports = new CommandData(
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
 
+    console.log("Letting discord finish in 0.5 seconds")
+    await util.promisify(setTimeout)(500);
+    console.log("Logged out of discord. Waiting 5 seconds for database to finish")
     interaction.client.destroy();
 
     await util.promisify(setTimeout)(5000);
 
+    console.log("Disconnecting from database")
     await interaction.client.database.saveAll(interaction.client.customData);
     await interaction.client.database.end();
   }
