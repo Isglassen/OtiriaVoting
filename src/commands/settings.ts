@@ -1,4 +1,4 @@
-import { PermissionsBitField, SlashCommandBuilder } from "discord.js";
+import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { CommandData, CustomCommandInteraction } from "../customClient";
 
 module.exports = new CommandData(
@@ -7,7 +7,7 @@ module.exports = new CommandData(
     .setDescription('Change the server settings')
     .setNameLocalization('sv-SE', 'inställningar')
     .setDescriptionLocalization('sv-SE', 'Ändra på serverns inställningar')
-    .setDefaultMemberPermissions(new PermissionsBitField(["Administrator", "ManageRoles"]).bitfield)
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
     .addSubcommand(subcommand => subcommand
       .setName('announcements')
       .setDescription('Sets the bot announcement channel')
@@ -22,7 +22,7 @@ module.exports = new CommandData(
         .setName('channel')
         .setDescription('The channel to log information in')
         .setRequired(true))),
-  async function(interaction: CustomCommandInteraction) {
+  async function (interaction: CustomCommandInteraction) {
 
   }
 );
