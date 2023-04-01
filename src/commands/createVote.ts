@@ -1,4 +1,4 @@
-import { voteCreateMessage } from "../messageCreators";
+import { getRole, voteCreateMessage } from "../messageCreators";
 import { serverVoteData } from "../databaseActions";
 import { PermissionFlagsBits, SlashCommandBuilder } from "discord.js";
 import { CommandData, CustomCommandInteraction } from "../customClient";
@@ -20,17 +20,17 @@ module.exports = new CommandData(
       candidates: [],
       started: false,
       ended: false,
+      channel_id: interaction.channelId,
+      can_vote_id: (await getRole(interaction.client, interaction.guildId)).id
     }
 
     // Respond so we can save the message id
-    let message = await interaction.reply({ ...voteCreateMessage(interaction.guildId, voteData), fetchReply: true });
+    let message = await interaction.reply({ ...await voteCreateMessage(interaction.client, interaction.guildId, voteData, true), fetchReply: true });
     voteData.create_message_channel_id = message.channelId;
     voteData.create_message_id = message.id;
 
     // Save command data
     await interaction.client.customData.votes.createVote(interaction.client.database, interaction.guildId, voteData);
-
-    console.log(JSON.stringify(voteData))
+    await message.edit(await voteCreateMessage(interaction.client, interaction.guildId, voteData));
   }
 )
-

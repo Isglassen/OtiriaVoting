@@ -1,9 +1,9 @@
-import { Client, ClientOptions, Collection, CommandInteraction, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
+import { ButtonInteraction, ChatInputCommandInteraction, Client, ClientOptions, Collection, Interaction, ModalSubmitInteraction, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
 import BotDatabase, { DatabaseData } from './databaseActions';
 import * as mySQL from 'mysql';
 
 type GeneralCommandBuilder =
-  | SlashCommandBuilder
+  | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">
   | SlashCommandSubcommandBuilder
   | SlashCommandOptionsOnlyBuilder
   | SlashCommandSubcommandGroupBuilder
@@ -14,6 +14,15 @@ export class CommandData {
   execute: (interaction: CustomCommandInteraction) => Promise<void>;
   constructor(data: GeneralCommandBuilder, execute: (interaction: CustomCommandInteraction) => Promise<void>) {
     this.data = data;
+    this.execute = execute;
+  }
+}
+
+export class ButtonData {
+  name: string;
+  execute: (interaction: CustomButtomInteraction) => Promise<void>;
+  constructor(name: string, execute: (interaction: CustomButtomInteraction) => Promise<void>) {
+    this.name = name;
     this.execute = execute;
   }
 }
@@ -31,7 +40,7 @@ export type BotConfig = {
 export class CustomClient extends Client {
   database: BotDatabase;
   customData: DatabaseData = new DatabaseData();
-  botData: { commands: Collection<string, CommandData> };
+  botData: { commands: Collection<string, CommandData>, buttons: Collection<string, ButtonData> };
   config: BotConfig
 
   constructor(options: ClientOptions, config: BotConfig) {
@@ -39,10 +48,22 @@ export class CustomClient extends Client {
 
     this.config = config;
     this.database = new BotDatabase(config.database);
-    this.botData = { commands: new Collection }
+    this.botData = { commands: new Collection, buttons: new Collection }
   }
 }
 
-export interface CustomCommandInteraction extends CommandInteraction {
-  client: CustomClient
+export type CustomInteraction = Interaction & {
+  client: CustomClient;
 }
+
+export type CustomButtomInteraction =
+  & CustomInteraction
+  & ButtonInteraction
+
+export type CustomCommandInteraction =
+  & CustomInteraction
+  & ChatInputCommandInteraction
+
+export type CustomModalInteraction =
+  & CustomInteraction
+  & ModalSubmitInteraction

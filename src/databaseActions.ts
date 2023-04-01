@@ -1,30 +1,18 @@
 import * as mySQL from "mysql";
 import * as util from "util";
 
-export class ServerConfigs {
-  data: {
-    guild_id: string,
-    announcement_id: string,
-    log_id: string,
-    can_vote_id: string,
-    mention_role_id: string
-  }[] = [];
-
-  async saveAll(database: BotDatabase) {
-
-  }
-}
-
 export type serverVoteData = {
   name: string,
-  channel_id?: string,
+  channel_id: string,
   message_id?: string,
   create_message_id: string,
   create_message_channel_id: string,
   creation_time: number,
   candidates: string[],
   started: boolean,
-  ended: boolean
+  ended: boolean,
+  can_vote_id: string,
+  mention_role_id?: string
 }
 
 export class ServerVotes {
@@ -33,14 +21,42 @@ export class ServerVotes {
   } = {};
 
   async saveAll(database: BotDatabase) {
-
+    // TODO
   }
 
   async createVote(database: BotDatabase, guild_id, voteData: serverVoteData) {
     // TODO: Fetch other command data first
-    let votesArray = this.data[guild_id]
-    if (!Array.isArray(votesArray)) votesArray = []
-    votesArray.push(voteData);
+    if (!Array.isArray(this.data[guild_id])) this.data[guild_id] = []
+    this.data[guild_id].push(voteData);
+    // TODO: Update database
+  }
+
+  async updateProperty<T extends keyof serverVoteData>(database: BotDatabase, guild_id: string, creation_time: number, property: T, value: serverVoteData[T]) {
+    // TODO: Fetch other command data first
+    if (!Array.isArray(this.data[guild_id])) return;
+    this.data[guild_id].forEach((vote, index) => {
+      if (vote.creation_time != creation_time) return;
+      this.data[guild_id][index][property] = value;
+    })
+    // TODO: Update database
+  }
+
+  async getProperty<T extends keyof serverVoteData>(database: BotDatabase, guild_id: string, creation_time: number, property: T): Promise<serverVoteData[T]> {
+    // TODO: Fetch other command data first
+    if (!Array.isArray(this.data[guild_id])) return null;
+    for (let i = 0; i < this.data[guild_id].length; i++) {
+      if (this.data[guild_id][i].creation_time == creation_time) return this.data[guild_id][i][property];
+    }
+    return null;
+  }
+
+  async getFull(database: BotDatabase, guild_id: string, creation_time: number): Promise<serverVoteData> {
+    // TODO: Fetch other command data first
+    if (!Array.isArray(this.data[guild_id])) return null;
+    for (let i = 0; i < this.data[guild_id].length; i++) {
+      if (this.data[guild_id][i].creation_time == creation_time) return this.data[guild_id][i];
+    }
+    return null
   }
 }
 
@@ -60,13 +76,11 @@ export class VoteDatas {
 }
 
 export class DatabaseData {
-  config: ServerConfigs = new ServerConfigs();
   votes: ServerVotes = new ServerVotes();
   voteData: VoteDatas = new VoteDatas();
 
   async saveAll(database: BotDatabase) {
     await Promise.all([
-      this.config.saveAll(database),
       this.votes.saveAll(database),
       this.voteData.saveAll(database)
     ]);
