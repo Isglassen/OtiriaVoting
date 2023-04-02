@@ -1,4 +1,4 @@
-const { GatewayIntentBits, Events, EmbedBuilder, Collection } = require('discord.js');
+const { GatewayIntentBits, Events, EmbedBuilder, Collection, InteractionType } = require('discord.js');
 const { CustomClient } = require('./compiled/customClient.js');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -46,6 +46,7 @@ async function respondError(interaction, message) {
 
 function interactionHandling() {
 	client.on(Events.InteractionCreate, async interaction => {
+		console.log(`${InteractionType[interaction.type]} interaction from ${interaction.user.tag} at ${new Date().toUTCString()}`);
 		if (!('botData' in interaction.client)) return await respondError(interaction, 'Kunnde inte ladda handlings information');
 		const botData = interaction.client.botData;
 		if (!(typeof botData == 'object' && botData != null && 'commands' in botData)) return await respondError(interaction, 'Kunnde inte ladda kommandon');

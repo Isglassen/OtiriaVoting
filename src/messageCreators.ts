@@ -32,11 +32,6 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 		new ActionRowBuilder<ButtonBuilder>()
 			.addComponents([
 				new ButtonBuilder()
-					.setLabel('Ändra namn')
-					.setStyle(ButtonStyle.Primary)
-					.setCustomId(`name.${guild_id}.${voteData.creation_time}`)
-					.setDisabled(voteData.started || disableButtons),
-				new ButtonBuilder()
 					.setLabel('Lägg till alternativ')
 					.setStyle(ButtonStyle.Primary)
 					.setCustomId(`add.${guild_id}.${voteData.creation_time}`)
@@ -47,13 +42,18 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 					.setCustomId(`remove.${guild_id}.${voteData.creation_time}`)
 					.setDisabled(voteData.started || disableButtons),
 				new ButtonBuilder()
+					.setLabel('Ändra namn')
+					.setStyle(ButtonStyle.Secondary)
+					.setCustomId(`name.${guild_id}.${voteData.creation_time}`)
+					.setDisabled(voteData.started || disableButtons),
+				new ButtonBuilder()
 					.setLabel('Ändra ping')
-					.setStyle(ButtonStyle.Primary)
+					.setStyle(ButtonStyle.Secondary)
 					.setCustomId(`ping.${guild_id}.${voteData.creation_time}`)
 					.setDisabled(voteData.started || disableButtons),
 				new ButtonBuilder()
 					.setLabel('Ändra rösträtt')
-					.setStyle(ButtonStyle.Primary)
+					.setStyle(ButtonStyle.Secondary)
 					.setCustomId(`rights.${guild_id}.${voteData.creation_time}`)
 					.setDisabled(voteData.started || disableButtons),
 			]),
