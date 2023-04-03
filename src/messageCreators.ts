@@ -31,11 +31,13 @@ export function voteCreateButtons(guild_id: string, creation_time: number, start
 					.setCustomId(`name.${guild_id}.${creation_time}`)
 					.setDisabled(started || disableButtons),
 				new ButtonBuilder()
+				// 🔴
 					.setLabel('Ändra ping')
 					.setStyle(ButtonStyle.Secondary)
 					.setCustomId(`ping.${guild_id}.${creation_time}`)
 					.setDisabled(started || disableButtons),
 				new ButtonBuilder()
+				// 🗳️
 					.setLabel('Ändra rösträtt')
 					.setStyle(ButtonStyle.Secondary)
 					.setCustomId(`rights.${guild_id}.${creation_time}`)
@@ -43,12 +45,14 @@ export function voteCreateButtons(guild_id: string, creation_time: number, start
 			]),
 		new ActionRowBuilder<ButtonBuilder>()
 			.addComponents([
+				// ✅
 				new ButtonBuilder()
 					.setLabel('Starta röstning')
 					.setStyle(ButtonStyle.Success)
 					.setCustomId(`start.${guild_id}.${creation_time}`)
 					.setDisabled(started || disableButtons),
 				new ButtonBuilder()
+				// ✖️
 					.setLabel('Avsluta röstning')
 					.setStyle(ButtonStyle.Danger)
 					.setCustomId(`stop.${guild_id}.${creation_time}`)
