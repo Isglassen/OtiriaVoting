@@ -1,5 +1,5 @@
 {
-  "version": "0.0.3",
+  "version": "0.0.4",
   "dependencies": {
     "discord.js": "^14.8.0",
     "mysql": "^2.18.1",

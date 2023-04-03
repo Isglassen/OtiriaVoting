@@ -43,11 +43,9 @@ export class ServerVotes {
 
 	async getProperty<T extends keyof serverVoteData>(database: BotDatabase, guild_id: string, creation_time: number, property: T): Promise<serverVoteData[T]> {
 		// TODO: Fetch other command data first
-		if (!Array.isArray(this.data[guild_id])) return null;
-		for (let i = 0; i < this.data[guild_id].length; i++) {
-			if (this.data[guild_id][i].creation_time == creation_time) return this.data[guild_id][i][property];
-		}
-		return null;
+		const data = (await this.getFull(database, guild_id, creation_time));
+		if (data == null) return null;
+		return data[property];
 	}
 
 	async getFull(database: BotDatabase, guild_id: string, creation_time: number): Promise<serverVoteData> {
