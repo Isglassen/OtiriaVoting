@@ -81,14 +81,7 @@ module.exports = new CommandData(
 		console.log(`${interaction.user.tag} created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(voteData.creation_time).toUTCString()}`);
 
 		// Respond so we can save the message id
-		const message = await interaction.reply({
-			...await voteCreateMessage(interaction.client, interaction.guildId, voteData, true),
-			fetchReply: true,
-			content: `Skapa röstning
-
-			Använd olika kommandon för att ändra på saker tills röstningen är som du vill ha den
-			När du är klar kan du starta och sedan avsluta röstningen med knapparna nedan`,
-		});
+		const message = await interaction.reply({ ...await voteCreateMessage(interaction.client, interaction.guildId, voteData, true), fetchReply: true });
 		voteData.create_message_channel_id = message.channelId;
 		voteData.create_message_id = message.id;
 

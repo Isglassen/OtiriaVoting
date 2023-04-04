@@ -52,5 +52,8 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 
 	const components = voteCreateButtons(guild_id, voteData.creation_time, voteData.started, voteData.ended, disableButtons);
 
-	return { embeds: [embed], components: components };
+	return { embeds: [embed], components: components, content: `Skapa röstning
+
+Använd olika kommandon för att ändra på saker tills röstningen är som du vill ha den
+När du är klar kan du starta och sedan avsluta röstningen med knapparna nedan` };
 }
