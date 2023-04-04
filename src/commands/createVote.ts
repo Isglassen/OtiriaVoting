@@ -35,9 +35,9 @@ module.exports = new CommandData(
 			.addChannelTypes(ChannelType.GuildText))
 		.addStringOption(option => option
 			.setName('choices')
-			.setDescription('A "," seperated list of choices for the vote. If you want to add a choice including the "," character you can use /add-option after this')
+			.setDescription('A "," seperated list of choices for the vote')
 			.setNameLocalization('sv-SE', 'alternativ')
-			.setDescriptionLocalization('sv-SE', 'En "," separerad lista av alternativ för röstningen. Om du vill ha "," i ett alternativ kan du använda /lägg-till-alternativ senare')
+			.setDescriptionLocalization('sv-SE', 'En "," separerad lista av alternativ för röstningen')
 			.setRequired(false)
 			.setMinLength(1))
 		.addRoleOption(option => option
