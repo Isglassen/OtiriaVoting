@@ -3,6 +3,7 @@ import * as util from 'util';
 
 export type serverVoteData = {
   name: string,
+	description: string;
   channel_id: string,
   message_id?: string,
   create_message_id: string,
@@ -11,7 +12,7 @@ export type serverVoteData = {
   candidates: string[],
   started: boolean,
   ended: boolean,
-  can_vote_id: string,
+  can_vote_id?: string,
   mention_role_id?: string
 }
 

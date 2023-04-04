@@ -1,1 +1,0 @@
-// TODO: Send an ephemeral with a StringSelectMenu for categories, and then channels in the selected category

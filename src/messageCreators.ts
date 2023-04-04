@@ -13,48 +13,6 @@ export function voteCreateButtons(guild_id: string, creation_time: number, start
 		new ActionRowBuilder<ButtonBuilder>()
 			.addComponents([
 				new ButtonBuilder()
-					.setEmoji('➕')
-					.setLabel('Lägg till alternativ')
-					.setStyle(ButtonStyle.Primary)
-					.setCustomId(`add.${guild_id}.${creation_time}`)
-					.setDisabled(started || disableButtons),
-				new ButtonBuilder()
-					.setEmoji('➖')
-					.setLabel('Ta bort alternativ')
-					.setStyle(ButtonStyle.Danger)
-					.setCustomId(`remove.${guild_id}.${creation_time}`)
-					.setDisabled(started || disableButtons),
-				new ButtonBuilder()
-					.setEmoji('📝')
-					.setLabel('Ändra namn')
-					.setStyle(ButtonStyle.Secondary)
-					.setCustomId(`name.${guild_id}.${creation_time}`)
-					.setDisabled(started || disableButtons),
-			]),
-		new ActionRowBuilder<ButtonBuilder>()
-			.addComponents([
-				new ButtonBuilder()
-					// .setEmoji('📰')
-					.setLabel('Ändra kanal')
-					.setStyle(ButtonStyle.Secondary)
-					.setCustomId(`channel.${guild_id}.${creation_time}`)
-					.setDisabled(started || disableButtons),
-				new ButtonBuilder()
-					// .setEmoji('🔴')
-					.setLabel('Ändra ping')
-					.setStyle(ButtonStyle.Secondary)
-					.setCustomId(`ping.${guild_id}.${creation_time}`)
-					.setDisabled(started || disableButtons),
-				new ButtonBuilder()
-					// .setEmoji('🗳️')
-					.setLabel('Ändra rösträtt')
-					.setStyle(ButtonStyle.Secondary)
-					.setCustomId(`rights.${guild_id}.${creation_time}`)
-					.setDisabled(started || disableButtons),
-			]),
-		new ActionRowBuilder<ButtonBuilder>()
-			.addComponents([
-				new ButtonBuilder()
 					// .setEmoji('✅')
 					.setLabel('Starta röstning')
 					.setStyle(ButtonStyle.Success)
@@ -72,19 +30,19 @@ export function voteCreateButtons(guild_id: string, creation_time: number, start
 
 export async function voteCreateMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableButtons: boolean = false): Promise<BaseMessageOptions> {
 	const embed = new EmbedBuilder()
-		.setTitle('Skapa röstning')
-		.setDescription('Tryck på knapparna för att ändra på dessa fälten tills röstningen är som du vill ha den')
+		.setTitle(voteData.name)
+		.setDescription(voteData.description)
 		.setColor('Blurple')
 		.addFields([
-			{ name: 'Röstningens namn', value: voteData.name },
-			{ name: 'Röstningen skapades', value: new Date(voteData.creation_time).toUTCString() },
 			{ name: 'Röstningens alternativ', value: voteData.candidates.length > 0 ? '**' + voteData.candidates.join('**, **') + '**' : '*Inga än*' },
 			{ name: 'Har startat', value: voteData.started ? 'Ja' : 'Nej', inline: true },
 			{ name: 'Har avslutats', value: voteData.ended ? 'Ja' : 'Nej', inline: true },
 			{ name: 'Kanal', value: `<#${voteData.channel_id}>` },
 			{ name: 'Rösträtt', value: (await getRole(client, guild_id, voteData.can_vote_id)).toString(), inline: true },
 			{ name: 'Ping', value: voteData.mention_role_id ? (await getRole(client, guild_id, voteData.mention_role_id)).toString() : '*Ingen*', inline: true },
-		]);
+			{ name: 'Röstningens id', value: `${guild_id}.${voteData.creation_time}` },
+		])
+		.setTimestamp(new Date(voteData.creation_time));
 	if ('message_id' in voteData) {
 		embed.addFields({ name: 'Meddelande', value: `https://discord.com/channels/${guild_id}/${voteData.channel_id}/${voteData.message_id}` });
 	}
