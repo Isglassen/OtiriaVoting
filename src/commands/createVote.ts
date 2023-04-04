@@ -21,7 +21,7 @@ module.exports = new CommandData(
 		.addStringOption(option => option
 			.setName('description')
 			.setDescription('The description of the vote')
-			.setNameLocalization('sv-SE', 'Beskrivning')
+			.setNameLocalization('sv-SE', 'beskrivning')
 			.setDescriptionLocalization('sv-SE', 'Röstningens beskrivning')
 			.setRequired(true)
 			.setMinLength(1)
