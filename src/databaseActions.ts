@@ -6,8 +6,8 @@ export type serverVoteData = {
 	description: string;
   channel_id: string,
   message_id?: string,
-  create_message_id: string,
-  create_message_channel_id: string,
+  status_message_id: string,
+  status_message_channel_id: string,
   creation_time: number,
   candidates: string[],
   started: boolean,
@@ -21,19 +21,23 @@ export class ServerVotes {
     [guild_id: string]: serverVoteData[]
   } = {};
 
+	async getAll(database: BotDatabase, guild_id: string): Promise<serverVoteData[]> {
+		// TODO: Fetch other command data first
+		if (!Array.isArray(this.data[guild_id])) return [];
+		return this.data[guild_id];
+	}
+
 	async saveAll(database: BotDatabase) {
 		// TODO
 	}
 
-	async createVote(database: BotDatabase, guild_id, voteData: serverVoteData) {
-		// TODO: Fetch other command data first
+	async createVote(database: BotDatabase, guild_id: string, voteData: serverVoteData) {
 		if (!Array.isArray(this.data[guild_id])) this.data[guild_id] = [];
 		this.data[guild_id].push(voteData);
 		// TODO: Update database
 	}
 
 	async updateProperty<T extends keyof serverVoteData>(database: BotDatabase, guild_id: string, creation_time: number, property: T, value: serverVoteData[T]) {
-		// TODO: Fetch other command data first
 		if (!Array.isArray(this.data[guild_id])) return;
 		this.data[guild_id].forEach((vote, index) => {
 			if (vote.creation_time != creation_time) return;
@@ -43,14 +47,14 @@ export class ServerVotes {
 	}
 
 	async getProperty<T extends keyof serverVoteData>(database: BotDatabase, guild_id: string, creation_time: number, property: T): Promise<serverVoteData[T]> {
-		// TODO: Fetch other command data first
+		// TODO: Fetch if not in cache
 		const data = (await this.getFull(database, guild_id, creation_time));
 		if (data == null) return null;
 		return data[property];
 	}
 
 	async getFull(database: BotDatabase, guild_id: string, creation_time: number): Promise<serverVoteData> {
-		// TODO: Fetch other command data first
+		// TODO: Fetch if not in cache
 		if (!Array.isArray(this.data[guild_id])) return null;
 		for (let i = 0; i < this.data[guild_id].length; i++) {
 			if (this.data[guild_id][i].creation_time == creation_time) return this.data[guild_id][i];

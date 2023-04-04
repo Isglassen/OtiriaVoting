@@ -1,4 +1,4 @@
-import { ButtonInteraction, ChatInputCommandInteraction, Client, ClientOptions, Collection, Interaction, ModalSubmitInteraction, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
+import { AutocompleteInteraction, ButtonInteraction, ChatInputCommandInteraction, Client, ClientOptions, Collection, Interaction, ModalSubmitInteraction, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
 import BotDatabase, { DatabaseData } from './databaseActions';
 import * as mySQL from 'mysql';
 
@@ -12,9 +12,13 @@ type GeneralCommandBuilder =
 export class CommandData {
 	data: GeneralCommandBuilder;
 	execute: (interaction: CustomCommandInteraction) => Promise<void>;
-	constructor(data: GeneralCommandBuilder, execute: (interaction: CustomCommandInteraction) => Promise<void>) {
+	autocomplete?: (interaction: CustomAutocompleteInteraction) => Promise<void>;
+	constructor(data: GeneralCommandBuilder,
+		execute: (interaction: CustomCommandInteraction) => Promise<void>,
+		autocomplete?: (interaction: CustomAutocompleteInteraction)=> Promise<void>) {
 		this.data = data;
 		this.execute = execute;
+		this.autocomplete = autocomplete;
 	}
 }
 
@@ -67,3 +71,7 @@ export type CustomCommandInteraction =
 export type CustomModalInteraction =
   & CustomInteraction
   & ModalSubmitInteraction
+
+export type CustomAutocompleteInteraction =
+	& CustomInteraction
+	& AutocompleteInteraction

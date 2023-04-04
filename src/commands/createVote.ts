@@ -61,29 +61,29 @@ module.exports = new CommandData(
 		const rights = interaction.options.getRole('voting-rights', false);
 		const can_vote_id = rights == null ? await getRole(interaction.client, interaction.guildId) : rights;
 		const ping = interaction.options.getRole('ping', false);
-		const mention_role_id = ping == null ? undefined : ping;
+		const mention_role_id = ping == null ? undefined : ping.id;
 
 		// Create base command data
 		const voteData: serverVoteData = {
 			name: name,
 			description: description,
-			create_message_channel_id: '',
-			create_message_id: '',
+			status_message_channel_id: '',
+			status_message_id: '',
 			creation_time: +new Date,
 			candidates: candidates,
 			started: false,
 			ended: false,
 			channel_id: channel.id,
 			can_vote_id: can_vote_id.id,
-			mention_role_id: mention_role_id.id,
+			mention_role_id: mention_role_id,
 		};
 
 		console.log(`${interaction.user.tag} created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(voteData.creation_time).toUTCString()}`);
 
 		// Respond so we can save the message id
 		const message = await interaction.reply({ ...await voteCreateMessage(interaction.client, interaction.guildId, voteData, true), fetchReply: true });
-		voteData.create_message_channel_id = message.channelId;
-		voteData.create_message_id = message.id;
+		voteData.status_message_channel_id = message.channelId;
+		voteData.status_message_id = message.id;
 
 		// Save command data
 		await interaction.client.customData.votes.createVote(interaction.client.database, interaction.guildId, voteData);

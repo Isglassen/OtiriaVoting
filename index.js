@@ -60,6 +60,8 @@ function interactionHandling() {
 		if (interaction.isChatInputCommand()) return await commandHandling(customInteraction);
 		// @ts-ignore
 		if (interaction.isButton()) return await buttonHandling(customInteraction);
+		// @ts-ignore
+		if (interaction.isAutocomplete()) return await autocompleteHandling(customInteraction);
 	});
 }
 
@@ -103,6 +105,29 @@ async function commandHandling(interaction) {
 	catch (error) {
 		console.error(error);
 		await respondError(interaction, 'Något gick fel med kommandot');
+	}
+}
+
+/**
+ * @param {import('./src/customClient.js').CustomAutocompleteInteraction} interaction
+ */
+async function autocompleteHandling(interaction) {
+	const botData = interaction.client.botData;
+	const command = botData.commands.get(interaction.commandName);
+
+	if (!command) {
+		console.error(`No command matching ${interaction.commandName} was found.`);
+		return;
+	}
+
+	try {
+		if (command.autocomplete) {
+			await command.autocomplete(interaction);
+		}
+	}
+	catch (error) {
+		console.error(error);
+		await interaction.respond([]);
 	}
 }
 
