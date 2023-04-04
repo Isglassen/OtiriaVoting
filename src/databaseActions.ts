@@ -9,7 +9,7 @@ export type serverVoteData = {
   status_message_id: string,
   status_message_channel_id: string,
   creation_time: number,
-  candidates: string[],
+  candidates: { name: string, description: string }[],
   started: boolean,
   ended: boolean,
   can_vote_id?: string,

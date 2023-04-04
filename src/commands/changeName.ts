@@ -1,6 +1,8 @@
-import { PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
 import { serverVoteData } from '../databaseActions';
+import idAutocorrect from '../idAutocorrect';
+import { voteCreateMessage } from '../messageCreators';
 
 module.exports = new CommandData(
 	new SlashCommandBuilder()
@@ -9,6 +11,7 @@ module.exports = new CommandData(
 		.setNameLocalization('sv-SE', 'ändra-namn')
 		.setDescriptionLocalization('sv-SE', 'Ändra namnet på en röstning')
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setDMPermission(false)
 		.addStringOption(option => option
 			.setName('vote-id')
 			.setDescription('The id of the vote')
@@ -25,24 +28,73 @@ module.exports = new CommandData(
 			.setMinLength(1)
 			.setMaxLength(64)),
 	async function(interaction: CustomCommandInteraction) {
-		console.log(JSON.stringify(interaction.options.getString('vote-id')));
-		interaction.reply({ content: 'Not finished', ephemeral: true });
-	},
-	async function(interaction: CustomAutocompleteInteraction) {
-		const focusedOption = interaction.options.getFocused();
-		const choices = await getActive(interaction.client, interaction.guildId);
+		const vote_id = interaction.options.getString('vote-id', true);
+		const new_name = interaction.options.getString('name', true);
+		const args = vote_id.split('.');
 
-		const filtered = choices.filter(choice => `${interaction.guildId}.${choice.creation_time}`.startsWith(focusedOption) || choice.creation_time.toString().startsWith(focusedOption),
-		);
-		await interaction.respond(
-			filtered.map(choice => ({ name: `${choice.name}: ${interaction.guildId}.${choice.creation_time}`, value: `${interaction.guildId}.${choice.creation_time}` })),
-		);
+		console.log(`${interaction.user.tag} tried to change the name of ${vote_id} to ${new_name}`);
+
+		if (args[0] != interaction.guildId) {
+			console.log(`${interaction.user.tag} failed to change name of ${vote_id} because it's in an other guild`);
+			const embed = new EmbedBuilder()
+				.setTitle('Kunde inte byta namn')
+				.setDescription('Det id du anget är för en röstning på en annan server')
+				.setColor('Red');
+
+			await interaction.reply({ embeds: [embed], ephemeral: true });
+			return;
+		}
+
+		const oldName = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], parseInt(args[1]), 'name');
+
+		if (oldName == null) {
+			console.log(`${interaction.user.tag} failed to change name of ${vote_id} because the vote is not in the database`);
+			const embed = new EmbedBuilder()
+				.setTitle('Misslyckades')
+				.setDescription('Kunnde inte hitta röstningen')
+				.setColor('Red');
+
+			await interaction.reply({ embeds: [embed], ephemeral: true });
+			return;
+		}
+
+		if (oldName == new_name) {
+			console.log(`${interaction.user.tag} didn't change name of ${vote_id} because it already had the specified name`);
+			const embed = new EmbedBuilder()
+				.setTitle('Klart!')
+				.setDescription('Namnet ändrades inte eftersom du angav samma namn som redan var')
+				.setColor('Green');
+
+			await interaction.reply({ embeds: [embed], ephemeral: true });
+			return;
+		}
+
+		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], parseInt(args[1]), 'name', new_name);
+
+		console.log(`${interaction.user.tag} successfully changed the name of ${vote_id}`);
+		const embed = new EmbedBuilder()
+			.setTitle('Klart!')
+			.setDescription('Namnet har nu ändrats')
+			.setColor('Green');
+
+		await interaction.reply({ embeds: [embed], ephemeral: true });
+
+		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], parseInt(args[1]));
+		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
+
+		if (!infoMessageChannel.isTextBased()) {
+			console.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
+			return;
+		}
+
+		const infoMessage = await infoMessageChannel.messages.fetch(newData.status_message_id);
+
+		if (!infoMessage) {
+			console.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
+			return;
+		}
+
+		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, false));
 	},
+	idAutocorrect,
 );
-
-async function getActive(client: CustomClient, guildId: string): Promise<serverVoteData[]> {
-	// TODO: Query with these filters instead of filtering everything here
-	const votes = await client.customData.votes.getAll(client.database, guildId);
-	const editable = votes.filter((value) => (value.started || value.ended) == false);
-	return editable;
-}

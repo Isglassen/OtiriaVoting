@@ -35,7 +35,7 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 		.setColor('Blurple')
 		.addFields([
 			{ name: 'Röstningens alternativ', value: voteData.candidates.length > 0 ? '**' + voteData.candidates.join('**, **') + '**' : '*Inga än*' },
-			{ name: 'Tillstånd', value: voteData.ended ? 'Avslutad' : voteData.started ? 'Startad' : 'Skapas' },
+			{ name: 'Stadie', value: voteData.ended ? 'Avslutad' : voteData.started ? 'Startad' : 'Skapas' },
 			{ name: 'Kanal', value: `<#${voteData.channel_id}>` },
 			{ name: 'Rösträtt', value: (await getRole(client, guild_id, voteData.can_vote_id)).toString(), inline: true },
 			{ name: 'Ping', value: voteData.mention_role_id ? (await getRole(client, guild_id, voteData.mention_role_id)).toString() : '*Ingen*', inline: true },

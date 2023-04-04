@@ -10,6 +10,7 @@ module.exports = new CommandData(
 		.setNameLocalization('sv-SE', 'skapa-röstning')
 		.setDescriptionLocalization('sv-SE', 'Påbörjar skapandet av en röstning')
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
+		.setDMPermission(false)
 		.addStringOption(option => option
 			.setName('name')
 			.setDescription('The name of the vote')
@@ -33,13 +34,6 @@ module.exports = new CommandData(
 			.setDescriptionLocalization('sv-SE', 'Kanalen för röstningsmeddelanden')
 			.setRequired(true)
 			.addChannelTypes(ChannelType.GuildText))
-		.addStringOption(option => option
-			.setName('choices')
-			.setDescription('A "," seperated list of choices for the vote')
-			.setNameLocalization('sv-SE', 'alternativ')
-			.setDescriptionLocalization('sv-SE', 'En "," separerad lista av alternativ för röstningen')
-			.setRequired(false)
-			.setMinLength(1))
 		.addRoleOption(option => option
 			.setName('voting-rights')
 			.setDescription('The role required to participate in the vote')
@@ -55,8 +49,6 @@ module.exports = new CommandData(
 	async function(interaction: CustomCommandInteraction) {
 		const name = interaction.options.getString('name', true);
 		const description = interaction.options.getString('description', true);
-		const choices = interaction.options.getString('choices', false);
-		const candidates = choices == null ? [] : choices.split(',').map((val => val.trim()));
 		const channel = interaction.options.getChannel('vote-channel', true, [ChannelType.GuildText]);
 		const rights = interaction.options.getRole('voting-rights', false);
 		const can_vote_id = rights == null ? await getRole(interaction.client, interaction.guildId) : rights;
@@ -70,7 +62,7 @@ module.exports = new CommandData(
 			status_message_channel_id: '',
 			status_message_id: '',
 			creation_time: +new Date,
-			candidates: candidates,
+			candidates: [],
 			started: false,
 			ended: false,
 			channel_id: channel.id,
