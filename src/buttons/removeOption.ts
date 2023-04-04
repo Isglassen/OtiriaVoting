@@ -2,6 +2,7 @@ import { ActionRowBuilder, EmbedBuilder, TextInputBuilder, TextInputStyle, Modal
 import { ButtonData, CustomButtomInteraction } from '../customClient';
 import { voteCreateButtons, voteCreateMessage } from '../messageCreators';
 
+// TODO: Change to send an ephemeral with a StringSelectMenu of current options
 module.exports = new ButtonData(
 	'remove',
 	async function(interaction: CustomButtomInteraction) {
