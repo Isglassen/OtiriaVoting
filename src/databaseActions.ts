@@ -91,11 +91,11 @@ export class DatabaseData {
 }
 
 export default class BotDatabase {
-	private database: mySQL.ConnectionConfig;
+	public database: mySQL.ConnectionConfig;
 	private connection: mySQL.Connection;
 
-	private query: (query: string) => Promise<any>;
-	public connect: Promise<void>;
+	public query: (query: string) => Promise<any>;
+	public connect: () => Promise<void>;
 	public end: () => Promise<void>;
 
 	constructor(database: mySQL.ConnectionConfig) {
@@ -109,18 +109,5 @@ export default class BotDatabase {
 
 	async saveAll(data: DatabaseData) {
 		await data.saveAll(this);
-	}
-
-	async firstData() {
-		const tables = await this.query('SHOW TABLES LIKE \'config\'');
-		if (tables.length > 0) return;
-
-		console.log('Creating config table');
-		await this.query('CREATE TABLE config (`guild_id` BIGINT UNSIGNED NOT NULL, `announcement_id` BIGINT UNSIGNED NOT NULL, `log_id` BIGINT UNSIGNED NOT NULL, `can_vote_id` BIGINT UNSIGNED NULL DEFAULT NULL, `mention_role_id` BIGINT UNSIGNED NULL DEFAULT NULL)');
-	}
-
-	async checkGuildVotes(guild_id: string) {
-		// Check if votes_${guild_id} exists
-		// Create if missing
 	}
 }
