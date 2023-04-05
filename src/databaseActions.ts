@@ -66,12 +66,22 @@ export class ServerVotes {
 export class VoteDatas {
 	data: {
     [guild_id: string]: {
-      [creation_time: string]: {
+      [creation_time: number]: {
         user_id: string,
         voted_for: string
       }[]
     }
   } = {};
+
+	async setVote(database: BotDatabase, guild_id: string, creation_time: number, user_id: string, vote: string) {
+		// TODO: Update cache
+		// TODO: Update database
+	}
+
+	async getVote(database: BotDatabase, guild_id: string, creation_time: number, user_id: string): Promise<string> {
+		// TODO: Fetch if not in cache
+		// TODO: Get from cache
+	}
 
 	async saveAll(database: BotDatabase) {
 		// TODO
