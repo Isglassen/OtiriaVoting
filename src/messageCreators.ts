@@ -2,6 +2,11 @@ import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, BaseMessage
 import { serverVoteData } from './databaseActions';
 import { CustomClient } from './customClient';
 
+const MESSAGE_CONTENT = `Skapa röstning
+
+Använd olika kommandon för att ändra på saker tills röstningen är som du vill ha den
+När du är klar kan du starta och sedan avsluta röstningen med knapparna nedan`;
+
 export async function getRole(client: CustomClient, guild_id: string, role_id?: string) {
 	const guild = await client.guilds.fetch(guild_id);
 	if (typeof role_id != 'string') return guild.roles.everyone;
@@ -43,8 +48,9 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 			{ name: 'Röstningens id', value: `\`${guild_id}.${voteData.creation_time}\`` },
 		])
 		.setTimestamp(new Date(voteData.creation_time));
+
 	if ('message_id' in voteData) {
-		embed.addFields({ name: 'Meddelande', value: `https://discord.com/channels/${guild_id}/${voteData.channel_id}/${voteData.message_id}` });
+		embed.setURL(`https://discord.com/channels/${guild_id}/${voteData.channel_id}/${voteData.message_id}`);
 	}
 
 	if (voteData.started) embed.setColor('Green');
@@ -52,8 +58,5 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 
 	const components = voteCreateButtons(guild_id, voteData.creation_time, voteData.started, voteData.ended, disableButtons);
 
-	return { embeds: [embed], components: components, content: `Skapa röstning
-
-Använd olika kommandon för att ändra på saker tills röstningen är som du vill ha den
-När du är klar kan du starta och sedan avsluta röstningen med knapparna nedan` };
+	return { embeds: [embed], components: components, content: MESSAGE_CONTENT };
 }
