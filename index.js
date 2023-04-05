@@ -11,7 +11,6 @@ async function main() {
 	loadButtons();
 
 	await client.database.connect();
-	await client.database.firstData();
 
 	interactionHandling();
 
