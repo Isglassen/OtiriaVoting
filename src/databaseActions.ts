@@ -31,6 +31,7 @@ export class ServerVotes {
 		// TODO
 	}
 
+	// TODO: Probably needs more checks
 	async createVote(database: BotDatabase, guild_id: string, voteData: serverVoteData) {
 		if (!Array.isArray(this.data[guild_id])) this.data[guild_id] = [];
 		this.data[guild_id].push(voteData);
@@ -74,13 +75,30 @@ export class VoteDatas {
   } = {};
 
 	async setVote(database: BotDatabase, guild_id: string, creation_time: number, user_id: string, vote: string) {
-		// TODO: Update cache
+		if (!this.data[guild_id]) this.data[guild_id] = {};
+		if (!this.data[guild_id][creation_time]) this.data[guild_id][creation_time] = [];
+		let found = false;
+		for (let i = 0; i < this.data[guild_id][creation_time].length; i++) {
+			if (this.data[guild_id][creation_time][i].user_id == user_id) {
+				found = true;
+				this.data[guild_id][creation_time][i].voted_for = vote;
+				break;
+			}
+		}
+		if (!found) {
+			this.data[guild_id][creation_time].push({ user_id, voted_for: vote });
+		}
 		// TODO: Update database
 	}
 
 	async getVote(database: BotDatabase, guild_id: string, creation_time: number, user_id: string): Promise<string> {
 		// TODO: Fetch if not in cache
-		// TODO: Get from cache
+		if (!this.data[guild_id]) return null;
+		if (!this.data[guild_id][creation_time]) return null;
+		for (let i = 0; i < this.data[guild_id][creation_time].length; i++) {
+			if (this.data[guild_id][creation_time][i].user_id == user_id) return this.data[guild_id][creation_time][i].voted_for;
+		}
+		return null;
 	}
 
 	async saveAll(database: BotDatabase) {
