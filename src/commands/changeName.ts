@@ -74,7 +74,7 @@ module.exports = new CommandData(
 		console.log(`${interaction.user.tag} successfully changed the name of ${vote_id}`);
 		const embed = new EmbedBuilder()
 			.setTitle('Klart!')
-			.setDescription('Namnet har nu ändrats')
+			.setDescription(`Namnet har nu ändrats till "${new_name}"`)
 			.setColor('Green');
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });

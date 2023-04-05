@@ -36,7 +36,6 @@ module.exports = new CommandData(
 			.setMinLength(1)
 			.setMaxLength(128)),
 	async function(interaction: CustomCommandInteraction) {
-		// TODO: Change to add choice instead of change name
 		const vote_id = interaction.options.getString('vote-id', true);
 		const new_name = interaction.options.getString('choice-name', true);
 		const new_description = interaction.options.getString('choice-description', true);
@@ -58,7 +57,7 @@ module.exports = new CommandData(
 		const currentChoices = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], parseInt(args[1]), 'candidates');
 
 		if (currentChoices == null) {
-			console.log(`${interaction.user.tag} failed to change name of ${vote_id} because the vote is not in the database`);
+			console.log(`${interaction.user.tag} failed to add option to ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
 				.setDescription('Kunnde inte hitta röstningen')
@@ -84,7 +83,7 @@ module.exports = new CommandData(
 		console.log(`${interaction.user.tag} successfully added option to ${vote_id}`);
 		const embed = new EmbedBuilder()
 			.setTitle('Klart!')
-			.setDescription('Alternativet har nu laggts till')
+			.setDescription(`Alternativet "${new_name}" har nu laggts till`)
 			.setColor('Green');
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });
