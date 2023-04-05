@@ -30,7 +30,7 @@ module.exports = new CommandData(
 		const new_role = interaction.options.getRole('role', true);
 		const args = vote_id.split('.');
 
-		console.log(`${interaction.user.tag} tried to change the rights of ${vote_id} to ${new_role.id}`);
+		console.log(`${interaction.user.tag} tried to change the rights of ${vote_id} to ${new_role}`);
 
 		if (args[0] != interaction.guildId) {
 			console.log(`${interaction.user.tag} failed to change rights of ${vote_id} because it's in an other guild`);

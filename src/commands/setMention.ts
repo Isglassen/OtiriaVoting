@@ -30,7 +30,7 @@ module.exports = new CommandData(
 		const new_role = interaction.options.getRole('role', false);
 		const args = vote_id.split('.');
 
-		console.log(`${interaction.user.tag} tried to change the mention of ${vote_id} to ${new_role.id}`);
+		console.log(`${interaction.user.tag} tried to change the mention of ${vote_id} to ${new_role}`);
 
 		if (args[0] != interaction.guildId) {
 			console.log(`${interaction.user.tag} failed to change mention of ${vote_id} because it's in an other guild`);
@@ -69,7 +69,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], parseInt(args[1]), 'channel_id', new_role_id);
+		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], parseInt(args[1]), 'mention_role_id', new_role_id);
 
 		console.log(`${interaction.user.tag} successfully changed the role of ${vote_id}`);
 		const embed = new EmbedBuilder()

@@ -31,7 +31,7 @@ module.exports = new CommandData(
 		const new_channel = interaction.options.getChannel('channel', true, [ChannelType.GuildText]);
 		const args = vote_id.split('.');
 
-		console.log(`${interaction.user.tag} tried to change the channel of ${vote_id} to ${new_channel.id}`);
+		console.log(`${interaction.user.tag} tried to change the channel of ${vote_id} to ${new_channel}`);
 
 		if (args[0] != interaction.guildId) {
 			console.log(`${interaction.user.tag} failed to change channel of ${vote_id} because it's in an other guild`);
