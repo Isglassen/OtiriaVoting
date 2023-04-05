@@ -38,15 +38,16 @@ module.exports = new CommandData(
 	async function(interaction: CustomCommandInteraction) {
 		// TODO: Change to add choice instead of change name
 		const vote_id = interaction.options.getString('vote-id', true);
-		const new_name = interaction.options.getString('name', true);
+		const new_name = interaction.options.getString('choice-name', true);
+		const new_description = interaction.options.getString('choice-description', true);
 		const args = vote_id.split('.');
 
-		console.log(`${interaction.user.tag} tried to change the name of ${vote_id} to ${new_name}`);
+		console.log(`${interaction.user.tag} tried to add option ${new_name}: ${new_description} to ${vote_id}`);
 
 		if (args[0] != interaction.guildId) {
 			console.log(`${interaction.user.tag} failed to change name of ${vote_id} because it's in an other guild`);
 			const embed = new EmbedBuilder()
-				.setTitle('Kunde inte byta namn')
+				.setTitle('Kunde inte lägga till alternativ')
 				.setDescription('Det id du anget är för en röstning på en annan server')
 				.setColor('Red');
 
@@ -54,9 +55,9 @@ module.exports = new CommandData(
 			return;
 		}
 
-		const oldName = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], parseInt(args[1]), 'name');
+		const currentChoices = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], parseInt(args[1]), 'candidates');
 
-		if (oldName == null) {
+		if (currentChoices == null) {
 			console.log(`${interaction.user.tag} failed to change name of ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
@@ -67,23 +68,23 @@ module.exports = new CommandData(
 			return;
 		}
 
-		if (oldName == new_name) {
-			console.log(`${interaction.user.tag} didn't change name of ${vote_id} because it already had the specified name`);
+		if (currentChoices.some((val) => val.name == new_name)) {
+			console.log(`${interaction.user.tag} couldn't add option to ${vote_id} because it already had the specified name`);
 			const embed = new EmbedBuilder()
-				.setTitle('Klart!')
-				.setDescription('Namnet ändrades inte eftersom du angav samma namn som redan var')
-				.setColor('Green');
+				.setTitle('Misslyckades')
+				.setDescription('Kunde inte lägga till alternativ eftersom ett alternativ med samma namn redan finns')
+				.setColor('Red');
 
 			await interaction.reply({ embeds: [embed], ephemeral: true });
 			return;
 		}
 
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], parseInt(args[1]), 'name', new_name);
+		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], parseInt(args[1]), 'candidates', [... currentChoices, { name: new_name, description: new_description }]);
 
-		console.log(`${interaction.user.tag} successfully changed the name of ${vote_id}`);
+		console.log(`${interaction.user.tag} successfully added option to ${vote_id}`);
 		const embed = new EmbedBuilder()
 			.setTitle('Klart!')
-			.setDescription('Namnet har nu ändrats')
+			.setDescription('Alternativet har nu laggts till')
 			.setColor('Green');
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });

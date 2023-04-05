@@ -29,6 +29,6 @@ export default async function idAutocorrect(interaction: CustomAutocompleteInter
 async function getPossibilities(client: CustomClient, guildId: string): Promise<serverVoteData[]> {
 	// TODO: Query with these filters instead of filtering everything here
 	const votes = await client.customData.votes.getAll(client.database, guildId);
-	const editable = votes.filter((value) => (value.started || value.ended) == false);
+	const editable = votes.filter((value) => value.started == false);
 	return editable;
 }
