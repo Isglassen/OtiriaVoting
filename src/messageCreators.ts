@@ -29,12 +29,13 @@ export function voteCreateButtons(guild_id: string, creation_time: number, start
 }
 
 export async function voteCreateMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableButtons: boolean = false): Promise<BaseMessageOptions> {
+	const choices = voteData.candidates.map((val) => val.name);
 	const embed = new EmbedBuilder()
 		.setTitle(voteData.name)
 		.setDescription(voteData.description)
 		.setColor('Blurple')
 		.addFields([
-			{ name: 'Röstningens alternativ', value: voteData.candidates.length > 0 ? '**' + voteData.candidates.join('**, **') + '**' : '*Inga än*' },
+			{ name: 'Röstningens alternativ', value: choices.length > 0 ? '**' + choices.join('**, **') + '**' : '*Inga än*' },
 			{ name: 'Stadie', value: voteData.ended ? 'Avslutad' : voteData.started ? 'Startad' : 'Skapas' },
 			{ name: 'Kanal', value: `<#${voteData.channel_id}>` },
 			{ name: 'Rösträtt', value: (await getRole(client, guild_id, voteData.can_vote_id)).toString(), inline: true },
