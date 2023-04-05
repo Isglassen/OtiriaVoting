@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, BaseMessageOptions } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, BaseMessageOptions, StringSelectMenuBuilder } from 'discord.js';
 import { serverVoteData } from './databaseActions';
 import { CustomClient } from './customClient';
 
@@ -33,6 +33,38 @@ export function voteCreateButtons(guild_id: string, creation_time: number, start
 	];
 }
 
+export async function voteMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableVoting: boolean = false): Promise<BaseMessageOptions> {
+	const embed = new EmbedBuilder()
+		.setTitle(voteData.name)
+		.setDescription(voteData.description)
+		.setColor('Blurple')
+		.addFields({ name: 'För att rösta', value: `Välj helt enkelt ett av alternativen nedan!\n${await getRole(client, guild_id, voteData.can_vote_id)} krävs för att rösta.` });
+
+	if (voteData.ended) {
+		embed.setColor('Greyple');
+	}
+
+	const selectMenu = new StringSelectMenuBuilder()
+		.setCustomId(`vote.${guild_id}.${voteData.creation_time}`)
+		.setDisabled(voteData.ended || disableVoting)
+		.setMaxValues(1)
+		.setMinValues(1)
+		.setPlaceholder('Välj alternativ');
+
+	voteData.candidates.forEach((candidate) => {
+		embed.addFields({ name: candidate.name, value: candidate.description });
+		selectMenu.addOptions({
+			label: candidate.name,
+			value: candidate.name,
+			description: candidate.description,
+		});
+	});
+
+	const component = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu);
+
+	return { content: voteData.mention_role_id == undefined ? undefined : (await getRole(client, guild_id, voteData.mention_role_id)).toString(), embeds: [embed], components: voteData.candidates.length < 1 ? undefined : [component] };
+}
+
 export async function voteCreateMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableButtons: boolean = false): Promise<BaseMessageOptions> {
 	const choices = voteData.candidates.map((val) => val.name);
 	const embed = new EmbedBuilder()
@@ -41,11 +73,12 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 		.setColor('Blurple')
 		.addFields([
 			{ name: 'Röstningens alternativ', value: choices.length > 0 ? '**' + choices.join('**, **') + '**' : '*Inga än*' },
+			{ name: 'Alternativens beskrivningar', value: 'Du kan läsa alternativens beskrivningar med `/få-beskrivning`' },
 			{ name: 'Stadie', value: voteData.ended ? 'Avslutad' : voteData.started ? 'Startad' : 'Skapas' },
 			{ name: 'Kanal', value: `<#${voteData.channel_id}>` },
 			{ name: 'Rösträtt', value: (await getRole(client, guild_id, voteData.can_vote_id)).toString(), inline: true },
 			{ name: 'Ping', value: voteData.mention_role_id ? (await getRole(client, guild_id, voteData.mention_role_id)).toString() : '*Ingen*', inline: true },
-			{ name: 'Röstningens id', value: `\`${guild_id}.${voteData.creation_time}\`` },
+			{ name: 'Röstningens id', value: `\`${voteData.creation_time}\`` },
 		])
 		.setTimestamp(new Date(voteData.creation_time));
 

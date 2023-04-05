@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, ButtonInteraction, ChatInputCommandInteraction, Client, ClientOptions, Collection, Interaction, ModalSubmitInteraction, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
+import { AnySelectMenuInteraction, AutocompleteInteraction, ButtonInteraction, ChatInputCommandInteraction, Client, ClientOptions, Collection, Interaction, ModalSubmitInteraction, SelectMenuType, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
 import BotDatabase, { DatabaseData } from './databaseActions';
 import * as mySQL from 'mysql';
 
@@ -19,6 +19,17 @@ export class CommandData {
 		this.data = data;
 		this.execute = execute;
 		this.autocomplete = autocomplete;
+	}
+}
+
+export class SelectMenuData {
+	name: string;
+	type: SelectMenuType;
+	execute: (interaction: CustomSelectMenuInteraction) => Promise<void>;
+	constructor(name: string, type: SelectMenuType, execute: (interaction: CustomSelectMenuInteraction) => Promise<void>) {
+		this.name = name;
+		this.type = type;
+		this.execute = execute;
 	}
 }
 
@@ -44,7 +55,7 @@ export type BotConfig = {
 export class CustomClient extends Client {
 	database: BotDatabase;
 	customData: DatabaseData = new DatabaseData();
-	botData: { commands: Collection<string, CommandData>, buttons: Collection<string, ButtonData> };
+	botData: { commands: Collection<string, CommandData>, buttons: Collection<string, ButtonData>, selectMenus: Collection<string, SelectMenuData> };
 	config: BotConfig;
 
 	constructor(options: ClientOptions, config: BotConfig) {
@@ -52,12 +63,12 @@ export class CustomClient extends Client {
 
 		this.config = config;
 		this.database = new BotDatabase(config.database);
-		this.botData = { commands: new Collection, buttons: new Collection };
+		this.botData = { commands: new Collection, buttons: new Collection, selectMenus: new Collection };
 	}
 }
 
 export type CustomInteraction = Interaction & {
-  client: CustomClient;
+	client: CustomClient;
 }
 
 export type CustomButtomInteraction =
@@ -75,3 +86,7 @@ export type CustomModalInteraction =
 export type CustomAutocompleteInteraction =
 	& CustomInteraction
 	& AutocompleteInteraction
+
+export type CustomSelectMenuInteraction =
+	& CustomInteraction
+	& AnySelectMenuInteraction

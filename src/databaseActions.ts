@@ -31,7 +31,6 @@ export class ServerVotes {
 		// TODO
 	}
 
-	// TODO: Probably needs more checks
 	async createVote(database: BotDatabase, guild_id: string, voteData: serverVoteData) {
 		if (!Array.isArray(this.data[guild_id])) this.data[guild_id] = [];
 		this.data[guild_id].push(voteData);

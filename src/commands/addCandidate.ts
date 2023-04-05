@@ -4,6 +4,7 @@ import { serverVoteData } from '../databaseActions';
 import idAutocorrect from '../idAutocorrect';
 import { voteCreateMessage } from '../messageCreators';
 
+// TODO: Limit to 25 candidates
 module.exports = new CommandData(
 	new SlashCommandBuilder()
 		.setName('add-choice')

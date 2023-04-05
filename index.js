@@ -1,4 +1,4 @@
-const { GatewayIntentBits, Events, EmbedBuilder, Collection, InteractionType } = require('discord.js');
+const { GatewayIntentBits, Events, EmbedBuilder, Collection, InteractionType, ComponentType } = require('discord.js');
 const { CustomClient } = require('./compiled/customClient.js');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -62,6 +62,33 @@ function interactionHandling() {
 		// @ts-ignore
 		if (interaction.isAutocomplete()) return await autocompleteHandling(customInteraction);
 	});
+}
+
+/**
+ * @param {import('./src/customClient').CustomSelectMenuInteraction} interaction
+ */
+async function selectMenuHandling(interaction) {
+	const botData = interaction.client.botData;
+	const selectMenuName = interaction.customId.split('.')[0];
+	const selectMenu = botData.selectMenus.get(selectMenuName);
+
+	if (!selectMenu) {
+		console.error(`No select menu matching ${selectMenuName}`);
+		return;
+	}
+
+	if (selectMenu.type != interaction.componentType) {
+		console.error(`Select menu ${selectMenuName} does uses ${ComponentType[selectMenu.type]}, not ${ComponentType[interaction.componentType]}`);
+		return;
+	}
+
+	try {
+		await selectMenu.execute(interaction);
+	}
+	catch (error) {
+		console.error(error);
+		await respondError(interaction, 'Något gick fel med menyn');
+	}
 }
 
 /**
@@ -160,6 +187,23 @@ function loadButtons() {
 		}
 		else {
 			console.log(`[WARNING] The button at ${filePath} is missing a required "name" or "execute" property.`);
+		}
+	}
+}
+
+function loadSelectMenus() {
+	const selectMenusPath = path.join(__dirname, 'compiled/selectMenus');
+	const selectMenuFiles = fs.readdirSync(selectMenusPath).filter(file => file.endsWith('.js'));
+
+	for (const file of selectMenuFiles) {
+		const filePath = path.join(selectMenusPath, file);
+		const selectMenu = require(filePath);
+		// Set a new item in the Collection with the key as the command name and the value as the exported module
+		if ('name' in selectMenu && 'execute' in selectMenu && 'type' in selectMenu) {
+			client.botData.selectMenus.set(selectMenu.name, selectMenu);
+		}
+		else {
+			console.log(`[WARNING] The selectMenu at ${filePath} is missing a required "name", "type" or "execute" property.`);
 		}
 	}
 }
