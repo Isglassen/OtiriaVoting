@@ -46,7 +46,7 @@ module.exports = new ButtonData(
 			return;
 		}
 
-		const info_message = await messageChannel.send(await voteMessage(interaction.client, args[1], voteData));
+		const info_message = await messageChannel.send(await voteMessage(interaction.client, args[1], voteData, false, {}));
 
 		console.log(`${interaction.user.tag} successfully started vote ${args[1]}.${args[2]}`);
 

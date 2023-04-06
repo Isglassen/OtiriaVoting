@@ -6,6 +6,8 @@ const config = require('./compiled/bot-config.json');
 
 const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config);
 
+// TODO: Optimize code order in many files to only do things right before when they are needed
+
 async function main() {
 	loadCommands();
 	loadButtons();

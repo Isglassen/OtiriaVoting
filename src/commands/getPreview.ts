@@ -53,7 +53,7 @@ module.exports = new CommandData(
 
 		console.log(`${interaction.user.tag} successfully previewed vote ${vote_id}`);
 
-		await interaction.reply({ ...await voteMessage(interaction.client, args[0], voteData, true), ephemeral: true });
+		await interaction.reply({ ...await voteMessage(interaction.client, args[0], voteData, true, {}), ephemeral: true });
 	},
 	idAutocorrect(getCreating),
 );

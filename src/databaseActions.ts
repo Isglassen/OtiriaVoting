@@ -62,13 +62,15 @@ export class ServerVotes {
 	}
 }
 
+export type voteData = {
+	user_id: string,
+	voted_for: string
+}
+
 export class VoteDatas {
 	data: {
     [guild_id: string]: {
-      [creation_time: number]: {
-        user_id: string,
-        voted_for: string
-      }[]
+      [creation_time: number]: voteData[];
     }
   } = {};
 

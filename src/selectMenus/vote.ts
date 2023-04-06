@@ -1,5 +1,6 @@
 import { ComponentType, EmbedBuilder } from 'discord.js';
 import { CustomSelectMenuInteraction, SelectMenuData } from '../customClient';
+import { generateSummary, voteMessage } from '../messageCreators';
 
 // TODO: Check users role
 
@@ -14,9 +15,9 @@ module.exports = new SelectMenuData(
 
 		console.log(`${interaction.user.tag} tried to vote for ${args[1]}.${args[2]}`);
 
-		const can_vote_id = await interaction.client.customData.votes.getProperty(interaction.client.database, args[1], parseInt(args[2]), 'can_vote_id');
+		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], parseInt(args[2]));
 
-		if (can_vote_id === null) {
+		if (voteData === null) {
 			console.log(`${interaction.user.tag} failed to vote for ${args[1]}.${args[2]} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
@@ -26,6 +27,8 @@ module.exports = new SelectMenuData(
 			await interaction.reply({ embeds: [embed], ephemeral: true });
 			return;
 		}
+
+		const can_vote_id = voteData.can_vote_id;
 
 		if (
 			(Array.isArray(interaction.member.roles) && !interaction.member.roles.includes(can_vote_id))
@@ -42,6 +45,11 @@ module.exports = new SelectMenuData(
 		}
 
 		await interaction.client.customData.voteData.setVote(interaction.client.database, args[1], parseInt(args[2]), interaction.user.id, interaction.values[0]);
+		const true_votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], parseInt(args[2]));
+
+		const summary = generateSummary(voteData.candidates, true_votes);
+
+		await interaction.message.edit(await voteMessage(interaction.client, args[1], voteData, false, summary));
 
 		const embed = new EmbedBuilder()
 			.setTitle('Röstat')

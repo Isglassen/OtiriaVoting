@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, BaseMessageOptions, StringSelectMenuBuilder } from 'discord.js';
-import { serverVoteData } from './databaseActions';
+import { serverVoteData, voteData as userVoteData } from './databaseActions';
 import { CustomClient } from './customClient';
 
 const MESSAGE_CONTENT = `Skapa röstning
@@ -33,12 +33,22 @@ export function voteCreateButtons(guild_id: string, creation_time: number, start
 	];
 }
 
-export async function voteMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableVoting: boolean = false, votes?: {[name: string]: number}): Promise<BaseMessageOptions> {
+export async function voteMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableVoting: boolean = false, votes: {[name: string]: number}): Promise<BaseMessageOptions> {
+	let total = 0;
+
+	Object.values(votes).forEach(num => total += num);
+
 	const embed = new EmbedBuilder()
 		.setTitle(voteData.name)
 		.setDescription(voteData.description)
 		.setColor('Blurple')
-		.addFields({ name: 'För att rösta', value: `Välj helt enkelt ett av alternativen nedan!\n${await getRole(client, guild_id, voteData.can_vote_id)} krävs för att rösta.` });
+		.addFields({
+			name: 'För att rösta',
+			value: voteData.ended ?
+				`Röstningen för alla ${await getRole(client, guild_id, voteData.can_vote_id)} är nu över, så du kan inte rösta längre` :
+				`Välj helt enkelt ett av alternativen nedan!\n${await getRole(client, guild_id, voteData.can_vote_id)} krävs för att rösta.`,
+		})
+		.setFooter({ text: `Totala röster: ${total}` });
 
 	if (voteData.ended) {
 		embed.setColor('Greyple');
@@ -52,7 +62,7 @@ export async function voteMessage(client: CustomClient, guild_id: string, voteDa
 		.setPlaceholder('Välj alternativ');
 
 	voteData.candidates.forEach((candidate) => {
-		embed.addFields({ name: candidate.name + (votes === undefined ? '' : (': ' + votes[candidate.name])), value: candidate.description });
+		embed.addFields({ name: candidate.name + (voteData.ended ? (': ' + votes[candidate.name]) : ''), value: candidate.description });
 		selectMenu.addOptions({
 			label: candidate.name,
 			value: candidate.name,
@@ -92,4 +102,13 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 	const components = voteCreateButtons(guild_id, voteData.creation_time, voteData.started, voteData.ended, disableButtons);
 
 	return { embeds: [embed], components: components, content: MESSAGE_CONTENT };
+}
+
+export function generateSummary(candidates: serverVoteData['candidates'], rawVotes: userVoteData[]): {[name: string]: number} {
+	const summary = {};
+
+	candidates.forEach((choice) => summary[choice.name] = 0);
+	rawVotes.forEach((vote) => summary[vote.voted_for] += 1);
+
+	return summary;
 }

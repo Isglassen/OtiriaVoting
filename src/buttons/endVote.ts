@@ -1,6 +1,6 @@
 import { EmbedBuilder, PermissionsBitField } from 'discord.js';
 import { ButtonData, CustomButtomInteraction } from '../customClient';
-import { voteCreateMessage, voteMessage } from '../messageCreators';
+import { generateSummary, voteCreateMessage, voteMessage } from '../messageCreators';
 
 module.exports = new ButtonData(
 	'stop',
@@ -11,8 +11,13 @@ module.exports = new ButtonData(
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], parseInt(args[2]));
 		const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], parseInt(args[2]));
+		let true_votes = votes;
 
-		if (voteData == null || votes === null) {
+		if (votes === null) {
+			true_votes = [];
+		}
+
+		if (voteData == null) {
 			console.log(`${interaction.user.tag} failed to end vote ${args[1]}.${args[2]} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
@@ -36,16 +41,14 @@ module.exports = new ButtonData(
 			return;
 		}
 
-		const summary = {};
+		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], parseInt(args[2]), 'ended', true);
 
-		votes.forEach((vote) => {
-			if (summary[vote.voted_for] === undefined) summary[vote.voted_for] = 0;
-			summary[vote.voted_for] += 1;
-		});
+		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], parseInt(args[2]));
+
+		const summary = generateSummary(voteData.candidates, true_votes);
 
 		const info_message = await messageChannel.messages.fetch(voteData.message_id);
-
-		await info_message.edit(await voteMessage(interaction.client, args[1], voteData, true, summary));
+		await info_message.edit(await voteMessage(interaction.client, args[1], newData, true, summary));
 
 		console.log(`${interaction.user.tag} successfully ended vote ${args[1]}.${args[2]}`);
 
@@ -62,10 +65,6 @@ module.exports = new ButtonData(
 			.setColor('Blurple');
 
 		await info_message.reply({ embeds: [infoEmbed] });
-
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], parseInt(args[2]), 'ended', true);
-
-		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], parseInt(args[2]));
 		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
 
 		if (!infoMessageChannel.isTextBased()) {

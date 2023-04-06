@@ -1,7 +1,7 @@
 import { EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomCommandInteraction } from '../customClient';
 import idAutocorrect, { checkCreating, checkDone, getDone } from '../idAutocorrect';
-import { voteMessage } from '../messageCreators';
+import { generateSummary, voteMessage } from '../messageCreators';
 
 module.exports = new CommandData(
 	new SlashCommandBuilder()
@@ -37,7 +37,13 @@ module.exports = new CommandData(
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], parseInt(args[1]));
 		const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[0], parseInt(args[1]));
 
-		if (votes === null || voteData === null) {
+		let true_votes = votes;
+
+		if (votes === null) {
+			true_votes = [];
+		}
+
+		if (voteData === null) {
 			console.log(`${interaction.user.tag} failed to view results of ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
@@ -50,12 +56,7 @@ module.exports = new CommandData(
 
 		if (!checkDone(interaction, args[0], parseInt(args[1]))) return;
 
-		const summary = {};
-
-		votes.forEach((vote) => {
-			if (summary[vote.voted_for] === undefined) summary[vote.voted_for] = 0;
-			summary[vote.voted_for] += 1;
-		});
+		const summary = generateSummary(voteData.candidates, true_votes);
 
 		await interaction.reply({ ...await voteMessage(interaction.client, args[0], voteData, true, summary) });
 	},
