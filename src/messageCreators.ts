@@ -72,7 +72,17 @@ export async function voteMessage(client: CustomClient, guild_id: string, voteDa
 
 	const component = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu);
 
-	return { content: voteData.mention_role_id == undefined ? undefined : (await getRole(client, guild_id, voteData.mention_role_id)).toString(), embeds: [embed], components: voteData.candidates.length < 1 || disableVoting ? undefined : [component] };
+	const out: BaseMessageOptions = { content: '', embeds: [embed], components: [] };
+
+	if (voteData.mention_role_id != undefined) {
+		out.content = (await getRole(client, guild_id, voteData.mention_role_id)).toString();
+	}
+
+	if (voteData.candidates.length > 1 && !disableVoting) {
+		out.components = [component];
+	}
+
+	return out;
 }
 
 export async function voteCreateMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableButtons: boolean = false): Promise<BaseMessageOptions> {

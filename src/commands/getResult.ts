@@ -58,7 +58,7 @@ module.exports = new CommandData(
 
 		const summary = generateSummary(voteData.candidates, true_votes);
 
-		await interaction.reply({ ...await voteMessage(interaction.client, args[0], voteData, true, summary) });
+		await interaction.reply({ ...await voteMessage(interaction.client, args[0], voteData, true, summary), ephemeral: true });
 	},
 	idAutocorrect(getDone),
 );

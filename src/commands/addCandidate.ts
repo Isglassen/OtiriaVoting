@@ -34,7 +34,7 @@ module.exports = new CommandData(
 			.setDescriptionLocalization('sv-SE', 'Det nya alternativets beskrivning')
 			.setRequired(true)
 			.setMinLength(1)
-			.setMaxLength(128)),
+			.setMaxLength(256)),
 	async function(interaction: CustomCommandInteraction) {
 		const vote_id = interaction.options.getString('vote-id', true);
 		const new_name = interaction.options.getString('choice-name', true);
