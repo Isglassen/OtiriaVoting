@@ -1,7 +1,7 @@
 import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
 import { serverVoteData } from '../databaseActions';
-import idAutocorrect from '../idAutocorrect';
+import idAutocorrect, { checkCreating, getCreating } from '../idAutocorrect';
 import { voteCreateMessage, voteMessage } from '../messageCreators';
 
 module.exports = new CommandData(
@@ -49,9 +49,11 @@ module.exports = new CommandData(
 			return;
 		}
 
+		if (!checkCreating(interaction, args[0], parseInt(args[1]))) return;
+
 		console.log(`${interaction.user.tag} successfully previewed vote ${vote_id}`);
 
 		await interaction.reply({ ...await voteMessage(interaction.client, args[0], voteData, true), ephemeral: true });
 	},
-	idAutocorrect,
+	idAutocorrect(getCreating),
 );

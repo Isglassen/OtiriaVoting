@@ -44,5 +44,6 @@ module.exports = new CommandData(
 		await interaction.client.database.saveAll(interaction.client.customData);
 		await interaction.client.database.end();
 		interaction.client.database.destroy();
+		process.exit();
 	},
 );

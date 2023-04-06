@@ -1,7 +1,7 @@
 import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
 import { serverVoteData } from '../databaseActions';
-import idAutocorrect from '../idAutocorrect';
+import idAutocorrect, { checkCreating, getCreating } from '../idAutocorrect';
 import { voteCreateMessage } from '../messageCreators';
 
 module.exports = new CommandData(
@@ -59,6 +59,8 @@ module.exports = new CommandData(
 			return;
 		}
 
+		if (!checkCreating(interaction, args[0], parseInt(args[1]))) return;
+
 		if (!currentChoices.some((val) => val.name == new_name)) {
 			console.log(`${interaction.user.tag} couldn't remove option from ${vote_id} because the option didn't exist`);
 			const embed = new EmbedBuilder()
@@ -77,7 +79,6 @@ module.exports = new CommandData(
 				break;
 			}
 		}
-
 
 		currentChoices.splice(index, 1);
 
@@ -109,7 +110,7 @@ module.exports = new CommandData(
 		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, false));
 	},
 	async function(interaction: CustomAutocompleteInteraction) {
-		if (interaction.options.getFocused(true).name == 'vote-id') return await idAutocorrect(interaction);
+		if (interaction.options.getFocused(true).name == 'vote-id') return await idAutocorrect(getCreating)(interaction);
 
 		const vote_id = interaction.options.getString('vote-id');
 		if (typeof vote_id != 'string') return await interaction.respond([]);

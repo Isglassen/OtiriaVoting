@@ -33,7 +33,7 @@ export function voteCreateButtons(guild_id: string, creation_time: number, start
 	];
 }
 
-export async function voteMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableVoting: boolean = false): Promise<BaseMessageOptions> {
+export async function voteMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableVoting: boolean = false, votes?: {[name: string]: number}): Promise<BaseMessageOptions> {
 	const embed = new EmbedBuilder()
 		.setTitle(voteData.name)
 		.setDescription(voteData.description)
@@ -52,7 +52,7 @@ export async function voteMessage(client: CustomClient, guild_id: string, voteDa
 		.setPlaceholder('Välj alternativ');
 
 	voteData.candidates.forEach((candidate) => {
-		embed.addFields({ name: candidate.name, value: candidate.description });
+		embed.addFields({ name: candidate.name + votes === undefined ? '' : (': ' + votes[candidate.name]), value: candidate.description });
 		selectMenu.addOptions({
 			label: candidate.name,
 			value: candidate.name,
@@ -62,7 +62,7 @@ export async function voteMessage(client: CustomClient, guild_id: string, voteDa
 
 	const component = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu);
 
-	return { content: voteData.mention_role_id == undefined ? undefined : (await getRole(client, guild_id, voteData.mention_role_id)).toString(), embeds: [embed], components: voteData.candidates.length < 1 ? undefined : [component] };
+	return { content: voteData.mention_role_id == undefined ? undefined : (await getRole(client, guild_id, voteData.mention_role_id)).toString(), embeds: [embed], components: voteData.candidates.length < 1 || disableVoting ? undefined : [component] };
 }
 
 export async function voteCreateMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableButtons: boolean = false): Promise<BaseMessageOptions> {

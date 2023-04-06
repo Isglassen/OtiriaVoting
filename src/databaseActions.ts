@@ -99,6 +99,13 @@ export class VoteDatas {
 		return null;
 	}
 
+	async getVotes(database: BotDatabase, guild_id: string, creation_time: number): Promise<{user_id: string, voted_for: string}[]> {
+		// TODO: Fetch if not in cache
+		if (!this.data[guild_id]) return null;
+		if (!this.data[guild_id][creation_time]) return null;
+		return this.data[guild_id][creation_time];
+	}
+
 	async saveAll(database: BotDatabase) {
 		// TODO
 	}

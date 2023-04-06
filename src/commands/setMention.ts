@@ -1,7 +1,7 @@
 import { ChannelType, EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
 import { serverVoteData } from '../databaseActions';
-import idAutocorrect from '../idAutocorrect';
+import idAutocorrect, { checkCreating, getCreating } from '../idAutocorrect';
 import { voteCreateMessage } from '../messageCreators';
 
 module.exports = new CommandData(
@@ -56,6 +56,8 @@ module.exports = new CommandData(
 			return;
 		}
 
+		if (!checkCreating(interaction, args[0], parseInt(args[1]))) return;
+
 		const new_role_id = new_role === null ? undefined : new_role.id;
 
 		if (oldRole === new_role_id) {
@@ -96,5 +98,5 @@ module.exports = new CommandData(
 
 		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, false));
 	},
-	idAutocorrect,
+	idAutocorrect(getCreating),
 );

@@ -1,10 +1,9 @@
 import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
 import { serverVoteData } from '../databaseActions';
-import idAutocorrect from '../idAutocorrect';
+import idAutocorrect, { checkCreating, getCreating } from '../idAutocorrect';
 import { voteCreateMessage } from '../messageCreators';
 
-// TODO: Limit to 25 candidates
 module.exports = new CommandData(
 	new SlashCommandBuilder()
 		.setName('add-choice')
@@ -68,6 +67,8 @@ module.exports = new CommandData(
 			return;
 		}
 
+		if (!checkCreating(interaction, args[0], parseInt(args[1]))) return;
+
 		if (currentChoices.some((val) => val.name == new_name)) {
 			console.log(`${interaction.user.tag} couldn't add option to ${vote_id} because it already had the specified name`);
 			const embed = new EmbedBuilder()
@@ -117,5 +118,5 @@ module.exports = new CommandData(
 
 		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, false));
 	},
-	idAutocorrect,
+	idAutocorrect(getCreating),
 );
