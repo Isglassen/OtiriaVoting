@@ -39,7 +39,7 @@ module.exports = new ButtonData(
 			console.log(`${interaction.user.tag} failed to start vote ${args[1]}.${args[2]} because there were too few options`);
 			const embed = new EmbedBuilder()
 				.setTitle('Lägg till lite alternativ')
-				.setDescription('Det är svårt att rösta om något när det finns färre än 2 alternativ, och du har bara' + voteData.candidates.length)
+				.setDescription('Det är svårt att rösta om något när det finns färre än 2 alternativ, och du har bara ' + voteData.candidates.length)
 				.setColor('Red');
 
 			await interaction.reply({ embeds: [embed], ephemeral: true });
@@ -75,6 +75,6 @@ module.exports = new ButtonData(
 			return;
 		}
 
-		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, false));
+		await infoMessage.edit(await voteCreateMessage(interaction.client, args[1], newData, false));
 	},
 );

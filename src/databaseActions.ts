@@ -1,5 +1,4 @@
-import * as mySQL from 'mysql';
-import * as util from 'util';
+import * as mySQL from 'mysql2/promise';
 
 export type serverVoteData = {
   name: string,
@@ -121,17 +120,28 @@ export default class BotDatabase {
 	public database: mySQL.ConnectionConfig;
 	private connection: mySQL.Connection;
 
-	public query: (query: string) => Promise<any>;
-	public connect: () => Promise<void>;
-	public end: () => Promise<void>;
+	private canConnect: boolean = false;
+	private connected: boolean = false;
 
 	constructor(database: mySQL.ConnectionConfig) {
 		this.database = database;
-		this.connection = mySQL.createConnection(database);
+	}
 
-		this.query = util.promisify(this.connection.query).bind(this.connection);
-		this.connect = util.promisify(this.connection.connect).bind(this.connection);
-		this.end = util.promisify(this.connection.end).bind(this.connection);
+	async createConnection() {
+		if (this.canConnect) return;
+		this.connection = await mySQL.createConnection(this.database);
+	}
+
+	async connect() {
+		if (this.connected || !this.canConnect) return;
+		this.connected = true;
+		return await this.connection.connect();
+	}
+
+	async end() {
+		if (!this.connected || !this.canConnect) return;
+		this.connected = false;
+		return await this.connection.end();
 	}
 
 	async saveAll(data: DatabaseData) {

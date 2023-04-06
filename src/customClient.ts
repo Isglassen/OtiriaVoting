@@ -1,6 +1,6 @@
 import { AnySelectMenuInteraction, AutocompleteInteraction, ButtonInteraction, ChatInputCommandInteraction, Client, ClientOptions, Collection, Interaction, ModalSubmitInteraction, SelectMenuType, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
 import BotDatabase, { DatabaseData } from './databaseActions';
-import * as mySQL from 'mysql';
+import * as mySQL from 'mysql2/promise';
 
 type GeneralCommandBuilder =
   | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>

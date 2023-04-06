@@ -4,7 +4,8 @@
     "outDir": "compiled",
     "resolveJsonModule": true,
     "lib": ["ES2022"],
-    "target": "ES2022"
+    "target": "ES2022",
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules"

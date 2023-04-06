@@ -10,6 +10,7 @@ async function main() {
 	loadCommands();
 	loadButtons();
 
+	await client.database.createConnection();
 	await client.database.connect();
 
 	interactionHandling();
@@ -35,32 +36,39 @@ async function respondError(interaction, message) {
 		.setTitle('Handling misslyckades')
 		.setDescription(message)
 		.setColor('Red');
-	if (!interaction.isRepliable()) return;
+	if (!interaction.isRepliable()) return false;
 	if (!(interaction.replied || interaction.deferred)) {
 		await interaction.reply({ embeds: [embed], ephemeral: true });
-		return;
+		return false;
 	}
 	await interaction.followUp({ embeds: [embed], ephemeral: true });
+	return false;
+}
+
+async function hasCustomClient(interaction) {
+	if (!('botData' in interaction.client)) return await respondError(interaction, 'Kunnde inte ladda handlings information');
+	const botData = interaction.client.botData;
+	if (!(typeof botData == 'object' && botData != null && 'commands' in botData)) return await respondError(interaction, 'Kunnde inte ladda kommandon');
+	if (!(botData.commands instanceof Collection)) return await respondError(interaction, 'Kunnde inte ladda kommandon');
 }
 
 function interactionHandling() {
 	client.on(Events.InteractionCreate, async interaction => {
 		console.log(`${InteractionType[interaction.type]} interaction from ${interaction.user.tag} at ${new Date().toUTCString()}`);
-		if (!('botData' in interaction.client)) return await respondError(interaction, 'Kunnde inte ladda handlings information');
-		const botData = interaction.client.botData;
-		if (!(typeof botData == 'object' && botData != null && 'commands' in botData)) return await respondError(interaction, 'Kunnde inte ladda kommandon');
-		if (!(botData.commands instanceof Collection)) return await respondError(interaction, 'Kunnde inte ladda kommandon');
+		if (!await hasCustomClient(interaction)) {
+			console.log('Interaction does not have all custom client data');
+			return;
+		}
+
 		/**
 		 * @type {import("./src/customClient").CustomInteraction}
 		 */
 		// @ts-ignore
 		const customInteraction = interaction;
-		// @ts-ignore
-		if (interaction.isChatInputCommand()) return await commandHandling(customInteraction);
-		// @ts-ignore
-		if (interaction.isButton()) return await buttonHandling(customInteraction);
-		// @ts-ignore
-		if (interaction.isAutocomplete()) return await autocompleteHandling(customInteraction);
+		if (customInteraction.isChatInputCommand()) return await commandHandling(customInteraction);
+		if (customInteraction.isButton()) return await buttonHandling(customInteraction);
+		if (customInteraction.isAutocomplete()) return await autocompleteHandling(customInteraction);
+		if (customInteraction.isAnySelectMenu()) return await selectMenuHandling(customInteraction);
 	});
 }
 
