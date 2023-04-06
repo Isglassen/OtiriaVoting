@@ -9,6 +9,7 @@ const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config)
 async function main() {
 	loadCommands();
 	loadButtons();
+	loadSelectMenus();
 
 	await client.database.createConnection();
 	await client.database.connect();
@@ -23,6 +24,7 @@ async function main() {
 	else {
 		console.error('config.bot.token was missing');
 		await client.database.end();
+		client.database.destroy();
 	}
 }
 
@@ -45,20 +47,9 @@ async function respondError(interaction, message) {
 	return false;
 }
 
-async function hasCustomClient(interaction) {
-	if (!('botData' in interaction.client)) return await respondError(interaction, 'Kunnde inte ladda handlings information');
-	const botData = interaction.client.botData;
-	if (!(typeof botData == 'object' && botData != null && 'commands' in botData)) return await respondError(interaction, 'Kunnde inte ladda kommandon');
-	if (!(botData.commands instanceof Collection)) return await respondError(interaction, 'Kunnde inte ladda kommandon');
-}
-
 function interactionHandling() {
 	client.on(Events.InteractionCreate, async interaction => {
 		console.log(`${InteractionType[interaction.type]} interaction from ${interaction.user.tag} at ${new Date().toUTCString()}`);
-		if (!await hasCustomClient(interaction)) {
-			console.log('Interaction does not have all custom client data');
-			return;
-		}
 
 		/**
 		 * @type {import("./src/customClient").CustomInteraction}

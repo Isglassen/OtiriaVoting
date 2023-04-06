@@ -79,6 +79,17 @@ module.exports = new CommandData(
 			return;
 		}
 
+		if (currentChoices.length >= 25) {
+			console.log(`${interaction.user.tag} couldn't add option to ${vote_id} because it has the maximum option count`);
+			const embed = new EmbedBuilder()
+				.setTitle('Misslyckades')
+				.setDescription('Röstningen har redan 25 alternativ, vilket är gränsen')
+				.setColor('Red');
+
+			await interaction.reply({ embeds: [embed], ephemeral: true });
+			return;
+		}
+
 		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], parseInt(args[1]), 'candidates', [... currentChoices, { name: new_name, description: new_description }]);
 
 		console.log(`${interaction.user.tag} successfully added option to ${vote_id}`);

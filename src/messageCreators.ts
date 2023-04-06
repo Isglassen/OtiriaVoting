@@ -73,7 +73,7 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 		.setColor('Blurple')
 		.addFields([
 			{ name: 'Röstningens alternativ', value: choices.length > 0 ? '**' + choices.join('**, **') + '**' : '*Inga än*' },
-			{ name: 'Alternativens beskrivningar', value: 'Du kan läsa alternativens beskrivningar med `/få-beskrivning`' },
+			{ name: 'Alternativens beskrivningar', value: 'Du kan läsa alternativens beskrivningar med `/förhandsgranska`' },
 			{ name: 'Stadie', value: voteData.ended ? 'Avslutad' : voteData.started ? 'Startad' : 'Skapas' },
 			{ name: 'Kanal', value: `<#${voteData.channel_id}>` },
 			{ name: 'Rösträtt', value: (await getRole(client, guild_id, voteData.can_vote_id)).toString(), inline: true },

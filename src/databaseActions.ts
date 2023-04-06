@@ -144,6 +144,12 @@ export default class BotDatabase {
 		return await this.connection.end();
 	}
 
+	destroy() {
+		if (this.connected || !this.canConnect) return;
+		this.canConnect = false;
+		return this.connection.destroy();
+	}
+
 	async saveAll(data: DatabaseData) {
 		await data.saveAll(this);
 	}
