@@ -1,6 +1,6 @@
 import { EmbedBuilder, PermissionsBitField } from 'discord.js';
 import { ButtonData, CustomButtomInteraction } from '../customClient';
-import { voteCreateMessage, voteMessage } from '../messageCreators';
+import { generateSummary, voteCreateMessage, voteMessage } from '../messageCreators';
 
 module.exports = new ButtonData(
 	'start',
@@ -11,7 +11,7 @@ module.exports = new ButtonData(
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], parseInt(args[2]));
 
-		if (voteData == null) {
+		if (voteData === null) {
 			console.log(`${interaction.user.tag} failed to start vote ${args[1]}.${args[2]} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
@@ -46,7 +46,7 @@ module.exports = new ButtonData(
 			return;
 		}
 
-		const info_message = await messageChannel.send(await voteMessage(interaction.client, args[1], voteData, false, {}));
+		const info_message = await messageChannel.send(await voteMessage(interaction.client, args[1], voteData, false, generateSummary(voteData.candidates, [])));
 
 		console.log(`${interaction.user.tag} successfully started vote ${args[1]}.${args[2]}`);
 

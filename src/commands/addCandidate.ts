@@ -44,7 +44,7 @@ module.exports = new CommandData(
 		console.log(`${interaction.user.tag} tried to add option ${new_name}: ${new_description} to ${vote_id}`);
 
 		if (args[0] != interaction.guildId) {
-			console.log(`${interaction.user.tag} failed to change name of ${vote_id} because it's in an other guild`);
+			console.log(`${interaction.user.tag} failed to add option to ${vote_id} because it's in an other guild`);
 			const embed = new EmbedBuilder()
 				.setTitle('Kunde inte lägga till alternativ')
 				.setDescription('Det id du anget är för en röstning på en annan server')
@@ -56,7 +56,7 @@ module.exports = new CommandData(
 
 		const currentChoices = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], parseInt(args[1]), 'candidates');
 
-		if (currentChoices == null) {
+		if (currentChoices === null) {
 			console.log(`${interaction.user.tag} failed to add option to ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')

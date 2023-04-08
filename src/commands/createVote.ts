@@ -45,15 +45,22 @@ module.exports = new CommandData(
 			.setDescription('The role to mention for vote announcements')
 			.setDescriptionLocalization('sv-SE', 'Rollen som ska nämnas för röstningsmeddelanden')
 			.setRequired(false))
-	,
+		.addBooleanOption(option => option
+			.setName('live-result')
+			.setDescription('Show the current vote numbers even before the vote has ended')
+			.setNameLocalization('sv-SE', 'live-resultat')
+			.setDescriptionLocalization('sv-SE', 'Visa antalet röster även innan röstningen är slut')
+			.setRequired(false)),
 	async function(interaction: CustomCommandInteraction) {
 		const name = interaction.options.getString('name', true);
 		const description = interaction.options.getString('description', true);
 		const channel = interaction.options.getChannel('vote-channel', true, [ChannelType.GuildText]);
 		const rights = interaction.options.getRole('voting-rights', false);
-		const can_vote_id = rights == null ? await getRole(interaction.client, interaction.guildId) : rights;
+		const can_vote_id = rights === null ? await getRole(interaction.client, interaction.guildId) : rights;
 		const ping = interaction.options.getRole('ping', false);
-		const mention_role_id = ping == null ? undefined : ping.id;
+		const mention_role_id = ping === null ? undefined : ping.id;
+		const liveResult = interaction.options.getBoolean('live-result', false);
+		const live_result = liveResult === null ? false : liveResult;
 
 		// Create base command data
 		const voteData: serverVoteData = {
@@ -68,6 +75,7 @@ module.exports = new CommandData(
 			channel_id: channel.id,
 			can_vote_id: can_vote_id.id,
 			mention_role_id: mention_role_id,
+			live_result: live_result,
 		};
 
 		console.log(`${interaction.user.tag} created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(voteData.creation_time).toUTCString()}`);

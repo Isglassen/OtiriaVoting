@@ -1,4 +1,4 @@
-import { ChannelType, EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
+import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
 import { serverVoteData } from '../databaseActions';
 import idAutocorrect, { checkCreating, getCreating } from '../idAutocorrect';
@@ -6,10 +6,10 @@ import { voteCreateMessage } from '../messageCreators';
 
 module.exports = new CommandData(
 	new SlashCommandBuilder()
-		.setName('change-channel')
-		.setDescription('Change the announcement channel of a vote')
-		.setNameLocalization('sv-SE', 'ändra-kanal')
-		.setDescriptionLocalization('sv-SE', 'Ändra nyheteskanalen för en röstning')
+		.setName('set-live-result')
+		.setDescription('Change if the vote should have live results')
+		.setNameLocalization('sv-SE', 'sätt-live-resultat')
+		.setDescriptionLocalization('sv-SE', 'Ändra ifall röstningen ska ha live resultat')
 		.setDefaultMemberPermissions(PermissionFlagsBits.ManageRoles)
 		.setDMPermission(false)
 		.addStringOption(option => option
@@ -19,24 +19,23 @@ module.exports = new CommandData(
 			.setDescriptionLocalization('sv-SE', 'Röstningens id')
 			.setRequired(true)
 			.setAutocomplete(true))
-		.addChannelOption(option => option
-			.setName('channel')
-			.setDescription('The new announcement channel')
-			.setNameLocalization('sv-SE', 'namn')
-			.setDescriptionLocalization('sv-SE', 'Den nya röstningskanalen')
-			.setRequired(true)
-			.addChannelTypes(ChannelType.GuildText)),
+		.addBooleanOption(option => option
+			.setName('live-result')
+			.setDescription('Show the current vote numbers even before the vote has ended')
+			.setNameLocalization('sv-SE', 'live-resultat')
+			.setDescriptionLocalization('sv-SE', 'Visa antalet röster även innan röstningen är slut')
+			.setRequired(true)),
 	async function(interaction: CustomCommandInteraction) {
 		const vote_id = interaction.options.getString('vote-id', true);
-		const new_channel = interaction.options.getChannel('channel', true, [ChannelType.GuildText]);
+		const live_result = interaction.options.getBoolean('live-result', true);
 		const args = vote_id.split('.');
 
-		console.log(`${interaction.user.tag} tried to change the channel of ${vote_id} to ${new_channel}`);
+		console.log(`${interaction.user.tag} tried to change live result of ${vote_id}`);
 
 		if (args[0] != interaction.guildId) {
-			console.log(`${interaction.user.tag} failed to change channel of ${vote_id} because it's in an other guild`);
+			console.log(`${interaction.user.tag} failed to change live result of ${vote_id} because it's in an other guild`);
 			const embed = new EmbedBuilder()
-				.setTitle('Kunde inte byta kanal')
+				.setTitle('Kunde inte ändra live resultat')
 				.setDescription('Det id du anget är för en röstning på en annan server')
 				.setColor('Red');
 
@@ -44,10 +43,10 @@ module.exports = new CommandData(
 			return;
 		}
 
-		const oldChannel = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], parseInt(args[1]), 'channel_id');
+		const currentLiveResult = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], parseInt(args[1]), 'live_result');
 
-		if (oldChannel === null) {
-			console.log(`${interaction.user.tag} failed to change channel of ${vote_id} because the vote is not in the database`);
+		if (currentLiveResult === null) {
+			console.log(`${interaction.user.tag} failed to change live result of ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
 				.setDescription('Kunnde inte hitta röstningen')
@@ -59,23 +58,23 @@ module.exports = new CommandData(
 
 		if (!checkCreating(interaction, args[0], parseInt(args[1]))) return;
 
-		if (oldChannel == new_channel.id) {
-			console.log(`${interaction.user.tag} didn't change channel of ${vote_id} because it already had the specified channel`);
+		if (currentLiveResult === live_result) {
+			console.log(`${interaction.user.tag} couldn't change live result of ${vote_id} because it already had the specified value`);
 			const embed = new EmbedBuilder()
-				.setTitle('Klart!')
-				.setDescription('Kanalen ändrades inte eftersom du angav samma kanal som redan var')
+				.setTitle('Ingen ändring')
+				.setDescription('Värdet du anget är samma som redan var')
 				.setColor('Green');
 
 			await interaction.reply({ embeds: [embed], ephemeral: true });
 			return;
 		}
 
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], parseInt(args[1]), 'channel_id', new_channel.id);
+		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], parseInt(args[1]), 'live_result', live_result);
 
-		console.log(`${interaction.user.tag} successfully changed the channel of ${vote_id}`);
+		console.log(`${interaction.user.tag} successfully changed live result of ${vote_id}`);
 		const embed = new EmbedBuilder()
 			.setTitle('Klart!')
-			.setDescription(`Kanalen har nu ändrats till "${new_channel}"`)
+			.setDescription('Har nu ändrat live resulat till det angivna värdet')
 			.setColor('Green');
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });

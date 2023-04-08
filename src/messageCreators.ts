@@ -62,7 +62,7 @@ export async function voteMessage(client: CustomClient, guild_id: string, voteDa
 		.setPlaceholder('Välj alternativ');
 
 	voteData.candidates.forEach((candidate) => {
-		embed.addFields({ name: candidate.name + (voteData.ended ? (': ' + votes[candidate.name]) : ''), value: candidate.description });
+		embed.addFields({ name: candidate.name + (voteData.ended || voteData.live_result ? (': ' + votes[candidate.name]) : ''), value: candidate.description });
 		selectMenu.addOptions({
 			label: candidate.name,
 			value: candidate.name,

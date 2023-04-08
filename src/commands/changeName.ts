@@ -47,7 +47,7 @@ module.exports = new CommandData(
 
 		const oldName = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], parseInt(args[1]), 'name');
 
-		if (oldName == null) {
+		if (oldName === null) {
 			console.log(`${interaction.user.tag} failed to change name of ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')

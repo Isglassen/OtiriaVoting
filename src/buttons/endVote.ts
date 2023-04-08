@@ -17,7 +17,7 @@ module.exports = new ButtonData(
 			true_votes = [];
 		}
 
-		if (voteData == null) {
+		if (voteData === null) {
 			console.log(`${interaction.user.tag} failed to end vote ${args[1]}.${args[2]} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
