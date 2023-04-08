@@ -43,7 +43,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		const oldRole = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], parseInt(args[1]), 'mention_role_id');
+		const oldRole = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'mention_role_id');
 
 		if (oldRole === null) {
 			console.log(`${interaction.user.tag} failed to change mention of ${vote_id} because the vote is not in the database`);
@@ -56,7 +56,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		if (!checkCreating(interaction, args[0], parseInt(args[1]))) return;
+		if (!checkCreating(interaction, args[0], args[1])) return;
 
 		const new_role_id = new_role === null ? undefined : new_role.id;
 
@@ -71,7 +71,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], parseInt(args[1]), 'mention_role_id', new_role_id);
+		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], args[1], 'mention_role_id', new_role_id);
 
 		console.log(`${interaction.user.tag} successfully changed the role of ${vote_id}`);
 		const embed = new EmbedBuilder()
@@ -81,7 +81,7 @@ module.exports = new CommandData(
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 
-		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], parseInt(args[1]));
+		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
 		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
 
 		if (!infoMessageChannel.isTextBased()) {

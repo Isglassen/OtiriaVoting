@@ -13,7 +13,7 @@ export async function getRole(client: CustomClient, guild_id: string, role_id?: 
 	return await guild.roles.fetch(role_id);
 }
 
-export function voteCreateButtons(guild_id: string, creation_time: number, started: boolean, ended: boolean, disableButtons: boolean): ActionRowBuilder<ButtonBuilder>[] {
+export function voteCreateButtons(guild_id: string, creation_time: string, started: boolean, ended: boolean, disableButtons: boolean): ActionRowBuilder<ButtonBuilder>[] {
 	return [
 		new ActionRowBuilder<ButtonBuilder>()
 			.addComponents([

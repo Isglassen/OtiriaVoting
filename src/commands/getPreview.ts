@@ -36,7 +36,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], parseInt(args[1]));
+		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
 
 		if (voteData === null) {
 			console.log(`${interaction.user.tag} failed to preview vote ${vote_id} because the vote is not in the database`);
@@ -49,7 +49,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		if (!checkCreating(interaction, args[0], parseInt(args[1]))) return;
+		if (!checkCreating(interaction, args[0], args[1])) return;
 
 		console.log(`${interaction.user.tag} successfully previewed vote ${vote_id}`);
 

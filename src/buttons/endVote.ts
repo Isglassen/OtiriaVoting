@@ -9,8 +9,8 @@ module.exports = new ButtonData(
 
 		console.log(`${interaction.user.tag} tried to end vote ${args[1]}.${args[2]}`);
 
-		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], parseInt(args[2]));
-		const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], parseInt(args[2]));
+		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
+		const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], args[2]);
 		let true_votes = votes;
 
 		if (votes === null) {
@@ -41,9 +41,9 @@ module.exports = new ButtonData(
 			return;
 		}
 
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], parseInt(args[2]), 'ended', true);
+		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'ended', true);
 
-		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], parseInt(args[2]));
+		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
 
 		const summary = generateSummary(voteData.candidates, true_votes);
 

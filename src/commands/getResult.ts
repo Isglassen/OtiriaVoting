@@ -34,8 +34,8 @@ module.exports = new CommandData(
 			return;
 		}
 
-		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], parseInt(args[1]));
-		const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[0], parseInt(args[1]));
+		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
+		const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[0], args[1]);
 
 		let true_votes = votes;
 
@@ -54,7 +54,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		if (!checkDone(interaction, args[0], parseInt(args[1]))) return;
+		if (!checkDone(interaction, args[0], args[1])) return;
 
 		const summary = generateSummary(voteData.candidates, true_votes);
 

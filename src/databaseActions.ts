@@ -7,7 +7,7 @@ export type serverVoteData = {
 	message_id?: string,
 	status_message_id: string,
 	status_message_channel_id: string,
-	creation_time: number,
+	creation_time: string,
 	candidates: { name: string, description: string }[],
 	started: boolean,
 	ended: boolean,
@@ -20,6 +20,10 @@ export class ServerVotes {
 	data: {
 		[guild_id: string]: serverVoteData[]
 	} = {};
+
+	async getCache(database: BotDatabase, guild_id: string, creation_time: string) {
+		// TODO: Get cahce for the specific vote
+	}
 
 	async getAll(database: BotDatabase, guild_id: string): Promise<serverVoteData[]> {
 		// TODO: Fetch other command data first
@@ -37,7 +41,10 @@ export class ServerVotes {
 		// TODO: Update database
 	}
 
-	async updateProperty<T extends keyof serverVoteData>(database: BotDatabase, guild_id: string, creation_time: number, property: T, value: serverVoteData[T]) {
+	async updateProperty<T extends keyof serverVoteData>(database: BotDatabase, guild_id: string, creation_time: string, property: T, value: serverVoteData[T]) {
+		// Fetch everything if it is not in the cache
+		await this.getCache(database, guild_id, creation_time);
+
 		if (!Array.isArray(this.data[guild_id])) return;
 		this.data[guild_id].forEach((vote, index) => {
 			if (vote.creation_time != creation_time) return;
@@ -46,15 +53,19 @@ export class ServerVotes {
 		// TODO: Update database
 	}
 
-	async getProperty<T extends keyof serverVoteData>(database: BotDatabase, guild_id: string, creation_time: number, property: T): Promise<serverVoteData[T]> {
-		// TODO: Fetch if not in cache
+	async getProperty<T extends keyof serverVoteData>(database: BotDatabase, guild_id: string, creation_time: string, property: T): Promise<serverVoteData[T]> {
+		// Fetch everything if it is not in the cache
+		await this.getCache(database, guild_id, creation_time);
+
 		const data = (await this.getFull(database, guild_id, creation_time));
 		if (data === null) return null;
 		return data[property];
 	}
 
-	async getFull(database: BotDatabase, guild_id: string, creation_time: number): Promise<serverVoteData> {
-		// TODO: Fetch if not in cache
+	async getFull(database: BotDatabase, guild_id: string, creation_time: string): Promise<serverVoteData> {
+		// Fetch everything if it is not in the cache
+		await this.getCache(database, guild_id, creation_time);
+
 		if (!Array.isArray(this.data[guild_id])) return null;
 		for (let i = 0; i < this.data[guild_id].length; i++) {
 			if (this.data[guild_id][i].creation_time == creation_time) return this.data[guild_id][i];
@@ -71,11 +82,18 @@ export type voteData = {
 export class VoteDatas {
 	data: {
 		[guild_id: string]: {
-			[creation_time: number]: voteData[];
+			[creation_time: string]: voteData[];
 		}
 	} = {};
 
-	async setVote(database: BotDatabase, guild_id: string, creation_time: number, user_id: string, vote: string) {
+	async getCache(database: BotDatabase, guild_id: string, creation_time: string) {
+		// TODO: Get cahce for the specific vote
+	}
+
+	async setVote(database: BotDatabase, guild_id: string, creation_time: string, user_id: string, vote: string) {
+		// Fetch everything if it is not in the cache
+		await this.getCache(database, guild_id, creation_time);
+
 		if (!this.data[guild_id]) this.data[guild_id] = {};
 		if (!this.data[guild_id][creation_time]) this.data[guild_id][creation_time] = [];
 		let found = false;
@@ -92,8 +110,10 @@ export class VoteDatas {
 		// TODO: Update database
 	}
 
-	async getVote(database: BotDatabase, guild_id: string, creation_time: number, user_id: string): Promise<string> {
-		// TODO: Fetch if not in cache
+	async getVote(database: BotDatabase, guild_id: string, creation_time: string, user_id: string): Promise<string> {
+		// Fetch everything if it is not in the cache
+		await this.getCache(database, guild_id, creation_time);
+
 		if (!this.data[guild_id]) return null;
 		if (!this.data[guild_id][creation_time]) return null;
 		for (let i = 0; i < this.data[guild_id][creation_time].length; i++) {
@@ -102,7 +122,7 @@ export class VoteDatas {
 		return null;
 	}
 
-	async getVotes(database: BotDatabase, guild_id: string, creation_time: number): Promise<{ user_id: string, voted_for: string }[]> {
+	async getVotes(database: BotDatabase, guild_id: string, creation_time: string): Promise<{ user_id: string, voted_for: string }[]> {
 		// TODO: Fetch if not in cache
 		if (!this.data[guild_id]) return null;
 		if (!this.data[guild_id][creation_time]) return null;

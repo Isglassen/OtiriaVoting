@@ -15,7 +15,7 @@ module.exports = new SelectMenuData(
 
 		console.log(`${interaction.user.tag} tried to vote for ${args[1]}.${args[2]}`);
 
-		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], parseInt(args[2]));
+		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
 
 		if (voteData === null) {
 			console.log(`${interaction.user.tag} failed to vote for ${args[1]}.${args[2]} because the vote is not in the database`);
@@ -44,8 +44,8 @@ module.exports = new SelectMenuData(
 			return;
 		}
 
-		await interaction.client.customData.voteData.setVote(interaction.client.database, args[1], parseInt(args[2]), interaction.user.id, interaction.values[0]);
-		const true_votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], parseInt(args[2]));
+		await interaction.client.customData.voteData.setVote(interaction.client.database, args[1], args[2], interaction.user.id, interaction.values[0]);
+		const true_votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], args[2]);
 
 		const summary = generateSummary(voteData.candidates, true_votes);
 

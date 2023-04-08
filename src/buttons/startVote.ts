@@ -9,7 +9,7 @@ module.exports = new ButtonData(
 
 		console.log(`${interaction.user.tag} tried to start vote ${args[1]}.${args[2]}`);
 
-		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], parseInt(args[2]));
+		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
 
 		if (voteData === null) {
 			console.log(`${interaction.user.tag} failed to start vote ${args[1]}.${args[2]} because the vote is not in the database`);
@@ -60,10 +60,10 @@ module.exports = new ButtonData(
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], parseInt(args[2]), 'started', true);
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], parseInt(args[2]), 'message_id', info_message.id);
+		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'started', true);
+		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'message_id', info_message.id);
 
-		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], parseInt(args[2]));
+		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
 		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
 
 		if (!infoMessageChannel.isTextBased()) {

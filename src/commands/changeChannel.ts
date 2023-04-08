@@ -44,7 +44,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		const oldChannel = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], parseInt(args[1]), 'channel_id');
+		const oldChannel = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'channel_id');
 
 		if (oldChannel === null) {
 			console.log(`${interaction.user.tag} failed to change channel of ${vote_id} because the vote is not in the database`);
@@ -57,7 +57,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		if (!checkCreating(interaction, args[0], parseInt(args[1]))) return;
+		if (!checkCreating(interaction, args[0], args[1])) return;
 
 		if (oldChannel == new_channel.id) {
 			console.log(`${interaction.user.tag} didn't change channel of ${vote_id} because it already had the specified channel`);
@@ -70,7 +70,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], parseInt(args[1]), 'channel_id', new_channel.id);
+		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], args[1], 'channel_id', new_channel.id);
 
 		console.log(`${interaction.user.tag} successfully changed the channel of ${vote_id}`);
 		const embed = new EmbedBuilder()
@@ -80,7 +80,7 @@ module.exports = new CommandData(
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 
-		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], parseInt(args[1]));
+		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
 		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
 
 		if (!infoMessageChannel.isTextBased()) {
