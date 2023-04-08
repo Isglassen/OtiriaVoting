@@ -47,7 +47,7 @@ module.exports = new CommandData(
 
 		const oldDescription = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'description');
 
-		if (oldDescription === null) {
+		if (oldDescription === undefined) {
 			console.log(`${interaction.user.tag} failed to change description of ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')

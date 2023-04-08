@@ -45,7 +45,7 @@ module.exports = new CommandData(
 
 		const oldRole = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'can_vote_id');
 
-		if (oldRole === null) {
+		if (oldRole === undefined) {
 			console.log(`${interaction.user.tag} failed to change rights of ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')

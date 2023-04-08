@@ -13,11 +13,11 @@ module.exports = new ButtonData(
 		const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], args[2]);
 		let true_votes = votes;
 
-		if (votes === null) {
+		if (votes === undefined) {
 			true_votes = [];
 		}
 
-		if (voteData === null) {
+		if (voteData === undefined) {
 			console.log(`${interaction.user.tag} failed to end vote ${args[1]}.${args[2]} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')

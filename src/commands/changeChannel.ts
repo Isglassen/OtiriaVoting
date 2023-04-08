@@ -46,7 +46,7 @@ module.exports = new CommandData(
 
 		const oldChannel = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'channel_id');
 
-		if (oldChannel === null) {
+		if (oldChannel === undefined) {
 			console.log(`${interaction.user.tag} failed to change channel of ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')

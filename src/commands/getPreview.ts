@@ -38,7 +38,7 @@ module.exports = new CommandData(
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
 
-		if (voteData === null) {
+		if (voteData === undefined) {
 			console.log(`${interaction.user.tag} failed to preview vote ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')

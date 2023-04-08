@@ -4,7 +4,7 @@ export type serverVoteData = {
 	name: string,
 	description: string;
 	channel_id: string,
-	message_id?: string,
+	message_id: string,
 	status_message_id: string,
 	status_message_channel_id: string,
 	creation_time: string,
@@ -16,6 +16,7 @@ export type serverVoteData = {
 	live_result: boolean,
 }
 
+// BIGINT: string, VARCHAR: string, BOOLEAN: number, NULL: null
 export class ServerVotes {
 	data: {
 		[guild_id: string]: serverVoteData[]
@@ -58,7 +59,7 @@ export class ServerVotes {
 		await this.getCache(database, guild_id, creation_time);
 
 		const data = (await this.getFull(database, guild_id, creation_time));
-		if (data === null) return null;
+		if (data === undefined) return undefined;
 		return data[property];
 	}
 
@@ -66,11 +67,11 @@ export class ServerVotes {
 		// Fetch everything if it is not in the cache
 		await this.getCache(database, guild_id, creation_time);
 
-		if (!Array.isArray(this.data[guild_id])) return null;
+		if (!Array.isArray(this.data[guild_id])) return undefined;
 		for (let i = 0; i < this.data[guild_id].length; i++) {
 			if (this.data[guild_id][i].creation_time == creation_time) return this.data[guild_id][i];
 		}
-		return null;
+		return undefined;
 	}
 }
 
@@ -114,18 +115,18 @@ export class VoteDatas {
 		// Fetch everything if it is not in the cache
 		await this.getCache(database, guild_id, creation_time);
 
-		if (!this.data[guild_id]) return null;
-		if (!this.data[guild_id][creation_time]) return null;
+		if (!this.data[guild_id]) return undefined;
+		if (!this.data[guild_id][creation_time]) return undefined;
 		for (let i = 0; i < this.data[guild_id][creation_time].length; i++) {
 			if (this.data[guild_id][creation_time][i].user_id == user_id) return this.data[guild_id][creation_time][i].voted_for;
 		}
-		return null;
+		return undefined;
 	}
 
 	async getVotes(database: BotDatabase, guild_id: string, creation_time: string): Promise<{ user_id: string, voted_for: string }[]> {
 		// TODO: Fetch if not in cache
-		if (!this.data[guild_id]) return null;
-		if (!this.data[guild_id][creation_time]) return null;
+		if (!this.data[guild_id]) return undefined;
+		if (!this.data[guild_id][creation_time]) return undefined;
 		return this.data[guild_id][creation_time];
 	}
 
@@ -148,7 +149,7 @@ export class DatabaseData {
 
 export default class BotDatabase {
 	public database: mySQL.ConnectionConfig;
-	private connection: mySQL.Connection;
+	private pool: mySQL.Pool;
 
 	private canConnect: boolean = false;
 	private connected: boolean = false;
@@ -159,25 +160,17 @@ export default class BotDatabase {
 
 	async createConnection() {
 		if (this.canConnect) return;
-		this.connection = await mySQL.createConnection(this.database);
-	}
-
-	async connect() {
-		if (this.connected || !this.canConnect) return;
-		this.connected = true;
-		return await this.connection.connect();
+		this.pool = await mySQL.createPool({
+			...this.database,
+			supportBigNumbers: true,
+			bigNumberStrings: true,
+		});
 	}
 
 	async end() {
 		if (!this.connected || !this.canConnect) return;
 		this.connected = false;
-		return await this.connection.end();
-	}
-
-	destroy() {
-		if (this.connected || !this.canConnect) return;
-		this.canConnect = false;
-		return this.connection.destroy();
+		return await this.pool.end();
 	}
 
 	async saveAll(data: DatabaseData) {

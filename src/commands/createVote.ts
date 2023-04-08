@@ -76,6 +76,7 @@ module.exports = new CommandData(
 			can_vote_id: can_vote_id.id,
 			mention_role_id: mention_role_id,
 			live_result: live_result,
+			message_id: null,
 		};
 
 		console.log(`${interaction.user.tag} created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(voteData.creation_time).toUTCString()}`);

@@ -56,7 +56,7 @@ module.exports = new CommandData(
 
 		const currentChoices = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'candidates');
 
-		if (currentChoices === null) {
+		if (currentChoices === undefined) {
 			console.log(`${interaction.user.tag} failed to add option to ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')

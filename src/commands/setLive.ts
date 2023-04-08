@@ -45,7 +45,7 @@ module.exports = new CommandData(
 
 		const currentLiveResult = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'live_result');
 
-		if (currentLiveResult === null) {
+		if (currentLiveResult === undefined) {
 			console.log(`${interaction.user.tag} failed to change live result of ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')

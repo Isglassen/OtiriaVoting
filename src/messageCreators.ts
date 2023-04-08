@@ -103,7 +103,7 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 		])
 		.setTimestamp(new Date(voteData.creation_time));
 
-	if ('message_id' in voteData) {
+	if (voteData.message_id !== null) {
 		embed.setURL(`https://discord.com/channels/${guild_id}/${voteData.channel_id}/${voteData.message_id}`);
 	}
 

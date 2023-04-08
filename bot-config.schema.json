@@ -45,7 +45,7 @@
         },
         "port": {
           "description": "SQL database port",
-          "type": "string"
+          "type": "number"
         },
         "database": {
           "description": "SQL database name",

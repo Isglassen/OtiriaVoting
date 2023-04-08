@@ -39,11 +39,11 @@ module.exports = new CommandData(
 
 		let true_votes = votes;
 
-		if (votes === null) {
+		if (votes === undefined) {
 			true_votes = [];
 		}
 
-		if (voteData === null) {
+		if (voteData === undefined) {
 			console.log(`${interaction.user.tag} failed to view results of ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')

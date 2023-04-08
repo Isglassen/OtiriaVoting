@@ -17,7 +17,7 @@ module.exports = new SelectMenuData(
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
 
-		if (voteData === null) {
+		if (voteData === undefined) {
 			console.log(`${interaction.user.tag} failed to vote for ${args[1]}.${args[2]} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')

@@ -16,7 +16,6 @@ async function main() {
 	loadSelectMenus();
 
 	await client.database.createConnection();
-	await client.database.connect();
 
 	interactionHandling();
 
@@ -28,8 +27,7 @@ async function main() {
 	else {
 		console.error('config.bot.token was missing');
 		await client.database.end();
-		client.database.destroy();
-		process.exit();
+		// process.exit();
 	}
 }
 
