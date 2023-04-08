@@ -7,6 +7,7 @@ const config = require('./compiled/bot-config.json');
 const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config);
 
 // TODO: Not ephemeral versions of some commands
+// TODO: Custom error for when the bot tries to edit responses without message perms
 // TODO: Optimize code order in many files to only do things right before when they are needed
 
 async function main() {
@@ -23,7 +24,7 @@ async function main() {
 		if (client.user) console.log(`Ready! Logged in as ${client.user.tag}`);
 	});
 
-	if ('bot' in config && typeof config.bot == 'object' && config.bot != null && 'token' in config.bot && typeof config.bot.token == 'string') { client.login(config.bot.token); }
+	if ('bot' in config && typeof config.bot == 'object' && config.bot !== null && 'token' in config.bot && typeof config.bot.token == 'string') { client.login(config.bot.token); }
 	else {
 		console.error('config.bot.token was missing');
 		await client.database.end();

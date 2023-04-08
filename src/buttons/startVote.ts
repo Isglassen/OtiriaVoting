@@ -1,6 +1,6 @@
 import { EmbedBuilder, PermissionsBitField } from 'discord.js';
 import { ButtonData, CustomButtomInteraction } from '../customClient';
-import { generateSummary, voteCreateMessage, voteMessage } from '../messageCreators';
+import { generateSummary, getRole, voteCreateMessage, voteMessage } from '../messageCreators';
 
 module.exports = new ButtonData(
 	'start',
@@ -46,7 +46,10 @@ module.exports = new ButtonData(
 			return;
 		}
 
-		const info_message = await messageChannel.send(await voteMessage(interaction.client, args[1], voteData, false, generateSummary(voteData.candidates, [])));
+		const info_message = await messageChannel.send({
+			...await voteMessage(interaction.client, args[1], voteData, false, generateSummary(voteData.candidates, [])),
+			content: voteData.mention_role_id !== undefined ? (await getRole(interaction.client, interaction.guildId, voteData.mention_role_id)).toString() : '',
+		});
 
 		console.log(`${interaction.user.tag} successfully started vote ${args[1]}.${args[2]}`);
 

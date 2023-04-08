@@ -74,7 +74,7 @@ export async function voteMessage(client: CustomClient, guild_id: string, voteDa
 
 	const out: BaseMessageOptions = { content: '', embeds: [embed], components: [] };
 
-	if (voteData.mention_role_id != undefined) {
+	if (voteData.mention_role_id !== undefined) {
 		out.content = (await getRole(client, guild_id, voteData.mention_role_id)).toString();
 	}
 
@@ -98,6 +98,7 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 			{ name: 'Kanal', value: `<#${voteData.channel_id}>` },
 			{ name: 'Rösträtt', value: (await getRole(client, guild_id, voteData.can_vote_id)).toString(), inline: true },
 			{ name: 'Ping', value: voteData.mention_role_id ? (await getRole(client, guild_id, voteData.mention_role_id)).toString() : '*Ingen*', inline: true },
+			{ name: 'Live resultat', value: voteData.live_result ? 'Ja' : 'Nej' },
 			{ name: 'Röstningens id', value: `\`${voteData.creation_time}\`` },
 		])
 		.setTimestamp(new Date(voteData.creation_time));
