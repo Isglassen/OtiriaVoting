@@ -60,10 +60,24 @@ module.exports = new ButtonData(
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 
-		// TODO: Include sorted result in embed instead of refering to original message
+		const sortedKeys = Object.keys(summary).sort((a, b) => summary[b] - summary[a]);
+
+		const resultStrings = [];
+
+		function getPlacement(array, index): number {
+			for (let i = index; i > 0; i--) {
+				if (array[i] < array[i - 1]) return i + 1;
+			}
+
+			return 1;
+		}
+
+		sortedKeys.forEach((key, index, array) => resultStrings.push(`**${getPlacement(array, index)}.** ${key}: ${summary[key]}`));
+
 		const infoEmbed = new EmbedBuilder()
 			.setTitle('Avslutad')
-			.setDescription('Röstningen är nu avslutat och ni kan istället finna resultaten ovan')
+			.setDescription('Röstningen är nu avslutat och ni kan istället finna resultaten här under')
+			.addFields({ name: 'Resultat', value: resultStrings.join('\n') })
 			.setColor('Blurple');
 
 		await info_message.reply({ embeds: [infoEmbed] });
