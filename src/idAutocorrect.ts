@@ -24,7 +24,7 @@ export default function idAutocorrect(getPossibilities: (client: CustomClient, g
 		const filtered = choices.filter(filterFn);
 
 		const choiceName = (choice: serverVoteData) => {
-			const choiceDate = new Date(choice.creation_time);
+			const choiceDate = new Date(parseInt(choice.creation_time));
 			// Add repeating lead 0 (min - val.toString().length) times to start of val.toString() and return it
 			const lead0 = (val:any, min:number = 2) => '0'.repeat(Math.max(min - val.toString().length, 0)) + val.toString();
 

@@ -54,7 +54,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		const currentChoices = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'candidates');
+		const currentChoices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 
 		if (currentChoices === undefined) {
 			console.log(`${interaction.user.tag} failed to add option to ${vote_id} because the vote is not in the database`);
@@ -91,7 +91,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], args[1], 'candidates', [... currentChoices, { name: new_name, description: new_description }]);
+		await interaction.client.customData.choices.addChoice(interaction.client.database, args[0], args[1], { name: new_name, description: new_description });
 
 		console.log(`${interaction.user.tag} successfully added option to ${vote_id}`);
 		const embed = new EmbedBuilder()
@@ -102,6 +102,7 @@ module.exports = new CommandData(
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 
 		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
+		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
 
 		if (!infoMessageChannel.isTextBased()) {
@@ -116,7 +117,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, false));
+		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, choices, false));
 	},
 	idAutocorrect(getCreating),
 );

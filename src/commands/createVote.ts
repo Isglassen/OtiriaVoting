@@ -58,7 +58,7 @@ module.exports = new CommandData(
 		const rights = interaction.options.getRole('voting-rights', false);
 		const can_vote_id = rights === null ? await getRole(interaction.client, interaction.guildId) : rights;
 		const ping = interaction.options.getRole('ping', false);
-		const mention_role_id = ping === null ? undefined : ping.id;
+		const mention_role_id = ping === null ? null : ping.id;
 		const liveResult = interaction.options.getBoolean('live-result', false);
 		const live_result = liveResult === null ? false : liveResult;
 
@@ -68,8 +68,7 @@ module.exports = new CommandData(
 			description: description,
 			status_message_channel_id: '',
 			status_message_id: '',
-			creation_time: new Date().toString(),
-			candidates: [],
+			creation_time: (+new Date).toString(),
 			started: false,
 			ended: false,
 			channel_id: channel.id,
@@ -79,15 +78,15 @@ module.exports = new CommandData(
 			message_id: null,
 		};
 
-		console.log(`${interaction.user.tag} created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(voteData.creation_time).toUTCString()}`);
+		console.log(`${interaction.user.tag} created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(parseInt(voteData.creation_time)).toUTCString()}`);
 
 		// Respond so we can save the message id
-		const message = await interaction.reply({ ...await voteCreateMessage(interaction.client, interaction.guildId, voteData, true), fetchReply: true });
+		const message = await interaction.reply({ ...await voteCreateMessage(interaction.client, interaction.guildId, voteData, [], true), fetchReply: true });
 		voteData.status_message_channel_id = message.channelId;
 		voteData.status_message_id = message.id;
 
 		// Save command data
 		await interaction.client.customData.votes.createVote(interaction.client.database, interaction.guildId, voteData);
-		await message.edit(await voteCreateMessage(interaction.client, interaction.guildId, voteData));
+		await message.edit(await voteCreateMessage(interaction.client, interaction.guildId, voteData, []));
 	},
 );

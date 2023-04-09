@@ -43,6 +43,6 @@ module.exports = new CommandData(
 		console.log('Disconnecting from database');
 		await interaction.client.database.saveAll(interaction.client.customData);
 		await interaction.client.database.end();
-		// process.exit();
+		process.exit();
 	},
 );

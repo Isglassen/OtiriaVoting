@@ -46,7 +46,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		const currentChoices = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'candidates');
+		const currentChoices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 
 		if (currentChoices === undefined) {
 			console.log(`${interaction.user.tag} failed to remove option from ${vote_id} because the vote is not in the database`);
@@ -72,17 +72,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		let index = 0;
-		for (let i = 0; i < currentChoices.length; i++) {
-			if (currentChoices[i].name == new_name) {
-				index = i;
-				break;
-			}
-		}
-
-		currentChoices.splice(index, 1);
-
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], args[1], 'candidates', currentChoices);
+		await interaction.client.customData.choices.removeChoice(interaction.client.database, args[0], args[1], new_name);
 
 		console.log(`${interaction.user.tag} successfully removed option from ${vote_id}`);
 		const embed = new EmbedBuilder()
@@ -93,6 +83,7 @@ module.exports = new CommandData(
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 
 		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
+		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
 
 		if (!infoMessageChannel.isTextBased()) {
@@ -107,7 +98,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, false));
+		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, choices, false));
 	},
 	async function(interaction: CustomAutocompleteInteraction) {
 		if (interaction.options.getFocused(true).name == 'vote-id') return await idAutocorrect(getCreating)(interaction);
@@ -118,7 +109,7 @@ module.exports = new CommandData(
 		const args = vote_id.split('.');
 		if (args[0] != interaction.guildId) return await interaction.respond([]);
 
-		const choices = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'candidates');
+		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 		if (!Array.isArray(choices)) return await interaction.respond([]);
 
 		const filtered = choices.filter((val) => val.name.startsWith(interaction.options.getFocused()));

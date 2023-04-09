@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, BaseMessageOptions, StringSelectMenuBuilder } from 'discord.js';
-import { serverVoteData, voteData as userVoteData } from './databaseActions';
+import { choiceData, serverVoteData, voteData as userVoteData } from './databaseActions';
 import { CustomClient } from './customClient';
 
 const MESSAGE_CONTENT = `Skapa röstning
@@ -33,7 +33,7 @@ export function voteCreateButtons(guild_id: string, creation_time: string, start
 	];
 }
 
-export async function voteMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableVoting: boolean = false, votes: {[name: string]: number}): Promise<BaseMessageOptions> {
+export async function voteMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, choiceList: choiceData[], disableVoting: boolean = false, votes: {[name: string]: number}): Promise<BaseMessageOptions> {
 	let total = 0;
 
 	Object.values(votes).forEach(num => total += num);
@@ -61,7 +61,7 @@ export async function voteMessage(client: CustomClient, guild_id: string, voteDa
 		.setMinValues(1)
 		.setPlaceholder('Välj alternativ');
 
-	voteData.candidates.forEach((candidate) => {
+	choiceList.forEach((candidate) => {
 		embed.addFields({ name: candidate.name + (voteData.ended || voteData.live_result ? (': ' + votes[candidate.name]) : ''), value: candidate.description });
 		selectMenu.addOptions({
 			label: candidate.name,
@@ -74,19 +74,19 @@ export async function voteMessage(client: CustomClient, guild_id: string, voteDa
 
 	const out: BaseMessageOptions = { content: '', embeds: [embed], components: [] };
 
-	if (voteData.mention_role_id !== undefined) {
+	if (voteData.mention_role_id !== null) {
 		out.content = (await getRole(client, guild_id, voteData.mention_role_id)).toString();
 	}
 
-	if (voteData.candidates.length > 1 && !disableVoting) {
+	if (choiceList.length > 1 && !disableVoting) {
 		out.components = [component];
 	}
 
 	return out;
 }
 
-export async function voteCreateMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, disableButtons: boolean = false): Promise<BaseMessageOptions> {
-	const choices = voteData.candidates.map((val) => val.name);
+export async function voteCreateMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, choiceList: choiceData[], disableButtons: boolean = false): Promise<BaseMessageOptions> {
+	const choices = choiceList.map((val) => val.name);
 	const embed = new EmbedBuilder()
 		.setTitle(voteData.name)
 		.setDescription(voteData.description)
@@ -101,7 +101,7 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 			{ name: 'Live resultat', value: voteData.live_result ? 'Ja' : 'Nej' },
 			{ name: 'Röstningens id', value: `\`${voteData.creation_time}\`` },
 		])
-		.setTimestamp(new Date(voteData.creation_time));
+		.setTimestamp(new Date(parseInt(voteData.creation_time)));
 
 	if (voteData.message_id !== null) {
 		embed.setURL(`https://discord.com/channels/${guild_id}/${voteData.channel_id}/${voteData.message_id}`);
@@ -115,7 +115,7 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 	return { embeds: [embed], components: components, content: MESSAGE_CONTENT };
 }
 
-export function generateSummary(candidates: serverVoteData['candidates'], rawVotes: userVoteData[]): {[name: string]: number} {
+export function generateSummary(candidates: choiceData[], rawVotes: userVoteData[]): {[name: string]: number} {
 	const summary = {};
 
 	candidates.forEach((choice) => summary[choice.name] = 0);

@@ -10,6 +10,7 @@ module.exports = new ButtonData(
 		console.log(`${interaction.user.tag} tried to end vote ${args[1]}.${args[2]}`);
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
+		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[1], args[2]);
 		const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], args[2]);
 		let true_votes = votes;
 
@@ -45,10 +46,10 @@ module.exports = new ButtonData(
 
 		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
 
-		const summary = generateSummary(voteData.candidates, true_votes);
+		const summary = generateSummary(choices, true_votes);
 
 		const info_message = await messageChannel.messages.fetch(voteData.message_id);
-		await info_message.edit(await voteMessage(interaction.client, args[1], newData, true, summary));
+		await info_message.edit(await voteMessage(interaction.client, args[1], newData, choices, true, summary));
 
 		console.log(`${interaction.user.tag} successfully ended vote ${args[1]}.${args[2]}`);
 
@@ -79,6 +80,6 @@ module.exports = new ButtonData(
 			return;
 		}
 
-		await infoMessage.edit(await voteCreateMessage(interaction.client, args[1], newData, false));
+		await infoMessage.edit(await voteCreateMessage(interaction.client, args[1], newData, choices, false));
 	},
 );

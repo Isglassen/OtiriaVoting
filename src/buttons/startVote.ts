@@ -10,6 +10,7 @@ module.exports = new ButtonData(
 		console.log(`${interaction.user.tag} tried to start vote ${args[1]}.${args[2]}`);
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
+		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[1], args[2]);
 
 		if (voteData === undefined) {
 			console.log(`${interaction.user.tag} failed to start vote ${args[1]}.${args[2]} because the vote is not in the database`);
@@ -35,11 +36,11 @@ module.exports = new ButtonData(
 			return;
 		}
 
-		if (voteData.candidates.length < 2) {
+		if (choices.length < 2) {
 			console.log(`${interaction.user.tag} failed to start vote ${args[1]}.${args[2]} because there were too few options`);
 			const embed = new EmbedBuilder()
 				.setTitle('Lägg till lite alternativ')
-				.setDescription('Det är svårt att rösta om något när det finns färre än 2 alternativ, och du har bara ' + voteData.candidates.length)
+				.setDescription('Det är svårt att rösta om något när det finns färre än 2 alternativ, och du har bara ' + choices.length)
 				.setColor('Red');
 
 			await interaction.reply({ embeds: [embed], ephemeral: true });
@@ -47,8 +48,8 @@ module.exports = new ButtonData(
 		}
 
 		const info_message = await messageChannel.send({
-			...await voteMessage(interaction.client, args[1], voteData, false, generateSummary(voteData.candidates, [])),
-			content: voteData.mention_role_id !== undefined ? (await getRole(interaction.client, interaction.guildId, voteData.mention_role_id)).toString() : '',
+			...await voteMessage(interaction.client, args[1], voteData, choices, false, generateSummary(choices, [])),
+			content: voteData.mention_role_id !== null ? (await getRole(interaction.client, interaction.guildId, voteData.mention_role_id)).toString() : '',
 		});
 
 		console.log(`${interaction.user.tag} successfully started vote ${args[1]}.${args[2]}`);
@@ -78,6 +79,6 @@ module.exports = new ButtonData(
 			return;
 		}
 
-		await infoMessage.edit(await voteCreateMessage(interaction.client, args[1], newData, false));
+		await infoMessage.edit(await voteCreateMessage(interaction.client, args[1], newData, choices, false));
 	},
 );

@@ -80,6 +80,7 @@ module.exports = new CommandData(
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 
 		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
+		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
 
 		if (!infoMessageChannel.isTextBased()) {
@@ -94,7 +95,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, false));
+		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, choices, false));
 	},
 	idAutocorrect(getCreating),
 );

@@ -35,6 +35,7 @@ module.exports = new CommandData(
 		}
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
+		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 		const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[0], args[1]);
 
 		let true_votes = votes;
@@ -56,9 +57,9 @@ module.exports = new CommandData(
 
 		if (!checkDone(interaction, args[0], args[1])) return;
 
-		const summary = generateSummary(voteData.candidates, true_votes);
+		const summary = generateSummary(choices, true_votes);
 
-		await interaction.reply({ ...await voteMessage(interaction.client, args[0], voteData, true, summary), ephemeral: true });
+		await interaction.reply({ ...await voteMessage(interaction.client, args[0], voteData, choices, true, summary), ephemeral: true });
 	},
 	idAutocorrect(getDone),
 );

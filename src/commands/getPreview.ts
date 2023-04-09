@@ -1,8 +1,7 @@
 import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
-import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
-import { serverVoteData } from '../databaseActions';
+import { CommandData, CustomCommandInteraction } from '../customClient';
 import idAutocorrect, { checkCreating, getCreating } from '../idAutocorrect';
-import { voteCreateMessage, voteMessage } from '../messageCreators';
+import { voteMessage } from '../messageCreators';
 
 module.exports = new CommandData(
 	new SlashCommandBuilder()
@@ -37,6 +36,7 @@ module.exports = new CommandData(
 		}
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
+		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 
 		if (voteData === undefined) {
 			console.log(`${interaction.user.tag} failed to preview vote ${vote_id} because the vote is not in the database`);
@@ -53,7 +53,7 @@ module.exports = new CommandData(
 
 		console.log(`${interaction.user.tag} successfully previewed vote ${vote_id}`);
 
-		await interaction.reply({ ...await voteMessage(interaction.client, args[0], voteData, true, {}), ephemeral: true });
+		await interaction.reply({ ...await voteMessage(interaction.client, args[0], voteData, choices, true, {}), ephemeral: true });
 	},
 	idAutocorrect(getCreating),
 );
