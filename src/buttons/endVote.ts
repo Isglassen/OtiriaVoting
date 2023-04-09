@@ -60,6 +60,7 @@ module.exports = new ButtonData(
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 
+		// TODO: Include sorted result in embed instead of refering to original message
 		const infoEmbed = new EmbedBuilder()
 			.setTitle('Avslutad')
 			.setDescription('Röstningen är nu avslutat och ni kan istället finna resultaten ovan')
