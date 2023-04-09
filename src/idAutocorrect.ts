@@ -38,9 +38,34 @@ export default function idAutocorrect(getPossibilities: (client: CustomClient, g
 }
 
 export async function getCreating(client: CustomClient, guildId: string): Promise<serverVoteData[]> {
-	// TODO: Query with these filters instead of filtering everything here
-	const votes = await client.customData.votes.getAll(client.database, guildId);
-	const editable = votes.filter((value) => value.started == false);
+	const votes = (await client.database.pool.execute(
+		'SELECT * FROM guilds WHERE guild_id = ? AND started = 0',
+		[guildId],
+	))[0];
+
+	const editable: serverVoteData[] = [];
+	if (!Array.isArray(votes)) return editable;
+
+	for (let i = 0; i < votes.length; i++) {
+		const data = votes[i];
+		if (!('creation_time' in data)) continue;
+
+		editable.push({
+			name: data.name,
+			description: data.description,
+			channel_id: data.channel_id,
+			message_id: data.message_id,
+			status_message_id: data.status_message_id,
+			status_message_channel_id: data.status_message_channel_id,
+			creation_time: data.creation_time,
+			started: !!data.started,
+			ended: !!data.ended,
+			can_vote_id: data.can_vote_id,
+			mention_role_id: data.mention_role_id,
+			live_result: !!data.live_result,
+		});
+	}
+
 	return editable;
 }
 
@@ -71,8 +96,33 @@ export async function checkDone(interaction: CustomCommandInteraction, guild_id:
 }
 
 export async function getDone(client: CustomClient, guildId: string): Promise<serverVoteData[]> {
-	// TODO: Query with these filters instead of filtering everything here
-	const votes = await client.customData.votes.getAll(client.database, guildId);
-	const editable = votes.filter((value) => value.ended == true);
+	const votes = (await client.database.pool.execute(
+		'SELECT * FROM guilds WHERE guild_id = ? AND ended = 1',
+		[guildId],
+	))[0];
+
+	const editable: serverVoteData[] = [];
+	if (!Array.isArray(votes)) return editable;
+
+	for (let i = 0; i < votes.length; i++) {
+		const data = votes[i];
+		if (!('creation_time' in data)) continue;
+
+		editable.push({
+			name: data.name,
+			description: data.description,
+			channel_id: data.channel_id,
+			message_id: data.message_id,
+			status_message_id: data.status_message_id,
+			status_message_channel_id: data.status_message_channel_id,
+			creation_time: data.creation_time,
+			started: !!data.started,
+			ended: !!data.ended,
+			can_vote_id: data.can_vote_id,
+			mention_role_id: data.mention_role_id,
+			live_result: !!data.live_result,
+		});
+	}
+
 	return editable;
 }

@@ -6,7 +6,6 @@ module.exports = new SelectMenuData(
 	'vote',
 	ComponentType.StringSelect,
 	async function(interaction: CustomSelectMenuInteraction) {
-		console.log(JSON.stringify(interaction.values));
 		if (!interaction.isStringSelectMenu()) return;
 
 		const args = interaction.customId.split('.');
@@ -42,6 +41,8 @@ module.exports = new SelectMenuData(
 			await interaction.reply({ embeds: [embed], ephemeral: true });
 			return;
 		}
+
+		console.log(`${interaction.user.tag} successfully voted for ${args[1]}.${args[2]}`);
 
 		await interaction.client.customData.voteData.setVote(interaction.client.database, args[1], args[2], interaction.user.id, interaction.values[0]);
 		const true_votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], args[2]);

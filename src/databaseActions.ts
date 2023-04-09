@@ -10,7 +10,7 @@ export type serverVoteData = {
 	creation_time: string,
 	started: boolean,
 	ended: boolean,
-	can_vote_id?: string,
+	can_vote_id: string,
 	mention_role_id: string,
 	live_result: boolean,
 }
@@ -33,13 +33,32 @@ export class Choices {
 
 	async getCache(database: BotDatabase, guild_id: string, creation_time: string) {
 		if (this.data[guild_id] && Array.isArray(this.data[guild_id][creation_time])) return;
+		console.log('Loading choices into cache');
 
-		// TODO: Get cache for the specific vote
+		const choices = (await database.pool.execute(
+			'SELECT * FROM choices WHERE guild_id = ? AND creation_time = ?',
+			[guild_id, creation_time],
+		))[0];
+
+		if (!Array.isArray(choices)) return;
+
+		if (!this.data[guild_id]) this.data[guild_id] = {};
+		if (!Array.isArray(this.data[guild_id][creation_time])) this.data[guild_id][creation_time] = [];
+
+		for (let i = 0; i < choices.length; i++) {
+			const data = choices[i];
+			if (!('creation_time' in data)) continue;
+
+			this.data[data.guild_id][data.creation_time].push({
+				name: data.name,
+				description: data.description,
+			});
+		}
 	}
 
 	async removeChoice(database: BotDatabase, guild_id: string, creation_time: string, name: string) {
 		// Fetch everything if it is not in the cache
-		this.getCache(database, guild_id, creation_time);
+		await this.getCache(database, guild_id, creation_time);
 
 		if (!this.data[guild_id]) return;
 		if (!Array.isArray(this.data[guild_id][creation_time])) return;
@@ -54,12 +73,15 @@ export class Choices {
 
 		this.data[guild_id][creation_time].splice(index, 1);
 
-		// TODO: Update database
+		await database.pool.execute(
+			'DELETE FROM choices WHERE guild_id = ? AND creation_time = ? AND name = ?',
+			[guild_id, creation_time, name],
+		);
 	}
 
 	async addChoice(database: BotDatabase, guild_id: string, creation_time: string, data: choiceData) {
 		// Fetch everything if it is not in the cache
-		this.getCache(database, guild_id, creation_time);
+		await this.getCache(database, guild_id, creation_time);
 
 		if (!this.data[guild_id]) this.data[guild_id] = {};
 		if (!Array.isArray(this.data[guild_id][creation_time])) this.data[guild_id][creation_time] = [];
@@ -68,12 +90,17 @@ export class Choices {
 
 		this.data[guild_id][creation_time].push(data);
 
-		// TODO: Update database
+		await database.pool.execute(
+			'INSERT INTO choices (guild_id, creation_time, name, description) VALUES (?, ?, ?, ?)',
+			[guild_id, creation_time, data.name, data.description],
+		);
+
+		console.log(JSON.stringify(this.data));
 	}
 
 	async getChoices(database: BotDatabase, guild_id: string, creation_time: string): Promise<choiceData[]> {
 		// Fetch everything if it is not in the cache
-		this.getCache(database, guild_id, creation_time);
+		await this.getCache(database, guild_id, creation_time);
 
 		if (!this.data[guild_id]) return [];
 		if (!Array.isArray(this.data[guild_id][creation_time])) return [];
@@ -90,26 +117,57 @@ export class ServerVotes {
 
 	async getCache(database: BotDatabase, guild_id: string, creation_time: string) {
 		if (Array.isArray(this.data[guild_id]) && this.data[guild_id].some(val => val.creation_time == creation_time)) return;
+		console.log('Loading guild into cache');
 
-		// TODO: Get cache for the specific vote
-		const guild = database.pool.execute(
+		const guild = (await database.pool.execute(
 			'SELECT * FROM guilds WHERE guild_id = ? AND creation_time = ?',
 			[guild_id, creation_time],
-		);
+		))[0];
 
-		console.log('Fake get cache guilds');
-		console.log(JSON.stringify(guild));
+		if (!Array.isArray(guild)) return;
+
+		if (!Array.isArray(this.data[guild_id])) this.data[guild_id] = [];
+
+		for (let i = 0; i < guild.length; i++) {
+			const data = guild[i];
+			if (!('creation_time' in data)) continue;
+
+			this.data[data.guild_id].push({
+				name: data.name,
+				description: data.description,
+				channel_id: data.channel_id,
+				message_id: data.message_id,
+				status_message_id: data.status_message_id,
+				status_message_channel_id: data.status_message_channel_id,
+				creation_time: data.creation_time,
+				started: !!data.started,
+				ended: !!data.ended,
+				can_vote_id: data.can_vote_id,
+				mention_role_id: data.mention_role_id,
+				live_result: !!data.live_result,
+			});
+		}
 	}
 
 	async getGuildCache(database: BotDatabase, guild_id: string) {
-		// TODO
-
 		// Get list of creation_times
+		const all = (await database.pool.execute(
+			'SELECT creation_time FROM guilds WHERE guild_id = ?',
+			[guild_id],
+		))[0];
+
+		if (!Array.isArray(all)) return;
+
 		// Run getCache for every time
+		for (let i = 0; i < all.length; i++) {
+			const data = all[i];
+			if ('creation_time' in data) await this.getCache(database, guild_id, data.creation_time);
+		}
 	}
 
 	async getAll(database: BotDatabase, guild_id: string): Promise<serverVoteData[]> {
-		// TODO: Fetch other command data first
+		await this.getGuildCache(database, guild_id);
+
 		if (!Array.isArray(this.data[guild_id])) return [];
 		return this.data[guild_id];
 	}
@@ -142,9 +200,9 @@ export class ServerVotes {
 
 		if (!updated) return;
 
-		// TODO: Update database
-		database.pool.execute(
-			'UPDATE ',
+		await database.pool.execute(
+			`UPDATE guilds SET ${property} = ?`,
+			[value],
 		);
 	}
 
@@ -183,15 +241,27 @@ export class VoteDatas {
 
 	async getCache(database: BotDatabase, guild_id: string, creation_time: string) {
 		if (this.data[guild_id] && Array.isArray(this.data[guild_id][creation_time])) return;
+		console.log('Loading votes into cache');
 
-		// TODO: Get cache for the specific vote
-		const votes = database.pool.execute(
+		const votes = (await database.pool.execute(
 			'SELECT * FROM votes WHERE guild_id = ? AND creation_time = ?',
 			[guild_id, creation_time],
-		);
+		))[0];
 
-		console.log('Fake get cache votes');
-		console.log(JSON.stringify(votes));
+		if (!Array.isArray(votes)) return;
+
+		if (!this.data[guild_id]) this.data[guild_id] = {};
+		if (!Array.isArray(this.data[guild_id][creation_time])) this.data[guild_id][creation_time] = [];
+
+		for (let i = 0; i < votes.length; i++) {
+			const data = votes[i];
+			if (!('creation_time' in data)) continue;
+
+			this.data[data.guild_id][data.creation_time].push({
+				user_id: data.user_id,
+				voted_for: data.choice,
+			});
+		}
 	}
 
 	async setVote(database: BotDatabase, guild_id: string, creation_time: string, user_id: string, vote: string) {
@@ -211,7 +281,26 @@ export class VoteDatas {
 		if (!found) {
 			this.data[guild_id][creation_time].push({ user_id, voted_for: vote });
 		}
-		// TODO: Update database
+
+		const currentVote = (await database.pool.execute(
+			'SELECT choice FROM votes WHERE guild_id = ? AND creation_time = ? AND user_id = ?',
+			[guild_id, creation_time, user_id],
+		))[0];
+
+		if (!Array.isArray(currentVote)) return;
+
+		if (currentVote.length > 0) {
+			await database.pool.execute(
+				'UPDATE votes SET choice = ? WHERE guild_id = ? AND creation_time = ? AND user_id = ?',
+				[vote, guild_id, creation_time, user_id],
+			);
+			return;
+		}
+
+		await database.pool.execute(
+			'INSERT INTO votes (choice, guild_id, creation_time, user_id) VALUES (?, ?, ?, ?)',
+			[vote, guild_id, creation_time, user_id],
+		);
 	}
 
 	async getVote(database: BotDatabase, guild_id: string, creation_time: string, user_id: string): Promise<string> {
