@@ -38,6 +38,6 @@ module.exports = new CommandData(
 
 		console.log('Disconnecting from database');
 		await interaction.client.database.end();
-		process.exit();
+		setTimeout(process.exit, 2500);
 	},
 );
