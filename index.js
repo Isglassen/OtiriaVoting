@@ -1,8 +1,9 @@
-const { GatewayIntentBits, Events, EmbedBuilder, Collection, InteractionType, ComponentType } = require('discord.js');
+const { GatewayIntentBits, Events, EmbedBuilder, Collection, InteractionType, ComponentType, ActivityType } = require('discord.js');
 const { CustomClient } = require('./compiled/customClient.js');
 const fs = require('node:fs');
 const path = require('node:path');
 const config = require('./compiled/bot-config.json');
+const packageData = require('./package.json');
 
 const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config);
 
@@ -18,7 +19,17 @@ async function main() {
 	interactionHandling();
 
 	client.once(Events.ClientReady, () => {
-		if (client.user) console.log(`Ready! Logged in as ${client.user.tag}`);
+		if (!client.user) return;
+
+		console.log(`Ready! Logged in as ${client.user.tag}`);
+
+		client.user.setPresence({
+			status: 'online',
+			activities: [{
+				name: `Version ${packageData.version}`,
+				type:  ActivityType.Playing,
+			}],
+		});
 	});
 
 	if ('bot' in config && typeof config.bot == 'object' && config.bot !== null && 'token' in config.bot && typeof config.bot.token == 'string') { client.login(config.bot.token); }
