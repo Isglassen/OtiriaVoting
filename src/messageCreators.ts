@@ -109,13 +109,13 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 		.addFields([
 			{ name: 'Röstningens alternativ', value: choices.length > 0 ? '**' + choices.join('**, **') + '**' : '*Inga än*' },
 			{ name: 'Alternativens beskrivningar', value: 'Du kan läsa alternativens beskrivningar med `/förhandsgranska`' },
-			{ name: 'Stadie', value: voteData.ended ? 'Avslutad' : voteData.started ? 'Startad' : 'Skapas' },
-			{ name: 'Kanal', value: `<#${voteData.channel_id}>` },
+			{ name: 'Stadie', value: voteData.ended ? 'Avslutad' : voteData.started ? 'Startad' : 'Skapas', inline: true },
+			{ name: 'Kanal', value: `<#${voteData.channel_id}>`, inline: true },
+			{ name: 'Live resultat', value: voteData.live_result ? 'Ja' : 'Nej', inline: true },
 			{ name: 'Rösträtt', value: (await getRole(client, guild_id, voteData.can_vote_id)).toString(), inline: true },
 			{ name: 'Ping', value: voteData.mention_role_id ? (await getRole(client, guild_id, voteData.mention_role_id)).toString() : '*Ingen*', inline: true },
-			{ name: 'Live resultat', value: voteData.live_result ? 'Ja' : 'Nej' },
-			{ name: 'Röstningens id', value: `\`${voteData.creation_time}\`` },
 		])
+		.setFooter({ text: voteData.creation_time })
 		.setTimestamp(new Date(parseInt(voteData.creation_time)));
 
 	if (voteData.message_id !== null) {
