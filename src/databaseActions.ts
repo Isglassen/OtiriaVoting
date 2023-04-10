@@ -27,10 +27,6 @@ export class Choices {
 		}
 	} = {};
 
-	async saveAll(database: BotDatabase) {
-		// TODO
-	}
-
 	async getCache(database: BotDatabase, guild_id: string, creation_time: string) {
 		if (this.data[guild_id] && Array.isArray(this.data[guild_id][creation_time])) return;
 		console.log('Loading choices into cache');
@@ -170,10 +166,6 @@ export class ServerVotes {
 
 		if (!Array.isArray(this.data[guild_id])) return [];
 		return this.data[guild_id];
-	}
-
-	async saveAll(database: BotDatabase) {
-		// TODO
 	}
 
 	async createVote(database: BotDatabase, guild_id: string, voteData: serverVoteData) {
@@ -323,24 +315,12 @@ export class VoteDatas {
 		if (!Array.isArray(this.data[guild_id][creation_time])) return undefined;
 		return this.data[guild_id][creation_time];
 	}
-
-	async saveAll(database: BotDatabase) {
-		// TODO
-	}
 }
 
 export class DatabaseData {
 	choices: Choices = new Choices();
 	votes: ServerVotes = new ServerVotes();
 	voteData: VoteDatas = new VoteDatas();
-
-	async saveAll(database: BotDatabase) {
-		await Promise.all([
-			this.choices.saveAll(database),
-			this.votes.saveAll(database),
-			this.voteData.saveAll(database),
-		]);
-	}
 }
 
 export default class BotDatabase {
@@ -368,9 +348,5 @@ export default class BotDatabase {
 		if (!this.connected || !this.canConnect) return;
 		this.connected = false;
 		return await this.pool.end();
-	}
-
-	async saveAll(data: DatabaseData) {
-		await data.saveAll(this);
 	}
 }

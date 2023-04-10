@@ -1,6 +1,6 @@
 import { EmbedBuilder, PermissionsBitField } from 'discord.js';
 import { ButtonData, CustomButtomInteraction } from '../customClient';
-import { generateSummary, getRole, voteCreateMessage, voteMessage } from '../messageCreators';
+import { checkCreateMessage, generateSummary, getRole, voteCreateMessage, voteMessage } from '../messageCreators';
 
 module.exports = new ButtonData(
 	'start',
@@ -9,8 +9,9 @@ module.exports = new ButtonData(
 
 		console.log(`${interaction.user.tag} tried to start vote ${args[1]}.${args[2]}`);
 
+		if (!await checkCreateMessage(interaction)) return;
+
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
-		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[1], args[2]);
 
 		if (voteData === undefined) {
 			console.log(`${interaction.user.tag} failed to start vote ${args[1]}.${args[2]} because the vote is not in the database`);
@@ -35,6 +36,8 @@ module.exports = new ButtonData(
 			await interaction.reply({ embeds: [embed], ephemeral: true });
 			return;
 		}
+
+		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[1], args[2]);
 
 		if (choices.length < 2) {
 			console.log(`${interaction.user.tag} failed to start vote ${args[1]}.${args[2]} because there were too few options`);

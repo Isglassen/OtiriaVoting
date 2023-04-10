@@ -1,8 +1,7 @@
 import { ChannelType, EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
-import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
-import { serverVoteData } from '../databaseActions';
+import { CommandData, CustomCommandInteraction } from '../customClient';
 import idAutocorrect, { checkCreating, getCreating } from '../idAutocorrect';
-import { voteCreateMessage } from '../messageCreators';
+import { checkCreateMessage, voteCreateMessage } from '../messageCreators';
 
 module.exports = new CommandData(
 	new SlashCommandBuilder()
@@ -32,6 +31,8 @@ module.exports = new CommandData(
 		const args = vote_id.split('.');
 
 		console.log(`${interaction.user.tag} tried to change the channel of ${vote_id} to ${new_channel}`);
+
+		if (!await checkCreateMessage(interaction)) return;
 
 		if (args[0] != interaction.guildId) {
 			console.log(`${interaction.user.tag} failed to change channel of ${vote_id} because it's in an other guild`);

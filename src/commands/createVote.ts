@@ -1,4 +1,4 @@
-import { getRole, voteCreateMessage } from '../messageCreators';
+import { checkCreateMessage, getRole, voteCreateMessage } from '../messageCreators';
 import { serverVoteData } from '../databaseActions';
 import { ChannelType, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomCommandInteraction } from '../customClient';
@@ -77,6 +77,10 @@ module.exports = new CommandData(
 			live_result: live_result,
 			message_id: null,
 		};
+
+		console.log(`${interaction.user.tag} tried to created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(parseInt(voteData.creation_time)).toUTCString()}`);
+
+		if (!await checkCreateMessage(interaction)) return;
 
 		console.log(`${interaction.user.tag} created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(parseInt(voteData.creation_time)).toUTCString()}`);
 

@@ -10,17 +10,13 @@ module.exports = new CommandData(
 		.setDescriptionLocalization('sv-SE', 'Stannar boten på ett säkert sätt')
 		.setDefaultMemberPermissions('0'),
 	async function(interaction: CustomCommandInteraction) {
-		async function noPermission() {
+		if (interaction.user.id != interaction.client.config.bot.ownerId) {
 			const embed = new EmbedBuilder()
 				.setTitle('Stop!')
 				.setDescription('Du äger inte denna boten, så du kan inte stänga av den')
 				.setColor('Red');
 
 			await interaction.reply({ embeds: [embed], ephemeral: true });
-		}
-
-		if (interaction.user.id != interaction.client.config.bot.ownerId) {
-			await noPermission();
 			return;
 		}
 
@@ -41,7 +37,6 @@ module.exports = new CommandData(
 		await util.promisify(setTimeout)(5000);
 
 		console.log('Disconnecting from database');
-		await interaction.client.database.saveAll(interaction.client.customData);
 		await interaction.client.database.end();
 		process.exit();
 	},

@@ -1,6 +1,6 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, BaseMessageOptions, StringSelectMenuBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, BaseMessageOptions, StringSelectMenuBuilder, TextChannel, MessageComponentInteraction, ChatInputCommandInteraction } from 'discord.js';
 import { choiceData, serverVoteData, voteData as userVoteData } from './databaseActions';
-import { CustomClient } from './customClient';
+import { CustomClient, CustomInteraction } from './customClient';
 
 const MESSAGE_CONTENT = `Skapa röstning
 
@@ -83,6 +83,21 @@ export async function voteMessage(client: CustomClient, guild_id: string, voteDa
 	}
 
 	return out;
+}
+
+export async function checkCreateMessage(interaction: MessageComponentInteraction | ChatInputCommandInteraction): Promise<boolean> {
+	if (!interaction.channel.permissionsFor(interaction.client.user).has('SendMessages')) {
+		const embed = new EmbedBuilder()
+			.setTitle('Misslyckades')
+			.setDescription('Kunde inte utföra kommandot eftersom boten inte får skriva i denna kanalen')
+			.setColor('Red');
+
+		await interaction.reply({ embeds: [embed], ephemeral: true });
+
+		return false;
+	}
+
+	return true;
 }
 
 export async function voteCreateMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, choiceList: choiceData[], disableButtons: boolean = false): Promise<BaseMessageOptions> {

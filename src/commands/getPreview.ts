@@ -36,7 +36,6 @@ module.exports = new CommandData(
 		}
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
-		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 
 		if (voteData === undefined) {
 			console.log(`${interaction.user.tag} failed to preview vote ${vote_id} because the vote is not in the database`);
@@ -48,6 +47,8 @@ module.exports = new CommandData(
 			await interaction.reply({ embeds: [embed], ephemeral: true });
 			return;
 		}
+
+		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 
 		if (!checkCreating(interaction, args[0], args[1])) return;
 
