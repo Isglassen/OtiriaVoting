@@ -6,7 +6,7 @@ const config = require('./bot-config.json');
 const packageData = require('./package.json');
 const util = require('node:util');
 
-const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config);
+const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config, interactionHandling);
 
 // TODO: Not ephemeral versions of some commands
 
