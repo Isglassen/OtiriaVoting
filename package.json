@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "dependencies": {
     "discord.js": "^14.8.0",
     "mysql2": "^3.2.0",
@@ -14,7 +14,7 @@
     "start": "npm install && npm run build && npm run run",
     "build": "rd /s /q compiled && npx tsc",
     "run": "node .",
-    "deploy": "npm run build && node ./compiled/deployCommands.js",
+    "deploy": "npm run build && node ./deployCommands.js",
     "deployStart": "npm install && npm run deploy && npm run run"
   }
 }

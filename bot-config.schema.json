@@ -29,7 +29,7 @@
     "database": {
       "type": "object",
       "description": "SQL database information",
-      "required": [ "host", "user", "password" ],
+      "required": [ "host", "user", "password", "database" ],
       "properties": {
         "host": {
           "description": "SQL database host",
