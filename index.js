@@ -4,10 +4,38 @@ const fs = require('node:fs');
 const path = require('node:path');
 const config = require('./bot-config.json');
 const packageData = require('./package.json');
+const util = require('node:util');
 
 const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config);
 
 // TODO: Not ephemeral versions of some commands
+
+// Clean shutdown
+if (process.platform === 'win32') {
+	const rl = require('readline').createInterface({
+		input: process.stdin,
+		output: process.stdout,
+	});
+
+	rl.on('SIGINT', function() {
+		process.emit('SIGINT');
+	});
+}
+
+process.on('SIGINT', async function() {
+	client.off(Events.InteractionCreate, interactionHandling);
+
+	console.log('Letting discord finish in 1 second');
+	await util.promisify(setTimeout)(1_000);
+	client.destroy();
+
+	console.log('Logged out of discord. Waiting 5 seconds for database to finish');
+	await util.promisify(setTimeout)(5_000);
+	client.database.end();
+
+	console.log('Disconnecting from database. Exiting in 2.5 seconds');
+	setTimeout(process.exit, 2_500);
+});
 
 async function main() {
 	loadCommands();
@@ -16,7 +44,7 @@ async function main() {
 
 	await client.database.createConnection();
 
-	interactionHandling();
+	client.on(Events.InteractionCreate, interactionHandling);
 
 	client.once(Events.ClientReady, () => {
 		if (!client.user) return;
@@ -48,7 +76,7 @@ async function main() {
 	else {
 		console.error('config.bot.token was missing');
 		await client.database.end();
-		setTimeout(process.exit, 2500);
+		setTimeout(() => process.exit(1), 2500);
 	}
 }
 
@@ -71,20 +99,18 @@ async function respondError(interaction, message) {
 	return false;
 }
 
-function interactionHandling() {
-	client.on(Events.InteractionCreate, async interaction => {
-		console.log(`${InteractionType[interaction.type]} interaction from ${interaction.user.tag} at ${new Date().toUTCString()}`);
+async function interactionHandling(interaction) {
+	console.log(`${InteractionType[interaction.type]} interaction from ${interaction.user.tag} at ${new Date().toUTCString()}`);
 
-		/**
+	/**
 		 * @type {import("./src/customClient").CustomInteraction}
 		 */
-		// @ts-ignore
-		const customInteraction = interaction;
-		if (customInteraction.isChatInputCommand()) return await commandHandling(customInteraction);
-		if (customInteraction.isButton()) return await buttonHandling(customInteraction);
-		if (customInteraction.isAutocomplete()) return await autocompleteHandling(customInteraction);
-		if (customInteraction.isAnySelectMenu()) return await selectMenuHandling(customInteraction);
-	});
+	// @ts-ignore
+	const customInteraction = interaction;
+	if (customInteraction.isChatInputCommand()) return await commandHandling(customInteraction);
+	if (customInteraction.isButton()) return await buttonHandling(customInteraction);
+	if (customInteraction.isAutocomplete()) return await autocompleteHandling(customInteraction);
+	if (customInteraction.isAnySelectMenu()) return await selectMenuHandling(customInteraction);
 }
 
 /**

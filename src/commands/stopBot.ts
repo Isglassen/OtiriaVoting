@@ -29,15 +29,6 @@ module.exports = new CommandData(
 
 		console.log(`Stoping for ${interaction.user.tag} at ${new Date().toUTCString()}`);
 
-		console.log('Letting discord finish in 0.5 seconds');
-		await util.promisify(setTimeout)(500);
-		console.log('Logged out of discord. Waiting 5 seconds for database to finish');
-		interaction.client.destroy();
-
-		await util.promisify(setTimeout)(5000);
-
-		console.log('Disconnecting from database');
-		await interaction.client.database.end();
-		setTimeout(process.exit, 2500);
+		process.emit('SIGINT');
 	},
 );
