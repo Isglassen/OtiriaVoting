@@ -41,7 +41,7 @@ async function main() {
 					type:  ActivityType.Playing,
 				}],
 			});
-		}, 500_000);
+		}, 600_000);
 	});
 
 	if ('bot' in config && typeof config.bot == 'object' && config.bot !== null && 'token' in config.bot && typeof config.bot.token == 'string') { client.login(config.bot.token); }
