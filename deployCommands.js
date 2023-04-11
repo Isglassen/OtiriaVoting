@@ -1,7 +1,7 @@
-import { REST, Routes } from 'discord.js';
-import { bot } from './bot-config.json';
-import fs = require('node:fs');
-import path = require('node:path');
+const { REST, Routes } = require('discord.js');
+const { bot } = require('./bot-config.json');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const commands = [];
 // Grab all the command files from the commands directory you created earlier

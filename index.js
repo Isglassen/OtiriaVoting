@@ -2,7 +2,7 @@ const { GatewayIntentBits, Events, EmbedBuilder, Collection, InteractionType, Co
 const { CustomClient } = require('./compiled/customClient.js');
 const fs = require('node:fs');
 const path = require('node:path');
-const config = require('./compiled/bot-config.json');
+const config = require('./bot-config.json');
 const packageData = require('./package.json');
 
 const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config);
@@ -30,6 +30,18 @@ async function main() {
 				type:  ActivityType.Playing,
 			}],
 		});
+
+		setInterval(() => {
+			if (!client.user) return;
+
+			client.user.setPresence({
+				status: 'online',
+				activities: [{
+					name: `Version ${packageData.version}`,
+					type:  ActivityType.Playing,
+				}],
+			});
+		}, 500_000);
 	});
 
 	if ('bot' in config && typeof config.bot == 'object' && config.bot !== null && 'token' in config.bot && typeof config.bot.token == 'string') { client.login(config.bot.token); }
