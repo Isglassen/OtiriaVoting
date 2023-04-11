@@ -128,3 +128,6 @@ dist
 
 # Vulnerable discord bot info
 bot-config.json
+
+# To have the host work
+package-lock.json
