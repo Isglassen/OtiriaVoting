@@ -9,6 +9,7 @@ En bot som håller i röstningar för Otiria på Minecraftservern jag spelar på
 Saker jag vill få gjorda
 
 - Ladda automatiskt upp compiled kod i releases
+- Skapa en branch med compiled kod som min host kan ladda ner automatiskt
 
 ## Användning
 
