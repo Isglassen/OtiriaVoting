@@ -39,11 +39,12 @@ class CustomClient extends discord_js_1.Client {
     customData = new databaseActions_1.DatabaseData();
     botData;
     config;
-    constructor(options, config) {
+    constructor(options, config, interactionHandler) {
         super(options);
+        this.on(discord_js_1.Events.InteractionCreate, interactionHandler);
         this.config = config;
         this.database = new databaseActions_1.default(config.database);
-        this.botData = { commands: new discord_js_1.Collection, buttons: new discord_js_1.Collection, selectMenus: new discord_js_1.Collection };
+        this.botData = { commands: new discord_js_1.Collection, buttons: new discord_js_1.Collection, selectMenus: new discord_js_1.Collection, interactionHandler: interactionHandler };
     }
 }
 exports.CustomClient = CustomClient;

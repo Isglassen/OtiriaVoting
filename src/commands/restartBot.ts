@@ -13,7 +13,7 @@ module.exports = new CommandData(
 		if (interaction.user.id != interaction.client.config.bot.ownerId) {
 			const embed = new EmbedBuilder()
 				.setTitle('Stop!')
-				.setDescription('Du äger inte denna boten, så du kan inte stänga av den')
+				.setDescription('Du äger inte denna boten, så du kan inte starta om den')
 				.setColor('Red');
 
 			await interaction.reply({ embeds: [embed], ephemeral: true });
@@ -21,13 +21,13 @@ module.exports = new CommandData(
 		}
 
 		const embed = new EmbedBuilder()
-			.setTitle('Stannar!')
+			.setTitle('Startar om!')
 			.setDescription('Boten är helt av om 8.5 sekunder')
 			.setColor('Blurple');
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 
-		console.log(`Stoping for ${interaction.user.tag} at ${new Date().toUTCString()}`);
+		console.log(`Restarting for ${interaction.user.tag} at ${new Date().toUTCString()}`);
 
 		process.emit('SIGINT');
 	},
