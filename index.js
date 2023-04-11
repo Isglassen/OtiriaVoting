@@ -37,6 +37,11 @@ process.on('SIGINT', async function() {
 	setTimeout(process.exit, 2_500);
 });
 
+process.on('exit', () => {
+	client.destroy();
+	client.database.end();
+});
+
 async function main() {
 	loadCommands();
 	loadButtons();
