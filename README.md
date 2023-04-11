@@ -4,7 +4,7 @@
 
 En bot som håller i röstningar för Otiria på Minecraftservern jag spelar på
 
-## TODO
+## Att göra
 
 Saker jag vill få gjorda
 
