@@ -4,10 +4,10 @@ import * as util from 'util';
 
 module.exports = new CommandData(
 	new SlashCommandBuilder()
-		.setName('stop-bot')
-		.setDescription('Safely stops the bot')
-		.setNameLocalization('sv-SE', 'stanna-bot')
-		.setDescriptionLocalization('sv-SE', 'Stannar boten på ett säkert sätt')
+		.setName('restart-bot')
+		.setDescription('Safely restarts the bot')
+		.setNameLocalization('sv-SE', 'starta-om-bot')
+		.setDescriptionLocalization('sv-SE', 'Startar om boten på ett säkert sätt')
 		.setDefaultMemberPermissions('0'),
 	async function(interaction: CustomCommandInteraction) {
 		if (interaction.user.id != interaction.client.config.bot.ownerId) {
@@ -29,7 +29,6 @@ module.exports = new CommandData(
 
 		console.log(`Stoping for ${interaction.user.tag} at ${new Date().toUTCString()}`);
 
-		process.exitCode = 1;
 		process.emit('SIGINT');
 	},
 );

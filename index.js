@@ -23,7 +23,7 @@ if (process.platform === 'win32') {
 }
 
 process.on('SIGINT', async function() {
-	client.off(Events.InteractionCreate, interactionHandling);
+	client.off(Events.InteractionCreate, client.botData.interactionHandler);
 
 	console.log('Letting discord finish in 1 second');
 	await util.promisify(setTimeout)(1_000);
@@ -43,8 +43,6 @@ async function main() {
 	loadSelectMenus();
 
 	await client.database.createConnection();
-
-	client.on(Events.InteractionCreate, interactionHandling);
 
 	client.once(Events.ClientReady, () => {
 		if (!client.user) return;
