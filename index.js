@@ -74,7 +74,7 @@ async function main() {
 	else {
 		console.error('config.bot.token was missing');
 		await client.database.end();
-		setTimeout(() => process.exit(1), 2500);
+		setTimeout(process.exit, 2500);
 	}
 }
 
