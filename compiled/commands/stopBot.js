@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const customClient_1 = require("../customClient");
-const util = require("util");
 module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBuilder()
     .setName('stop-bot')
     .setDescription('Safely stops the bot')
@@ -23,12 +22,5 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
         .setColor('Blurple');
     await interaction.reply({ embeds: [embed], ephemeral: true });
     console.log(`Stoping for ${interaction.user.tag} at ${new Date().toUTCString()}`);
-    console.log('Letting discord finish in 0.5 seconds');
-    await util.promisify(setTimeout)(500);
-    console.log('Logged out of discord. Waiting 5 seconds for database to finish');
-    interaction.client.destroy();
-    await util.promisify(setTimeout)(5000);
-    console.log('Disconnecting from database');
-    await interaction.client.database.end();
-    setTimeout(process.exit, 2500);
+    process.emit('SIGINT');
 });
