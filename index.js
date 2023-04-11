@@ -9,6 +9,7 @@ const util = require('node:util');
 const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config, interactionHandling);
 
 // TODO: Not ephemeral versions of some commands
+// TODO: Somehow run the clean shutdown when running the stop on the host
 
 // Clean shutdown
 if (process.platform === 'win32') {
