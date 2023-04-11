@@ -29,7 +29,6 @@ module.exports = new CommandData(
 
 		console.log(`Stoping for ${interaction.user.tag} at ${new Date().toUTCString()}`);
 
-		process.exitCode = 1;
 		process.emit('SIGINT');
 	},
 );
