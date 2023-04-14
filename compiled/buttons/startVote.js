@@ -40,7 +40,7 @@ module.exports = new customClient_1.ButtonData('start', async function (interact
     }
     const info_message = await messageChannel.send({
         ...await (0, messageCreators_1.voteMessage)(interaction.client, args[1], voteData, choices, false, (0, messageCreators_1.generateSummary)(choices, [])),
-        content: voteData.mention_role_id !== null ? (await (0, messageCreators_1.getRole)(interaction.client, interaction.guildId, voteData.mention_role_id)).toString() : '',
+        content: voteData.mention_role_id !== null ? `${await (0, messageCreators_1.getRole)(interaction.client, interaction.guildId, voteData.mention_role_id)}` : '',
     });
     console.log(`${interaction.user.tag} successfully started vote ${args[1]}.${args[2]}`);
     const embed = new discord_js_1.EmbedBuilder()

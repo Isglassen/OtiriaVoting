@@ -52,7 +52,7 @@ module.exports = new ButtonData(
 
 		const info_message = await messageChannel.send({
 			...await voteMessage(interaction.client, args[1], voteData, choices, false, generateSummary(choices, [])),
-			content: voteData.mention_role_id !== null ? (await getRole(interaction.client, interaction.guildId, voteData.mention_role_id)).toString() : '',
+			content: voteData.mention_role_id !== null ? `${await getRole(interaction.client, interaction.guildId, voteData.mention_role_id)}` : '',
 		});
 
 		console.log(`${interaction.user.tag} successfully started vote ${args[1]}.${args[2]}`);

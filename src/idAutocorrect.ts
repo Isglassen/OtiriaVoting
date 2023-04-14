@@ -10,7 +10,7 @@ export default function idAutocorrect(getPossibilities: (client: CustomClient, g
 
 		const filters: ((choice: serverVoteData) => boolean)[] = [
 			choice => `${interaction.guildId}.${choice.creation_time}`.startsWith(focusedOption),
-			choice => choice.creation_time.toString().startsWith(focusedOption),
+			choice => `${choice.creation_time}`.startsWith(focusedOption),
 			choice => choice.name.startsWith(focusedOption),
 		];
 
@@ -25,11 +25,13 @@ export default function idAutocorrect(getPossibilities: (client: CustomClient, g
 
 		const choiceName = (choice: serverVoteData) => {
 			const choiceDate = new Date(parseInt(choice.creation_time));
-			// Add repeating lead 0 (min - val.toString().length) times to start of val.toString() and return it
-			const lead0 = (val:any, min:number = 2) => '0'.repeat(Math.max(min - val.toString().length, 0)) + val.toString();
+			// Add repeating lead 0 (min - `${val}`.length) times to start of `${val}` and return it
+			const lead0 = (val:any, min:number = 2) => '0'.repeat(Math.max(min - `${val}`.length, 0)) + `${val}`;
 
 			return `${choice.name}: ${choiceDate.getFullYear()}-${lead0(choiceDate.getMonth() + 1)}-${lead0(choiceDate.getDate())} ${lead0(choiceDate.getHours())}:${lead0(choiceDate.getMinutes())}:${lead0(choiceDate.getSeconds())} (${lead0(choiceDate.getMilliseconds(), 3)})`;
 		};
+
+		console.log(`Responding with votes: ${filtered.map(choice => choiceName(choice))}`);
 
 		await interaction.respond(
 			filtered.map(choice => ({ name: choiceName(choice), value: `${interaction.guildId}.${choice.creation_time}` })),

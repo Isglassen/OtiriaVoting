@@ -9,6 +9,7 @@ const util = require('node:util');
 const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config, interactionHandling);
 
 // TODO: Not ephemeral versions of some commands
+// TODO: Somehow run the clean shutdown when running the stop on the host
 
 // Clean shutdown
 if (process.platform === 'win32') {
@@ -198,10 +199,13 @@ async function autocompleteHandling(interaction) {
 		return;
 	}
 
+	if (!command.autocomplete) {
+		console.error(`Command ${interaction.commandName} has no autocomplete function`);
+		return;
+	}
+
 	try {
-		if (command.autocomplete) {
-			await command.autocomplete(interaction);
-		}
+		await command.autocomplete(interaction);
 	}
 	catch (error) {
 		console.error(error);
