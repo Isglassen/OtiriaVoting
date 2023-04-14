@@ -68,7 +68,7 @@ module.exports = new CommandData(
 			description: description,
 			status_message_channel_id: '',
 			status_message_id: '',
-			creation_time: (+new Date).toString(),
+			creation_time: `${+new Date}`,
 			started: false,
 			ended: false,
 			channel_id: channel.id,

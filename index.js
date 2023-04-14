@@ -199,10 +199,13 @@ async function autocompleteHandling(interaction) {
 		return;
 	}
 
+	if (!command.autocomplete) {
+		console.error(`Command ${interaction.commandName} has no autocomplete function`);
+		return;
+	}
+
 	try {
-		if (command.autocomplete) {
-			await command.autocomplete(interaction);
-		}
+		await command.autocomplete(interaction);
 	}
 	catch (error) {
 		console.error(error);
