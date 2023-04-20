@@ -45,7 +45,7 @@ export async function voteMessage(client: CustomClient, guild_id: string, voteDa
 		.addFields({
 			name: 'För att rösta',
 			value: voteData.ended ?
-				`Röstningen för alla ${await getRole(client, guild_id, voteData.can_vote_id)} är nu över, så du kan inte rösta längre` :
+				`Röstningen för alla med ${await getRole(client, guild_id, voteData.can_vote_id)} är nu över, så du kan inte rösta längre` :
 				`Välj helt enkelt ett av alternativen nedan!\n${await getRole(client, guild_id, voteData.can_vote_id)} krävs för att rösta.`,
 		})
 		.setFooter({ text: `Totala röster: ${total}` });
