@@ -10,6 +10,8 @@ const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config,
 
 // TODO: Not ephemeral versions of some commands
 // TODO: Somehow run the clean shutdown when running the stop on the host
+// TODO: Create a new vote status message if the current message is not found. Maybe do this to all votes on startup
+// TODO: Clear votes from the cache after some time
 
 // Clean shutdown
 if (process.platform === 'win32') {
