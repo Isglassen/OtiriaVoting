@@ -21,7 +21,7 @@ module.exports = new CommandData(
 		.addChannelOption(option => option
 			.setName('channel')
 			.setDescription('The new announcement channel')
-			.setNameLocalization('sv-SE', 'namn')
+			.setNameLocalization('sv-SE', 'kanal')
 			.setDescriptionLocalization('sv-SE', 'Den nya röstningskanalen')
 			.setRequired(true)
 			.addChannelTypes(ChannelType.GuildText)),
