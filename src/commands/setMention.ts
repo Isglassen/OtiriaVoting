@@ -58,7 +58,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		if (!checkCreating(interaction, args[0], args[1])) return;
+		if (!await checkCreating(interaction, args[0], args[1])) return;
 
 		const new_role_id = new_role === null ? null : new_role.id;
 

@@ -69,7 +69,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		if (!checkCreating(interaction, args[0], args[1])) return;
+		if (!await checkCreating(interaction, args[0], args[1])) return;
 
 		if (currentChoices.some((val) => val.name == new_name)) {
 			console.log(`${interaction.user.tag} couldn't add option to ${vote_id} because it already had the specified name`);

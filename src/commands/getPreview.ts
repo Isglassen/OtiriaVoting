@@ -50,7 +50,7 @@ module.exports = new CommandData(
 
 		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 
-		if (!checkCreating(interaction, args[0], args[1])) return;
+		if (!await checkCreating(interaction, args[0], args[1])) return;
 
 		console.log(`${interaction.user.tag} successfully previewed vote ${vote_id}`);
 

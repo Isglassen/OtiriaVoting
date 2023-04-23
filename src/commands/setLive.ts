@@ -58,7 +58,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		if (!checkCreating(interaction, args[0], args[1])) return;
+		if (!await checkCreating(interaction, args[0], args[1])) return;
 
 		if (currentLiveResult === live_result) {
 			console.log(`${interaction.user.tag} couldn't change live result of ${vote_id} because it already had the specified value`);

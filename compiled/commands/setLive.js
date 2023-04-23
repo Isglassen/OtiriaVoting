@@ -49,7 +49,7 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
         await interaction.reply({ embeds: [embed], ephemeral: true });
         return;
     }
-    if (!(0, idAutocorrect_1.checkCreating)(interaction, args[0], args[1]))
+    if (!await (0, idAutocorrect_1.checkCreating)(interaction, args[0], args[1]))
         return;
     if (currentLiveResult === live_result) {
         console.log(`${interaction.user.tag} couldn't change live result of ${vote_id} because it already had the specified value`);

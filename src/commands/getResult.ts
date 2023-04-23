@@ -1,6 +1,6 @@
 import { EmbedBuilder, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomCommandInteraction } from '../customClient';
-import idAutocorrect, { checkCreating, checkDone, getDone } from '../idAutocorrect';
+import idAutocorrect, { checkDone, getDone } from '../idAutocorrect';
 import { generateSummary, voteMessage } from '../messageCreators';
 
 module.exports = new CommandData(
@@ -55,7 +55,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		if (!checkDone(interaction, args[0], args[1])) return;
+		if (!await checkDone(interaction, args[0], args[1])) return;
 
 		const summary = generateSummary(choices, true_votes);
 

@@ -41,7 +41,7 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
         return;
     }
     const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
-    if (!(0, idAutocorrect_1.checkCreating)(interaction, args[0], args[1]))
+    if (!await (0, idAutocorrect_1.checkCreating)(interaction, args[0], args[1]))
         return;
     console.log(`${interaction.user.tag} successfully previewed vote ${vote_id}`);
     await interaction.reply({ ...await (0, messageCreators_1.voteMessage)(interaction.client, args[0], voteData, choices, true, (0, messageCreators_1.generateSummary)(choices, [])), ephemeral: true });

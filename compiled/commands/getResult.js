@@ -45,7 +45,7 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
         await interaction.reply({ embeds: [embed], ephemeral: true });
         return;
     }
-    if (!(0, idAutocorrect_1.checkDone)(interaction, args[0], args[1]))
+    if (!await (0, idAutocorrect_1.checkDone)(interaction, args[0], args[1]))
         return;
     const summary = (0, messageCreators_1.generateSummary)(choices, true_votes);
     await interaction.reply({ ...await (0, messageCreators_1.voteMessage)(interaction.client, args[0], voteData, choices, true, summary), ephemeral: true });

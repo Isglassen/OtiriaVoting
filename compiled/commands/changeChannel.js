@@ -21,7 +21,7 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     .addChannelOption(option => option
     .setName('channel')
     .setDescription('The new announcement channel')
-    .setNameLocalization('sv-SE', 'namn')
+    .setNameLocalization('sv-SE', 'kanal')
     .setDescriptionLocalization('sv-SE', 'Den nya röstningskanalen')
     .setRequired(true)
     .addChannelTypes(discord_js_1.ChannelType.GuildText)), async function (interaction) {
@@ -50,7 +50,7 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
         await interaction.reply({ embeds: [embed], ephemeral: true });
         return;
     }
-    if (!(0, idAutocorrect_1.checkCreating)(interaction, args[0], args[1]))
+    if (!await (0, idAutocorrect_1.checkCreating)(interaction, args[0], args[1]))
         return;
     if (oldChannel == new_channel.id) {
         console.log(`${interaction.user.tag} didn't change channel of ${vote_id} because it already had the specified channel`);

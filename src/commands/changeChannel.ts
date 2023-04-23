@@ -58,7 +58,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		if (!checkCreating(interaction, args[0], args[1])) return;
+		if (!await checkCreating(interaction, args[0], args[1])) return;
 
 		if (oldChannel == new_channel.id) {
 			console.log(`${interaction.user.tag} didn't change channel of ${vote_id} because it already had the specified channel`);
