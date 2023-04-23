@@ -8,6 +8,7 @@ const util = require('node:util');
 
 const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config, interactionHandling);
 
+// TODO: Defer replies
 // TODO: Not ephemeral versions of some commands
 // TODO: Somehow run the clean shutdown when running the stop on the host
 // TODO: Create a new vote status message if the current message is not found. Maybe do this to all votes on startup
