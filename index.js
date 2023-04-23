@@ -142,7 +142,12 @@ async function selectMenuHandling(interaction) {
 	}
 	catch (error) {
 		console.error(error);
-		await respondError(interaction, 'Något gick fel med menyn');
+		try {
+			await respondError(interaction, 'Något gick fel med menyn');
+		}
+		catch (err) {
+			console.log('Couldn\'t respond to error');
+		}
 	}
 }
 
@@ -164,7 +169,12 @@ async function buttonHandling(interaction) {
 	}
 	catch (error) {
 		console.error(error);
-		await respondError(interaction, 'Något gick fel med knappen');
+		try {
+			await respondError(interaction, 'Något gick fel med knappen');
+		}
+		catch (err) {
+			console.log('Couldn\'t respond to error');
+		}
 	}
 }
 
@@ -185,7 +195,12 @@ async function commandHandling(interaction) {
 	}
 	catch (error) {
 		console.error(error);
-		await respondError(interaction, 'Något gick fel med kommandot');
+		try {
+			await respondError(interaction, 'Något gick fel med kommandot');
+		}
+		catch (err) {
+			console.log('Couldn\'t respond to error');
+		}
 	}
 }
 
@@ -211,7 +226,12 @@ async function autocompleteHandling(interaction) {
 	}
 	catch (error) {
 		console.error(error);
-		await interaction.respond([]);
+		try {
+			await interaction.respond([]);
+		}
+		catch (err) {
+			console.log('Couldn\'t respond to error');
+		}
 	}
 }
 
