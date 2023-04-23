@@ -1,4 +1,5 @@
 import * as mySQL from 'mysql2/promise';
+import * as winston from 'winston';
 
 export type serverVoteData = {
 	name: string,
@@ -26,10 +27,15 @@ export class Choices {
 			[creation_time: string]: choiceData[]
 		}
 	} = {};
+	logger: winston.Logger;
+
+	constructor(logger: winston.Logger) {
+		this.logger = logger;
+	}
 
 	async getCache(database: BotDatabase, guild_id: string, creation_time: string) {
 		if (this.data[guild_id] && Array.isArray(this.data[guild_id][creation_time])) return;
-		console.log('Loading choices into cache');
+		this.logger.info('Loading choices into cache');
 
 		const choices = (await database.pool.execute(
 			'SELECT * FROM choices WHERE guild_id = ? AND creation_time = ?',
@@ -91,7 +97,7 @@ export class Choices {
 			[guild_id, creation_time, data.name, data.description],
 		);
 
-		console.log(JSON.stringify(this.data));
+		this.logger.info(JSON.stringify(this.data));
 	}
 
 	async getChoices(database: BotDatabase, guild_id: string, creation_time: string): Promise<choiceData[]> {
@@ -110,10 +116,15 @@ export class ServerVotes {
 	data: {
 		[guild_id: string]: serverVoteData[]
 	} = {};
+	logger: winston.Logger;
+
+	constructor(logger: winston.Logger) {
+		this.logger = logger;
+	}
 
 	async getCache(database: BotDatabase, guild_id: string, creation_time: string) {
 		if (Array.isArray(this.data[guild_id]) && this.data[guild_id].some(val => val.creation_time == creation_time)) return;
-		console.log('Loading guild into cache');
+		this.logger.info('Loading guild into cache');
 
 		const guild = (await database.pool.execute(
 			'SELECT * FROM guilds WHERE guild_id = ? AND creation_time = ?',
@@ -230,10 +241,15 @@ export class VoteDatas {
 			[creation_time: string]: voteData[];
 		}
 	} = {};
+	logger: winston.Logger;
+
+	constructor(logger: winston.Logger) {
+		this.logger = logger;
+	}
 
 	async getCache(database: BotDatabase, guild_id: string, creation_time: string) {
 		if (this.data[guild_id] && Array.isArray(this.data[guild_id][creation_time])) return;
-		console.log('Loading votes into cache');
+		this.logger.info('Loading votes into cache');
 
 		const votes = (await database.pool.execute(
 			'SELECT * FROM votes WHERE guild_id = ? AND creation_time = ?',
@@ -318,9 +334,15 @@ export class VoteDatas {
 }
 
 export class DatabaseData {
-	choices: Choices = new Choices();
-	votes: ServerVotes = new ServerVotes();
-	voteData: VoteDatas = new VoteDatas();
+	choices: Choices;
+	votes: ServerVotes;
+	voteData: VoteDatas;
+
+	constructor(logger: winston.Logger) {
+		this.choices = new Choices(logger);
+		this.votes = new ServerVotes(logger);
+		this.voteData = new VoteDatas(logger);
+	}
 }
 
 export default class BotDatabase {

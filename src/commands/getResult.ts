@@ -21,10 +21,12 @@ module.exports = new CommandData(
 		const vote_id = interaction.options.getString('vote-id', true);
 		const args = vote_id.split('.');
 
-		console.log(`${interaction.user.tag} tried to view result of ${vote_id}`);
+		const logger = interaction.client.logger;
+
+		logger.info(`${interaction.user.tag} tried to view result of ${vote_id}`);
 
 		if (args[0] != interaction.guildId) {
-			console.log(`${interaction.user.tag} failed to view results of ${vote_id} because it's in an other guild`);
+			logger.info(`${interaction.user.tag} failed to view results of ${vote_id} because it's in an other guild`);
 			const embed = new EmbedBuilder()
 				.setTitle('Kunde inte visa resultat')
 				.setDescription('Det id du anget är för en röstning på en annan server')
@@ -45,7 +47,7 @@ module.exports = new CommandData(
 		}
 
 		if (voteData === undefined) {
-			console.log(`${interaction.user.tag} failed to view results of ${vote_id} because the vote is not in the database`);
+			logger.info(`${interaction.user.tag} failed to view results of ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
 				.setDescription('Kunnde inte hitta röstningen')

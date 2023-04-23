@@ -20,9 +20,10 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     .setAutocomplete(true)), async function (interaction) {
     const vote_id = interaction.options.getString('vote-id', true);
     const args = vote_id.split('.');
-    console.log(`${interaction.user.tag} tried to preview vote ${vote_id}`);
+    const logger = interaction.client.logger;
+    logger.info(`${interaction.user.tag} tried to preview vote ${vote_id}`);
     if (args[0] != interaction.guildId) {
-        console.log(`${interaction.user.tag} failed to preview vote ${vote_id} because it's in an other guild`);
+        logger.info(`${interaction.user.tag} failed to preview vote ${vote_id} because it's in an other guild`);
         const embed = new discord_js_1.EmbedBuilder()
             .setTitle('Kunde inte förhandsgranska')
             .setDescription('Det id du anget är för en röstning på en annan server')
@@ -32,7 +33,7 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     }
     const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
     if (voteData === undefined) {
-        console.log(`${interaction.user.tag} failed to preview vote ${vote_id} because the vote is not in the database`);
+        logger.info(`${interaction.user.tag} failed to preview vote ${vote_id} because the vote is not in the database`);
         const embed = new discord_js_1.EmbedBuilder()
             .setTitle('Misslyckades')
             .setDescription('Kunnde inte hitta röstningen')
@@ -43,6 +44,6 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
     if (!await (0, idAutocorrect_1.checkCreating)(interaction, args[0], args[1]))
         return;
-    console.log(`${interaction.user.tag} successfully previewed vote ${vote_id}`);
+    logger.info(`${interaction.user.tag} successfully previewed vote ${vote_id}`);
     await interaction.reply({ ...await (0, messageCreators_1.voteMessage)(interaction.client, args[0], voteData, choices, true, (0, messageCreators_1.generateSummary)(choices, [])), ephemeral: true });
 }, (0, idAutocorrect_1.default)(idAutocorrect_1.getCreating));

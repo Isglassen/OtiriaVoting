@@ -5,7 +5,8 @@ const customClient_1 = require("../customClient");
 const messageCreators_1 = require("../messageCreators");
 module.exports = new customClient_1.ButtonData('stop', async function (interaction) {
     const args = interaction.customId.split('.');
-    console.log(`${interaction.user.tag} tried to end vote ${args[1]}.${args[2]}`);
+    const logger = interaction.client.logger;
+    logger.info(`${interaction.user.tag} tried to end vote ${args[1]}.${args[2]}`);
     if (!await (0, messageCreators_1.checkCreateMessage)(interaction))
         return;
     const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
@@ -15,7 +16,7 @@ module.exports = new customClient_1.ButtonData('stop', async function (interacti
         true_votes = [];
     }
     if (voteData === undefined) {
-        console.log(`${interaction.user.tag} failed to end vote ${args[1]}.${args[2]} because the vote is not in the database`);
+        logger.info(`${interaction.user.tag} failed to end vote ${args[1]}.${args[2]} because the vote is not in the database`);
         const embed = new discord_js_1.EmbedBuilder()
             .setTitle('Misslyckades')
             .setDescription('Kunnde inte hitta röstningen')
@@ -25,7 +26,7 @@ module.exports = new customClient_1.ButtonData('stop', async function (interacti
     }
     const messageChannel = await interaction.guild.channels.fetch(voteData.channel_id);
     if (!(messageChannel.isTextBased() && messageChannel.permissionsFor(interaction.client.user).has(discord_js_1.PermissionsBitField.Flags.SendMessages))) {
-        console.log(`${interaction.user.tag} failed to end vote ${args[1]}.${args[2]} because the bot can not send messages in channel`);
+        logger.info(`${interaction.user.tag} failed to end vote ${args[1]}.${args[2]} because the bot can not send messages in channel`);
         const embed = new discord_js_1.EmbedBuilder()
             .setTitle('Misslyckades')
             .setDescription('Kan inte skicka meddelanden i kanalen')
@@ -39,7 +40,7 @@ module.exports = new customClient_1.ButtonData('stop', async function (interacti
     const summary = (0, messageCreators_1.generateSummary)(choices, true_votes);
     const info_message = await messageChannel.messages.fetch(voteData.message_id);
     await info_message.edit(await (0, messageCreators_1.voteMessage)(interaction.client, args[1], newData, choices, true, summary));
-    console.log(`${interaction.user.tag} successfully ended vote ${args[1]}.${args[2]}`);
+    logger.info(`${interaction.user.tag} successfully ended vote ${args[1]}.${args[2]}`);
     const embed = new discord_js_1.EmbedBuilder()
         .setTitle('Avslutad!')
         .setDescription(`Röstningen har nu avslutats och resultaten finns i ${messageChannel}`)
@@ -63,12 +64,12 @@ module.exports = new customClient_1.ButtonData('stop', async function (interacti
     await info_message.reply({ embeds: [infoEmbed] });
     const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
     if (!infoMessageChannel.isTextBased()) {
-        console.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
+        logger.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
         return;
     }
     const infoMessage = await infoMessageChannel.messages.fetch(newData.status_message_id);
     if (!infoMessage) {
-        console.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
+        logger.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
         return;
     }
     await infoMessage.edit(await (0, messageCreators_1.voteCreateMessage)(interaction.client, args[1], newData, choices, false));

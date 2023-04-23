@@ -21,6 +21,6 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
         .setDescription('Boten är helt av om 8.5 sekunder')
         .setColor('Blurple');
     await interaction.reply({ embeds: [embed], ephemeral: true });
-    console.log(`Stoping for ${interaction.user.tag} at ${new Date().toUTCString()}`);
+    interaction.client.logger.info(`Stoping for ${interaction.user.tag} at ${new Date().toUTCString()}`);
     process.emit('SIGINT');
 });

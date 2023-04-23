@@ -33,12 +33,14 @@ module.exports = new CommandData(
 		const new_name = interaction.options.getString('choice-name', true);
 		const args = vote_id.split('.');
 
-		console.log(`${interaction.user.tag} tried to remove option ${new_name} from ${vote_id}`);
+		const logger = interaction.client.logger;
+
+		logger.info(`${interaction.user.tag} tried to remove option ${new_name} from ${vote_id}`);
 
 		if (!await checkCreateMessage(interaction)) return;
 
 		if (args[0] != interaction.guildId) {
-			console.log(`${interaction.user.tag} failed to remove option of ${vote_id} because it's in an other guild`);
+			logger.info(`${interaction.user.tag} failed to remove option of ${vote_id} because it's in an other guild`);
 			const embed = new EmbedBuilder()
 				.setTitle('Kunde inte ta bort alternativ')
 				.setDescription('Det id du anget är för en röstning på en annan server')
@@ -51,7 +53,7 @@ module.exports = new CommandData(
 		const currentChoices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 
 		if (currentChoices === undefined) {
-			console.log(`${interaction.user.tag} failed to remove option from ${vote_id} because the vote is not in the database`);
+			logger.info(`${interaction.user.tag} failed to remove option from ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
 				.setDescription('Kunnde inte hitta röstningen')
@@ -64,7 +66,7 @@ module.exports = new CommandData(
 		if (!await checkCreating(interaction, args[0], args[1])) return;
 
 		if (!currentChoices.some((val) => val.name == new_name)) {
-			console.log(`${interaction.user.tag} couldn't remove option from ${vote_id} because the option didn't exist`);
+			logger.info(`${interaction.user.tag} couldn't remove option from ${vote_id} because the option didn't exist`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
 				.setDescription('Kunde inte ta bort alternativ eftersom det inte finns ett alternativ med det namnet')
@@ -76,7 +78,7 @@ module.exports = new CommandData(
 
 		await interaction.client.customData.choices.removeChoice(interaction.client.database, args[0], args[1], new_name);
 
-		console.log(`${interaction.user.tag} successfully removed option from ${vote_id}`);
+		logger.info(`${interaction.user.tag} successfully removed option from ${vote_id}`);
 		const embed = new EmbedBuilder()
 			.setTitle('Klart!')
 			.setDescription(`Alternativet "${new_name}" har nu tagits bort`)
@@ -89,14 +91,14 @@ module.exports = new CommandData(
 		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
 
 		if (!infoMessageChannel.isTextBased()) {
-			console.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
+			logger.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
 			return;
 		}
 
 		const infoMessage = await infoMessageChannel.messages.fetch(newData.status_message_id);
 
 		if (!infoMessage) {
-			console.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
+			logger.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
 			return;
 		}
 

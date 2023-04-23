@@ -1,6 +1,7 @@
 import { AnySelectMenuInteraction, AutocompleteInteraction, ButtonInteraction, ChatInputCommandInteraction, Client, ClientOptions, Collection, Events, Interaction, ModalSubmitInteraction, SelectMenuType, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
 import BotDatabase, { DatabaseData } from './databaseActions';
 import * as mySQL from 'mysql2/promise';
+import * as winston from 'winston';
 
 type GeneralCommandBuilder =
   | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
@@ -54,12 +55,16 @@ export type BotConfig = {
 
 export class CustomClient extends Client {
 	database: BotDatabase;
-	customData: DatabaseData = new DatabaseData();
+	customData: DatabaseData;
 	botData: { commands: Collection<string, CommandData>, buttons: Collection<string, ButtonData>, selectMenus: Collection<string, SelectMenuData>, interactionHandler: (interaction: Interaction) => Promise<void> };
 	config: BotConfig;
+	logger: winston.Logger;
 
-	constructor(options: ClientOptions, config: BotConfig, interactionHandler: (interaction: Interaction) => Promise<void>) {
+	constructor(options: ClientOptions, config: BotConfig, logger: winston.Logger, interactionHandler: (interaction: Interaction) => Promise<void>) {
 		super(options);
+
+		this.logger = logger;
+		this.customData = new DatabaseData(this.logger);
 
 		this.on(Events.InteractionCreate, interactionHandler);
 

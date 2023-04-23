@@ -30,12 +30,14 @@ module.exports = new CommandData(
 		const new_channel = interaction.options.getChannel('channel', true, [ChannelType.GuildText]);
 		const args = vote_id.split('.');
 
-		console.log(`${interaction.user.tag} tried to change the channel of ${vote_id} to ${new_channel}`);
+		const logger = interaction.client.logger;
+
+		logger.info(`${interaction.user.tag} tried to change the channel of ${vote_id} to ${new_channel}`);
 
 		if (!await checkCreateMessage(interaction)) return;
 
 		if (args[0] != interaction.guildId) {
-			console.log(`${interaction.user.tag} failed to change channel of ${vote_id} because it's in an other guild`);
+			logger.info(`${interaction.user.tag} failed to change channel of ${vote_id} because it's in an other guild`);
 			const embed = new EmbedBuilder()
 				.setTitle('Kunde inte byta kanal')
 				.setDescription('Det id du anget är för en röstning på en annan server')
@@ -48,7 +50,7 @@ module.exports = new CommandData(
 		const oldChannel = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'channel_id');
 
 		if (oldChannel === undefined) {
-			console.log(`${interaction.user.tag} failed to change channel of ${vote_id} because the vote is not in the database`);
+			logger.info(`${interaction.user.tag} failed to change channel of ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
 				.setDescription('Kunnde inte hitta röstningen')
@@ -61,7 +63,7 @@ module.exports = new CommandData(
 		if (!await checkCreating(interaction, args[0], args[1])) return;
 
 		if (oldChannel == new_channel.id) {
-			console.log(`${interaction.user.tag} didn't change channel of ${vote_id} because it already had the specified channel`);
+			logger.info(`${interaction.user.tag} didn't change channel of ${vote_id} because it already had the specified channel`);
 			const embed = new EmbedBuilder()
 				.setTitle('Klart!')
 				.setDescription('Kanalen ändrades inte eftersom du angav samma kanal som redan var')
@@ -73,7 +75,7 @@ module.exports = new CommandData(
 
 		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], args[1], 'channel_id', new_channel.id);
 
-		console.log(`${interaction.user.tag} successfully changed the channel of ${vote_id}`);
+		logger.info(`${interaction.user.tag} successfully changed the channel of ${vote_id}`);
 		const embed = new EmbedBuilder()
 			.setTitle('Klart!')
 			.setDescription(`Kanalen har nu ändrats till "${new_channel}"`)
@@ -86,14 +88,14 @@ module.exports = new CommandData(
 		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
 
 		if (!infoMessageChannel.isTextBased()) {
-			console.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
+			logger.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
 			return;
 		}
 
 		const infoMessage = await infoMessageChannel.messages.fetch(newData.status_message_id);
 
 		if (!infoMessage) {
-			console.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
+			logger.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
 			return;
 		}
 

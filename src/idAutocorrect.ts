@@ -31,7 +31,7 @@ export default function idAutocorrect(getPossibilities: (client: CustomClient, g
 			return `${choice.name}: ${choiceDate.getFullYear()}-${lead0(choiceDate.getMonth() + 1)}-${lead0(choiceDate.getDate())} ${lead0(choiceDate.getHours())}:${lead0(choiceDate.getMinutes())}:${lead0(choiceDate.getSeconds())} (${lead0(choiceDate.getMilliseconds(), 3)})`;
 		};
 
-		console.log(`Responding with votes: ${filtered.map(choice => choiceName(choice))}`);
+		interaction.client.logger.info(`Responding with votes: ${filtered.map(choice => choiceName(choice))}`);
 
 		await interaction.respond(
 			filtered.map(choice => ({ name: choiceName(choice), value: `${interaction.guildId}.${choice.creation_time}` })),

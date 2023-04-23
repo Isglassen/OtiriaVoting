@@ -5,10 +5,22 @@ const path = require('node:path');
 const config = require('./bot-config.json');
 const packageData = require('./package.json');
 const util = require('node:util');
+const winston = require('winston');
 
-const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config, interactionHandling);
+const logger = winston.createLogger({
+	format: winston.format.simple(),
+	transports: [
+		new winston.transports.Console(),
+		new winston.transports.File({ filename: 'combined.log' }),
+		new winston.transports.File({ filename: 'error.log', level: 'error', format: winston.format.combine(
+			winston.format.errors({ stack: true }),
+			winston.format.simple()),
+		}),
+	],
+});
 
-// TODO: Save logs in a file
+const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config, logger, interactionHandling);
+
 // TODO: Defer replies
 // TODO: Not ephemeral versions of some commands
 // TODO: Somehow run the clean shutdown when running the stop on the host
@@ -30,15 +42,15 @@ if (process.platform === 'win32') {
 process.on('SIGINT', async function() {
 	client.off(Events.InteractionCreate, client.botData.interactionHandler);
 
-	console.log('Letting discord finish in 1 second');
+	logger.info('Letting discord finish in 1 second');
 	await util.promisify(setTimeout)(1_000);
 	client.destroy();
 
-	console.log('Logged out of discord. Waiting 5 seconds for database to finish');
+	logger.info('Logged out of discord. Waiting 5 seconds for database to finish');
 	await util.promisify(setTimeout)(5_000);
 	client.database.end();
 
-	console.log('Disconnecting from database. Exiting in 2.5 seconds');
+	logger.info('Disconnecting from database. Exiting in 2.5 seconds');
 	setTimeout(process.exit, 2_500);
 });
 
@@ -57,7 +69,7 @@ async function main() {
 	client.once(Events.ClientReady, () => {
 		if (!client.user) return;
 
-		console.log(`Ready! Logged in as ${client.user.tag} at ${new Date}`);
+		logger.info(`Ready! Logged in as ${client.user.tag} at ${new Date().toUTCString()}`);
 
 		client.user.setPresence({
 			status: 'online',
@@ -82,7 +94,7 @@ async function main() {
 
 	if ('bot' in config && typeof config.bot == 'object' && config.bot !== null && 'token' in config.bot && typeof config.bot.token == 'string') { client.login(config.bot.token); }
 	else {
-		console.error('config.bot.token was missing');
+		logger.error('config.bot.token was missing');
 		await client.database.end();
 		setTimeout(process.exit, 2500);
 	}
@@ -108,7 +120,7 @@ async function respondError(interaction, message) {
 }
 
 async function interactionHandling(interaction) {
-	console.log(`${InteractionType[interaction.type]} interaction from ${interaction.user.tag} at ${new Date().toUTCString()}`);
+	logger.info(`${InteractionType[interaction.type]} interaction from ${interaction.user.tag} at ${new Date().toUTCString()}`);
 
 	/**
 		 * @type {import("./src/customClient").CustomInteraction}
@@ -130,12 +142,12 @@ async function selectMenuHandling(interaction) {
 	const selectMenu = botData.selectMenus.get(selectMenuName);
 
 	if (!selectMenu) {
-		console.error(`No select menu matching ${selectMenuName}`);
+		logger.error(`No select menu matching ${selectMenuName}`);
 		return;
 	}
 
 	if (selectMenu.type != interaction.componentType) {
-		console.error(`Select menu ${selectMenuName} does uses ${ComponentType[selectMenu.type]}, not ${ComponentType[interaction.componentType]}`);
+		logger.error(`Select menu ${selectMenuName} does uses ${ComponentType[selectMenu.type]}, not ${ComponentType[interaction.componentType]}`);
 		return;
 	}
 
@@ -143,12 +155,12 @@ async function selectMenuHandling(interaction) {
 		await selectMenu.execute(interaction);
 	}
 	catch (error) {
-		console.error(error);
+		logger.error(error);
 		try {
 			await respondError(interaction, 'Något gick fel med menyn');
 		}
 		catch (err) {
-			console.log('Couldn\'t respond to error');
+			logger.warn('Couldn\'t respond to error');
 		}
 	}
 }
@@ -162,7 +174,7 @@ async function buttonHandling(interaction) {
 	const button = botData.buttons.get(buttonName);
 
 	if (!button) {
-		console.error(`No button matching ${buttonName}`);
+		logger.error(`No button matching ${buttonName}`);
 		return;
 	}
 
@@ -170,12 +182,12 @@ async function buttonHandling(interaction) {
 		await button.execute(interaction);
 	}
 	catch (error) {
-		console.error(error);
+		logger.error(error);
 		try {
 			await respondError(interaction, 'Något gick fel med knappen');
 		}
 		catch (err) {
-			console.log('Couldn\'t respond to error');
+			logger.warn('Couldn\'t respond to error');
 		}
 	}
 }
@@ -188,7 +200,7 @@ async function commandHandling(interaction) {
 	const command = botData.commands.get(interaction.commandName);
 
 	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
+		logger.error(`No command matching ${interaction.commandName} was found.`);
 		return;
 	}
 
@@ -196,12 +208,12 @@ async function commandHandling(interaction) {
 		await command.execute(interaction);
 	}
 	catch (error) {
-		console.error(error);
+		logger.error(error);
 		try {
 			await respondError(interaction, 'Något gick fel med kommandot');
 		}
 		catch (err) {
-			console.log('Couldn\'t respond to error');
+			logger.warn('Couldn\'t respond to error');
 		}
 	}
 }
@@ -214,12 +226,12 @@ async function autocompleteHandling(interaction) {
 	const command = botData.commands.get(interaction.commandName);
 
 	if (!command) {
-		console.error(`No command matching ${interaction.commandName} was found.`);
+		logger.error(`No command matching ${interaction.commandName} was found.`);
 		return;
 	}
 
 	if (!command.autocomplete) {
-		console.error(`Command ${interaction.commandName} has no autocomplete function`);
+		logger.error(`Command ${interaction.commandName} has no autocomplete function`);
 		return;
 	}
 
@@ -227,12 +239,12 @@ async function autocompleteHandling(interaction) {
 		await command.autocomplete(interaction);
 	}
 	catch (error) {
-		console.error(error);
+		logger.error(error);
 		try {
 			await interaction.respond([]);
 		}
 		catch (err) {
-			console.log('Couldn\'t respond to error');
+			logger.warn('Couldn\'t respond to error');
 		}
 	}
 }
@@ -249,7 +261,7 @@ function loadCommands() {
 			client.botData.commands.set(command.data.name, command);
 		}
 		else {
-			console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+			logger.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
 		}
 	}
 }
@@ -266,7 +278,7 @@ function loadButtons() {
 			client.botData.buttons.set(button.name, button);
 		}
 		else {
-			console.log(`[WARNING] The button at ${filePath} is missing a required "name" or "execute" property.`);
+			logger.warn(`[WARNING] The button at ${filePath} is missing a required "name" or "execute" property.`);
 		}
 	}
 }
@@ -283,7 +295,7 @@ function loadSelectMenus() {
 			client.botData.selectMenus.set(selectMenu.name, selectMenu);
 		}
 		else {
-			console.log(`[WARNING] The selectMenu at ${filePath} is missing a required "name", "type" or "execute" property.`);
+			logger.warn(`[WARNING] The selectMenu at ${filePath} is missing a required "name", "type" or "execute" property.`);
 		}
 	}
 }

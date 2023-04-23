@@ -36,11 +36,14 @@ class ButtonData {
 exports.ButtonData = ButtonData;
 class CustomClient extends discord_js_1.Client {
     database;
-    customData = new databaseActions_1.DatabaseData();
+    customData;
     botData;
     config;
-    constructor(options, config, interactionHandler) {
+    logger;
+    constructor(options, config, logger, interactionHandler) {
         super(options);
+        this.logger = logger;
+        this.customData = new databaseActions_1.DatabaseData(this.logger);
         this.on(discord_js_1.Events.InteractionCreate, interactionHandler);
         this.config = config;
         this.database = new databaseActions_1.default(config.database);

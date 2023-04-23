@@ -27,11 +27,12 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     const vote_id = interaction.options.getString('vote-id', true);
     const live_result = interaction.options.getBoolean('live-result', true);
     const args = vote_id.split('.');
-    console.log(`${interaction.user.tag} tried to change live result of ${vote_id}`);
+    const logger = interaction.client.logger;
+    logger.info(`${interaction.user.tag} tried to change live result of ${vote_id}`);
     if (!await (0, messageCreators_1.checkCreateMessage)(interaction))
         return;
     if (args[0] != interaction.guildId) {
-        console.log(`${interaction.user.tag} failed to change live result of ${vote_id} because it's in an other guild`);
+        logger.info(`${interaction.user.tag} failed to change live result of ${vote_id} because it's in an other guild`);
         const embed = new discord_js_1.EmbedBuilder()
             .setTitle('Kunde inte ändra live resultat')
             .setDescription('Det id du anget är för en röstning på en annan server')
@@ -41,7 +42,7 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     }
     const currentLiveResult = await interaction.client.customData.votes.getProperty(interaction.client.database, args[0], args[1], 'live_result');
     if (currentLiveResult === undefined) {
-        console.log(`${interaction.user.tag} failed to change live result of ${vote_id} because the vote is not in the database`);
+        logger.info(`${interaction.user.tag} failed to change live result of ${vote_id} because the vote is not in the database`);
         const embed = new discord_js_1.EmbedBuilder()
             .setTitle('Misslyckades')
             .setDescription('Kunnde inte hitta röstningen')
@@ -52,7 +53,7 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     if (!await (0, idAutocorrect_1.checkCreating)(interaction, args[0], args[1]))
         return;
     if (currentLiveResult === live_result) {
-        console.log(`${interaction.user.tag} couldn't change live result of ${vote_id} because it already had the specified value`);
+        logger.info(`${interaction.user.tag} couldn't change live result of ${vote_id} because it already had the specified value`);
         const embed = new discord_js_1.EmbedBuilder()
             .setTitle('Ingen ändring')
             .setDescription('Värdet du anget är samma som redan var')
@@ -61,7 +62,7 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
         return;
     }
     await interaction.client.customData.votes.updateProperty(interaction.client.database, args[0], args[1], 'live_result', live_result);
-    console.log(`${interaction.user.tag} successfully changed live result of ${vote_id}`);
+    logger.info(`${interaction.user.tag} successfully changed live result of ${vote_id}`);
     const embed = new discord_js_1.EmbedBuilder()
         .setTitle('Klart!')
         .setDescription('Har nu ändrat live resulat till det angivna värdet')
@@ -71,12 +72,12 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
     const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
     if (!infoMessageChannel.isTextBased()) {
-        console.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
+        logger.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
         return;
     }
     const infoMessage = await infoMessageChannel.messages.fetch(newData.status_message_id);
     if (!infoMessage) {
-        console.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
+        logger.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
         return;
     }
     await infoMessage.edit(await (0, messageCreators_1.voteCreateMessage)(interaction.client, args[0], newData, choices, false));

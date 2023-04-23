@@ -4,10 +4,14 @@ exports.DatabaseData = exports.VoteDatas = exports.ServerVotes = exports.Choices
 const mySQL = require("mysql2/promise");
 class Choices {
     data = {};
+    logger;
+    constructor(logger) {
+        this.logger = logger;
+    }
     async getCache(database, guild_id, creation_time) {
         if (this.data[guild_id] && Array.isArray(this.data[guild_id][creation_time]))
             return;
-        console.log('Loading choices into cache');
+        this.logger.info('Loading choices into cache');
         const choices = (await database.pool.execute('SELECT * FROM choices WHERE guild_id = ? AND creation_time = ?', [guild_id, creation_time]))[0];
         if (!Array.isArray(choices))
             return;
@@ -53,7 +57,7 @@ class Choices {
             return;
         this.data[guild_id][creation_time].push(data);
         await database.pool.execute('INSERT INTO choices (guild_id, creation_time, name, description) VALUES (?, ?, ?, ?)', [guild_id, creation_time, data.name, data.description]);
-        console.log(JSON.stringify(this.data));
+        this.logger.info(JSON.stringify(this.data));
     }
     async getChoices(database, guild_id, creation_time) {
         // Fetch everything if it is not in the cache
@@ -69,10 +73,14 @@ exports.Choices = Choices;
 // BIGINT: string, VARCHAR: string, BOOLEAN: number, NULL: null
 class ServerVotes {
     data = {};
+    logger;
+    constructor(logger) {
+        this.logger = logger;
+    }
     async getCache(database, guild_id, creation_time) {
         if (Array.isArray(this.data[guild_id]) && this.data[guild_id].some(val => val.creation_time == creation_time))
             return;
-        console.log('Loading guild into cache');
+        this.logger.info('Loading guild into cache');
         const guild = (await database.pool.execute('SELECT * FROM guilds WHERE guild_id = ? AND creation_time = ?', [guild_id, creation_time]))[0];
         if (!Array.isArray(guild))
             return;
@@ -161,10 +169,14 @@ class ServerVotes {
 exports.ServerVotes = ServerVotes;
 class VoteDatas {
     data = {};
+    logger;
+    constructor(logger) {
+        this.logger = logger;
+    }
     async getCache(database, guild_id, creation_time) {
         if (this.data[guild_id] && Array.isArray(this.data[guild_id][creation_time]))
             return;
-        console.log('Loading votes into cache');
+        this.logger.info('Loading votes into cache');
         const votes = (await database.pool.execute('SELECT * FROM votes WHERE guild_id = ? AND creation_time = ?', [guild_id, creation_time]))[0];
         if (!Array.isArray(votes))
             return;
@@ -234,9 +246,14 @@ class VoteDatas {
 }
 exports.VoteDatas = VoteDatas;
 class DatabaseData {
-    choices = new Choices();
-    votes = new ServerVotes();
-    voteData = new VoteDatas();
+    choices;
+    votes;
+    voteData;
+    constructor(logger) {
+        this.choices = new Choices(logger);
+        this.votes = new ServerVotes(logger);
+        this.voteData = new VoteDatas(logger);
+    }
 }
 exports.DatabaseData = DatabaseData;
 class BotDatabase {

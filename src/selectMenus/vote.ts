@@ -10,12 +10,14 @@ module.exports = new SelectMenuData(
 
 		const args = interaction.customId.split('.');
 
-		console.log(`${interaction.user.tag} tried to vote for ${args[1]}.${args[2]}`);
+		const logger = interaction.client.logger;
+
+		logger.info(`${interaction.user.tag} tried to vote for ${args[1]}.${args[2]}`);
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
 
 		if (voteData === undefined) {
-			console.log(`${interaction.user.tag} failed to vote for ${args[1]}.${args[2]} because the vote is not in the database`);
+			logger.info(`${interaction.user.tag} failed to vote for ${args[1]}.${args[2]} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
 				.setDescription('Kunnde inte hitta röstningen')
@@ -31,7 +33,7 @@ module.exports = new SelectMenuData(
 			(Array.isArray(interaction.member.roles) && !interaction.member.roles.includes(can_vote_id))
 			|| (!Array.isArray(interaction.member.roles)) && !interaction.member.roles.cache.some(role => role.id == can_vote_id)
 		) {
-			console.log(`${interaction.user.tag} failed to vote for ${args[1]}.${args[2]} because they did not have permissions`);
+			logger.info(`${interaction.user.tag} failed to vote for ${args[1]}.${args[2]} because they did not have permissions`);
 			const embed = new EmbedBuilder()
 				.setTitle('Ingen rösträtt')
 				.setDescription('Du saknar den roll som krävs för att rösta här')
@@ -41,7 +43,7 @@ module.exports = new SelectMenuData(
 			return;
 		}
 
-		console.log(`${interaction.user.tag} successfully voted for ${args[1]}.${args[2]}`);
+		logger.info(`${interaction.user.tag} successfully voted for ${args[1]}.${args[2]}`);
 
 		await interaction.client.customData.voteData.setVote(interaction.client.database, args[1], args[2], interaction.user.id, interaction.values[0]);
 		const true_votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], args[2]);

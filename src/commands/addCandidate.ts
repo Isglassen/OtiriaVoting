@@ -41,12 +41,14 @@ module.exports = new CommandData(
 		const new_description = interaction.options.getString('choice-description', true);
 		const args = vote_id.split('.');
 
-		console.log(`${interaction.user.tag} tried to add option ${new_name}: ${new_description} to ${vote_id}`);
+		const logger = interaction.client.logger;
+
+		logger.info(`${interaction.user.tag} tried to add option ${new_name}: ${new_description} to ${vote_id}`);
 
 		if (!await checkCreateMessage(interaction)) return;
 
 		if (args[0] != interaction.guildId) {
-			console.log(`${interaction.user.tag} failed to add option to ${vote_id} because it's in an other guild`);
+			logger.info(`${interaction.user.tag} failed to add option to ${vote_id} because it's in an other guild`);
 			const embed = new EmbedBuilder()
 				.setTitle('Kunde inte lägga till alternativ')
 				.setDescription('Det id du anget är för en röstning på en annan server')
@@ -59,7 +61,7 @@ module.exports = new CommandData(
 		const currentChoices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
 
 		if (currentChoices === undefined) {
-			console.log(`${interaction.user.tag} failed to add option to ${vote_id} because the vote is not in the database`);
+			logger.info(`${interaction.user.tag} failed to add option to ${vote_id} because the vote is not in the database`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
 				.setDescription('Kunnde inte hitta röstningen')
@@ -72,7 +74,7 @@ module.exports = new CommandData(
 		if (!await checkCreating(interaction, args[0], args[1])) return;
 
 		if (currentChoices.some((val) => val.name == new_name)) {
-			console.log(`${interaction.user.tag} couldn't add option to ${vote_id} because it already had the specified name`);
+			logger.info(`${interaction.user.tag} couldn't add option to ${vote_id} because it already had the specified name`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
 				.setDescription('Kunde inte lägga till alternativ eftersom ett alternativ med samma namn redan finns')
@@ -83,7 +85,7 @@ module.exports = new CommandData(
 		}
 
 		if (currentChoices.length >= 25) {
-			console.log(`${interaction.user.tag} couldn't add option to ${vote_id} because it has the maximum option count`);
+			logger.info(`${interaction.user.tag} couldn't add option to ${vote_id} because it has the maximum option count`);
 			const embed = new EmbedBuilder()
 				.setTitle('Misslyckades')
 				.setDescription('Röstningen har redan 25 alternativ, vilket är gränsen')
@@ -95,7 +97,7 @@ module.exports = new CommandData(
 
 		await interaction.client.customData.choices.addChoice(interaction.client.database, args[0], args[1], { name: new_name, description: new_description });
 
-		console.log(`${interaction.user.tag} successfully added option to ${vote_id}`);
+		logger.info(`${interaction.user.tag} successfully added option to ${vote_id}`);
 		const embed = new EmbedBuilder()
 			.setTitle('Klart!')
 			.setDescription(`Alternativet "${new_name}" har nu laggts till`)
@@ -108,14 +110,14 @@ module.exports = new CommandData(
 		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
 
 		if (!infoMessageChannel.isTextBased()) {
-			console.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
+			logger.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
 			return;
 		}
 
 		const infoMessage = await infoMessageChannel.messages.fetch(newData.status_message_id);
 
 		if (!infoMessage) {
-			console.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
+			logger.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
 			return;
 		}
 
