@@ -8,6 +8,7 @@ const util = require('node:util');
 
 const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config, interactionHandling);
 
+// TODO: Save logs in a file
 // TODO: Defer replies
 // TODO: Not ephemeral versions of some commands
 // TODO: Somehow run the clean shutdown when running the stop on the host
@@ -56,7 +57,7 @@ async function main() {
 	client.once(Events.ClientReady, () => {
 		if (!client.user) return;
 
-		console.log(`Ready! Logged in as ${client.user.tag}`);
+		console.log(`Ready! Logged in as ${client.user.tag} at ${new Date}`);
 
 		client.user.setPresence({
 			status: 'online',
