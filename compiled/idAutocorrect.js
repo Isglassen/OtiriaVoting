@@ -52,6 +52,8 @@ async function getCreating(client, guildId) {
             can_vote_id: data.can_vote_id,
             mention_role_id: data.mention_role_id,
             live_result: !!data.live_result,
+            start_time: data.start_time,
+            end_time: data.end_time,
         });
     }
     return editable;
@@ -103,6 +105,8 @@ async function getDone(client, guildId) {
             can_vote_id: data.can_vote_id,
             mention_role_id: data.mention_role_id,
             live_result: !!data.live_result,
+            start_time: data.start_time,
+            end_time: data.end_time,
         });
     }
     return editable;

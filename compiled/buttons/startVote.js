@@ -10,6 +10,7 @@ module.exports = new customClient_1.ButtonData('start', async function (interact
     if (!await (0, messageCreators_1.checkCreateMessage)(interaction))
         return;
     const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
+    voteData.start_time = `${new Date().getTime()}`;
     if (voteData === undefined) {
         logger.info(`${interaction.user.tag} failed to start vote ${args[1]}.${args[2]} because the vote is not in the database`);
         const embed = new discord_js_1.EmbedBuilder()
@@ -50,6 +51,7 @@ module.exports = new customClient_1.ButtonData('start', async function (interact
         .setColor('Green');
     await interaction.reply({ embeds: [embed], ephemeral: true });
     await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'started', true);
+    await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'start_time', voteData.start_time);
     await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'message_id', info_message.id);
     const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
     const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);

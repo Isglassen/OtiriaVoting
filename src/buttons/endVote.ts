@@ -14,6 +14,8 @@ module.exports = new ButtonData(
 		if (!await checkCreateMessage(interaction)) return;
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
+		voteData.end_time = `${new Date().getTime()}`;
+
 		const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], args[2]);
 		let true_votes = votes;
 
@@ -46,6 +48,7 @@ module.exports = new ButtonData(
 		}
 
 		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'ended', true);
+		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'end_time', voteData.end_time);
 
 		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
 

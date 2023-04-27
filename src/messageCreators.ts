@@ -35,10 +35,13 @@ export function voteCreateButtons(guild_id: string, creation_time: string, start
 	];
 }
 
-export async function voteMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, choiceList: choiceData[], disableVoting: boolean = false, votes: {[name: string]: number}, message_id: string): Promise<BaseMessageOptions> {
+export async function voteMessage(client: CustomClient, guild_id: string, voteData: serverVoteData, choiceList: choiceData[], disableVoting: boolean = false, votes: {[name: string]: number}): Promise<BaseMessageOptions> {
 	let total = 0;
 
 	Object.values(votes).forEach(num => total += num);
+
+	const startSec = voteData.start_time.substring(0, voteData.start_time.length - 3);
+	const endSec = voteData.end_time !== null ? voteData.end_time.substring(0, voteData.end_time.length - 3) : '';
 
 	const embed = new EmbedBuilder()
 		.setTitle(voteData.name)
@@ -52,8 +55,12 @@ export async function voteMessage(client: CustomClient, guild_id: string, voteDa
 		},
 		{
 			name: 'Tider',
-			value: `Startade: <t:${voteData.end_time}:F>; ${voteData.ended ? 'Slutade' : 'Slutar'}: ${voteData.end_time === null ? '*Manuellt*' :
-				voteData.ended ? `<t:${voteData.end_time}:F>` : `<t:${voteData.end_time}:F> (<t:${voteData.end_time}:R>)}`}`,
+			value: `Startade: <t:${startSec}:F>\n` +
+			(voteData.ended ?
+				`Slutade: <t:${endSec}:F>` :
+				'Slutar: ' + (voteData.end_time === null ?
+					'*Manuellt*' :
+					`<t:${endSec}:F> (<t:${endSec}:R>)`)),
 		}])
 		.setFooter({ text: `Totala röster: ${total}` });
 
@@ -121,9 +128,9 @@ export async function voteCreateMessage(client: CustomClient, guild_id: string, 
 			{ name: 'Live resultat', value: voteData.live_result ? 'Ja' : 'Nej', inline: true },
 			{ name: 'Rösträtt', value: `${await getRole(client, guild_id, voteData.can_vote_id)}`, inline: true },
 			{ name: 'Ping', value: voteData.mention_role_id ? `${await getRole(client, guild_id, voteData.mention_role_id)}` : '*Ingen*', inline: true },
-			{ name: 'Automatiska tider', value: 'Automatiska tider aktiveras som tidigast 10 minuter efter att boten startat efter t.ex. en krasch. Detta är så att det finns tid att ändra på de' },
+			{ name: 'Automatiska tider', value: 'Automatiska tider aktiveras som tidigast 10 minuter efter att boten startat efter t.ex. en krasch. Detta är så att det finns tid att ändra på dem' },
 			{ name: 'Startar', value: voteData.start_time === null ? '*Manuellt*' : `<t:${voteData.start_time.substring(0, voteData.start_time.length - 3)}:f>`, inline: true },
-			{ name: 'Slutar', value: voteData.end_time === null ? '*Manuellt*' : `<t:${voteData.start_time.substring(0, voteData.start_time.length - 3)}:f>`, inline: true },
+			{ name: 'Slutar', value: voteData.end_time === null ? '*Manuellt*' : `<t:${voteData.end_time.substring(0, voteData.end_time.length - 3)}:f>`, inline: true },
 		])
 		.setFooter({ text: voteData.creation_time })
 		.setTimestamp(new Date(parseInt(voteData.creation_time)));

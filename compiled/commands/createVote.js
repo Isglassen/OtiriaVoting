@@ -49,7 +49,23 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     .setDescription('Show the current vote numbers even before the vote has ended')
     .setNameLocalization('sv-SE', 'live-resultat')
     .setDescriptionLocalization('sv-SE', 'Visa antalet röster även innan röstningen är slut')
-    .setRequired(false)), async function (interaction) {
+    .setRequired(false))
+    .addIntegerOption(option => option
+    .setName('start-time')
+    .setDescription('epochconverter.com to generate a timestamp.')
+    .setNameLocalization('sv-SE', 'start-tid')
+    .setDescriptionLocalization('sv-SE', 'epochconverter.com för att generera en timestamp.')
+    .setRequired(false)
+    .setMinValue(-8640000000000)
+    .setMaxValue(8640000000000))
+    .addIntegerOption(option => option
+    .setName('end-time')
+    .setDescription('epochconverter.com to generate a timestamp.')
+    .setNameLocalization('sv-SE', 'slut-tid')
+    .setDescriptionLocalization('sv-SE', 'epochconverter.com för att generera en timestamp.')
+    .setRequired(false)
+    .setMinValue(-8640000000000)
+    .setMaxValue(8640000000000)), async function (interaction) {
     const name = interaction.options.getString('name', true);
     const description = interaction.options.getString('description', true);
     const channel = interaction.options.getChannel('vote-channel', true, [discord_js_1.ChannelType.GuildText]);
@@ -59,6 +75,10 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     const mention_role_id = ping === null ? null : ping.id;
     const liveResult = interaction.options.getBoolean('live-result', false);
     const live_result = liveResult === null ? false : liveResult;
+    const startTime = interaction.options.getInteger('start-time', false);
+    const start_time = startTime === null ? null : `${startTime * 1000}`;
+    const endTime = interaction.options.getInteger('end-time', false);
+    const end_time = endTime === null ? null : `${endTime * 1000}`;
     // Create base command data
     const voteData = {
         name: name,
@@ -73,6 +93,8 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
         mention_role_id: mention_role_id,
         live_result: live_result,
         message_id: null,
+        start_time: start_time,
+        end_time: end_time,
     };
     interaction.client.logger.info(`${interaction.user.tag} tried to created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(parseInt(voteData.creation_time)).toUTCString()}`);
     if (!await (0, messageCreators_1.checkCreateMessage)(interaction))

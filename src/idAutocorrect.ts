@@ -65,6 +65,8 @@ export async function getCreating(client: CustomClient, guildId: string): Promis
 			can_vote_id: data.can_vote_id,
 			mention_role_id: data.mention_role_id,
 			live_result: !!data.live_result,
+			start_time: data.start_time,
+			end_time: data.end_time,
 		});
 	}
 
@@ -123,6 +125,8 @@ export async function getDone(client: CustomClient, guildId: string): Promise<se
 			can_vote_id: data.can_vote_id,
 			mention_role_id: data.mention_role_id,
 			live_result: !!data.live_result,
+			start_time: data.start_time,
+			end_time: data.end_time,
 		});
 	}
 

@@ -103,6 +103,8 @@ class ServerVotes {
                 can_vote_id: data.can_vote_id,
                 mention_role_id: data.mention_role_id,
                 live_result: !!data.live_result,
+                start_time: data.start_time,
+                end_time: data.end_time,
             });
         }
     }
@@ -128,7 +130,7 @@ class ServerVotes {
         if (!Array.isArray(this.data[guild_id]))
             this.data[guild_id] = [];
         this.data[guild_id].push(voteData);
-        await database.pool.execute('INSERT INTO guilds (name, description, channel_id, message_id, status_message_id, status_message_channel_id, creation_time, started, ended, can_vote_id, mention_role_id, guild_id, live_result) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [voteData.name, voteData.description, voteData.channel_id, voteData.message_id, voteData.status_message_id, voteData.status_message_channel_id, voteData.creation_time, voteData.started, voteData.ended, voteData.can_vote_id, voteData.mention_role_id, guild_id, voteData.live_result]);
+        await database.pool.execute('INSERT INTO guilds (name, description, channel_id, message_id, status_message_id, status_message_channel_id, creation_time, started, ended, can_vote_id, mention_role_id, guild_id, live_result, start_time, end_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [voteData.name, voteData.description, voteData.channel_id, voteData.message_id, voteData.status_message_id, voteData.status_message_channel_id, voteData.creation_time, voteData.started, voteData.ended, voteData.can_vote_id, voteData.mention_role_id, guild_id, voteData.live_result, voteData.start_time, voteData.end_time]);
     }
     async updateProperty(database, guild_id, creation_time, property, value) {
         // Fetch everything if it is not in the cache

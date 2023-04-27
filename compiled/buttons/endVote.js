@@ -10,6 +10,7 @@ module.exports = new customClient_1.ButtonData('stop', async function (interacti
     if (!await (0, messageCreators_1.checkCreateMessage)(interaction))
         return;
     const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
+    voteData.end_time = `${new Date().getTime()}`;
     const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[1], args[2]);
     let true_votes = votes;
     if (votes === undefined) {
@@ -35,6 +36,7 @@ module.exports = new customClient_1.ButtonData('stop', async function (interacti
         return;
     }
     await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'ended', true);
+    await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'end_time', voteData.end_time);
     const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
     const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[1], args[2]);
     const summary = (0, messageCreators_1.generateSummary)(choices, true_votes);
