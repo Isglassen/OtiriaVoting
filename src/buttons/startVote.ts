@@ -1,6 +1,7 @@
 import { EmbedBuilder, PermissionsBitField } from 'discord.js';
 import { ButtonData, CustomButtomInteraction } from '../customClient';
 import { checkCreateMessage, generateSummary, getRole, voteCreateMessage, voteMessage } from '../messageCreators';
+import { startVote } from '../automaticActions';
 
 module.exports = new ButtonData(
 	'start',
@@ -14,8 +15,6 @@ module.exports = new ButtonData(
 		if (!await checkCreateMessage(interaction)) return;
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
-
-		voteData.start_time = `${new Date().getTime()}`;
 
 		if (voteData === undefined) {
 			logger.info(`${interaction.user.tag} failed to start vote ${args[1]}.${args[2]} because the vote is not in the database`);
@@ -41,10 +40,10 @@ module.exports = new ButtonData(
 			return;
 		}
 
-		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[1], args[2]);
+		const choices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[1], voteData.creation_time);
 
 		if (choices.length < 2) {
-			logger.info(`${interaction.user.tag} failed to start vote ${args[1]}.${args[2]} because there were too few options`);
+			logger.info(`${interaction.user.tag} failed to start vote ${args[1]}.${voteData.creation_time} because there were too few options`);
 			const embed = new EmbedBuilder()
 				.setTitle('Lägg till lite alternativ')
 				.setDescription('Det är svårt att rösta om något när det finns färre än 2 alternativ, och du har bara ' + choices.length)
@@ -54,10 +53,7 @@ module.exports = new ButtonData(
 			return;
 		}
 
-		const info_message = await messageChannel.send({
-			...await voteMessage(interaction.client, args[1], voteData, choices, false, generateSummary(choices, [])),
-			content: voteData.mention_role_id !== null ? `${await getRole(interaction.client, interaction.guildId, voteData.mention_role_id)}` : '',
-		});
+		if (!await startVote(interaction.client, interaction.guildId, voteData)) {return;}
 
 		logger.info(`${interaction.user.tag} successfully started vote ${args[1]}.${args[2]}`);
 
@@ -67,26 +63,5 @@ module.exports = new ButtonData(
 			.setColor('Green');
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });
-
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'started', true);
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'start_time', voteData.start_time);
-		await interaction.client.customData.votes.updateProperty(interaction.client.database, args[1], args[2], 'message_id', info_message.id);
-
-		const newData = await interaction.client.customData.votes.getFull(interaction.client.database, args[1], args[2]);
-		const infoMessageChannel = await interaction.guild.channels.fetch(newData.status_message_channel_id);
-
-		if (!infoMessageChannel.isTextBased()) {
-			logger.warn(`Info message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
-			return;
-		}
-
-		const infoMessage = await infoMessageChannel.messages.fetch(newData.status_message_id);
-
-		if (!infoMessage) {
-			logger.warn(`Info message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
-			return;
-		}
-
-		await infoMessage.edit(await voteCreateMessage(interaction.client, args[1], newData, choices, false));
 	},
 );

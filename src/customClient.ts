@@ -2,6 +2,7 @@ import { AnySelectMenuInteraction, AutocompleteInteraction, ButtonInteraction, C
 import BotDatabase, { DatabaseData } from './databaseActions';
 import * as mySQL from 'mysql2/promise';
 import * as winston from 'winston';
+import { updateVotes } from './automaticActions';
 
 type GeneralCommandBuilder =
   | Omit<SlashCommandBuilder, 'addSubcommand' | 'addSubcommandGroup'>
@@ -59,6 +60,7 @@ export class CustomClient extends Client {
 	botData: { commands: Collection<string, CommandData>, buttons: Collection<string, ButtonData>, selectMenus: Collection<string, SelectMenuData>, interactionHandler: (interaction: Interaction) => Promise<void> };
 	config: BotConfig;
 	logger: winston.Logger;
+	updateTask: NodeJS.Timer;
 
 	constructor(options: ClientOptions, config: BotConfig, logger: winston.Logger, interactionHandler: (interaction: Interaction) => Promise<void>) {
 		super(options);
@@ -71,6 +73,19 @@ export class CustomClient extends Client {
 		this.config = config;
 		this.database = new BotDatabase(config.database);
 		this.botData = { commands: new Collection, buttons: new Collection, selectMenus: new Collection, interactionHandler: interactionHandler };
+	}
+
+	public override destroy(): void {
+		clearInterval(this.updateTask);
+		super.destroy();
+	}
+
+	startUpdates() {
+		const time = new Date;
+		time.setMinutes(time.getMinutes() + 10);
+		time.setSeconds(0);
+		time.setMilliseconds(0);
+		setTimeout(() => { this.updateTask = setInterval(updateVotes, 30_000, this), +time - +new Date; });
 	}
 }
 

@@ -13,6 +13,7 @@
 		"sourceType": "module"
 	},
 	"rules": {
+    "no-undef": "off",
 		"arrow-spacing": ["warn", { "before": true, "after": true }],
 		"brace-style": ["error", "stroustrup", { "allowSingleLine": true }],
 		"comma-dangle": ["error", "always-multiline"],
@@ -58,7 +59,10 @@
 			"parser": "@typescript-eslint/parser",
 			"plugins": [
 				"@typescript-eslint"
-			]
+			],
+			"rules": {
+				"no-undef": "off"
+			}
 		}
 	]
 }
