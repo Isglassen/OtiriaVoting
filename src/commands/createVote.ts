@@ -3,8 +3,6 @@ import { serverVoteData } from '../databaseActions';
 import { ChannelType, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomCommandInteraction } from '../customClient';
 
-// TODO: Add start and end time: Input should be any javascript date format
-
 module.exports = new CommandData(
 	new SlashCommandBuilder()
 		.setName('create-vote')
@@ -52,7 +50,23 @@ module.exports = new CommandData(
 			.setDescription('Show the current vote numbers even before the vote has ended')
 			.setNameLocalization('sv-SE', 'live-resultat')
 			.setDescriptionLocalization('sv-SE', 'Visa antalet röster även innan röstningen är slut')
-			.setRequired(false)),
+			.setRequired(false))
+		.addIntegerOption(option => option
+			.setName('start-time')
+			.setDescription('The vote will automatically start at this time. epochconverter.com to generate a timestamp.')
+			.setNameLocalization('sv-SE', 'start-tid')
+			.setDescriptionLocalization('sv-SE', 'Röstningen kommer starta automatiskt vid denna tiden. epochconverter.com för att generera en timestamp.')
+			.setRequired(false)
+			.setMinValue(-8_640_000_000_000)
+			.setMaxValue(8_640_000_000_000))
+		.addIntegerOption(option => option
+			.setName('end-time')
+			.setDescription('The vote will automatically end at this time. epochconverter.com to generate a timestamp.')
+			.setNameLocalization('sv-SE', 'slut-tid')
+			.setDescriptionLocalization('sv-SE', 'Röstningen kommer avslutas automatiskt vid denna tiden. epochconverter.com för att generera en timestamp.')
+			.setRequired(false)
+			.setMinValue(-8_640_000_000_000)
+			.setMaxValue(8_640_000_000_000)),
 	async function(interaction: CustomCommandInteraction) {
 		const name = interaction.options.getString('name', true);
 		const description = interaction.options.getString('description', true);
@@ -63,6 +77,10 @@ module.exports = new CommandData(
 		const mention_role_id = ping === null ? null : ping.id;
 		const liveResult = interaction.options.getBoolean('live-result', false);
 		const live_result = liveResult === null ? false : liveResult;
+		const startTime = interaction.options.getInteger('start-time', false);
+		const start_time = startTime === null ? null : `${startTime * 1000}`;
+		const endTime = interaction.options.getInteger('end-time', false);
+		const end_time = endTime === null ? null : `${endTime * 1000}`;
 
 		// Create base command data
 		const voteData: serverVoteData = {
@@ -78,6 +96,8 @@ module.exports = new CommandData(
 			mention_role_id: mention_role_id,
 			live_result: live_result,
 			message_id: null,
+			start_time: start_time,
+			end_time: end_time,
 		};
 
 		interaction.client.logger.info(`${interaction.user.tag} tried to created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(parseInt(voteData.creation_time)).toUTCString()}`);
