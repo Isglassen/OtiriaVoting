@@ -2,23 +2,25 @@ import * as mySQL from 'mysql2/promise';
 import * as winston from 'winston';
 
 export type serverVoteData = {
-	name: string,
+	name: string;
 	description: string;
-	channel_id: string,
-	message_id: string,
-	status_message_id: string,
-	status_message_channel_id: string,
-	creation_time: string,
-	started: boolean,
-	ended: boolean,
-	can_vote_id: string,
-	mention_role_id: string,
-	live_result: boolean,
+	channel_id: string;
+	message_id: string;
+	status_message_id: string;
+	status_message_channel_id: string;
+	creation_time: string;
+	started: boolean;
+	ended: boolean;
+	can_vote_id: string;
+	mention_role_id: string;
+	live_result: boolean;
+	start_time: string;
+	end_time: string;
 }
 
 export type choiceData = {
-	name: string,
-	description: string
+	name: string;
+	description: string;
 }
 
 export class Choices {
@@ -152,6 +154,8 @@ export class ServerVotes {
 				can_vote_id: data.can_vote_id,
 				mention_role_id: data.mention_role_id,
 				live_result: !!data.live_result,
+				start_time: data.start_time,
+				end_time: data.end_time,
 			});
 		}
 	}

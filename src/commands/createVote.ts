@@ -3,6 +3,8 @@ import { serverVoteData } from '../databaseActions';
 import { ChannelType, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomCommandInteraction } from '../customClient';
 
+// TODO: Add start and end time: Input should be any javascript date format
+
 module.exports = new CommandData(
 	new SlashCommandBuilder()
 		.setName('create-vote')

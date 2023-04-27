@@ -1,4 +1,4 @@
-const { GatewayIntentBits, Events, EmbedBuilder, Collection, InteractionType, ComponentType, ActivityType } = require('discord.js');
+const { GatewayIntentBits, Events, EmbedBuilder, InteractionType, ComponentType, ActivityType } = require('discord.js');
 const { CustomClient } = require('./compiled/customClient.js');
 const fs = require('node:fs');
 const path = require('node:path');
