@@ -1,4 +1,4 @@
-import { AnySelectMenuInteraction, AutocompleteInteraction, ButtonInteraction, ChatInputCommandInteraction, Client, ClientOptions, Collection, Events, Interaction, ModalSubmitInteraction, SelectMenuType, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
+import { ActivityType, AnySelectMenuInteraction, AutocompleteInteraction, ButtonInteraction, ChatInputCommandInteraction, Client, ClientOptions, Collection, Events, Interaction, ModalSubmitInteraction, SelectMenuType, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, SlashCommandSubcommandsOnlyBuilder } from 'discord.js';
 import BotDatabase, { DatabaseData } from './databaseActions';
 import * as mySQL from 'mysql2/promise';
 import * as winston from 'winston';
@@ -80,12 +80,46 @@ export class CustomClient extends Client {
 		super.destroy();
 	}
 
-	startUpdates() {
+	startUpdates(packageData: { version: string }) {
 		const time = new Date;
 		time.setMinutes(time.getMinutes() + 10);
 		time.setSeconds(0);
 		time.setMilliseconds(0);
-		setTimeout(() => { this.updateTask = setInterval(updateVotes, 30_000, this), +time - +new Date; });
+
+		const timeString: string = (`${time.getUTCHours()}`.length < 2 ? '0' + time.getUTCHours() : `${time.getUTCHours()}`) +
+		':' + (`${time.getUTCMinutes()}`.length < 2 ? '0' + time.getUTCMinutes() : `${time.getUTCMinutes()}`);
+
+		this.user.setPresence({
+			status: 'idle',
+			activities: [{
+				name: `Startat om. Kör automatiska kommandon ${timeString} UTC`,
+				type:  ActivityType.Playing,
+			}],
+		});
+
+		setTimeout(() => {
+			this.updateTask = setInterval(updateVotes, 30_000, this);
+
+			this.user.setPresence({
+				status: 'online',
+				activities: [{
+					name: `Version ${packageData.version}`,
+					type:  ActivityType.Playing,
+				}],
+			});
+
+			setInterval(() => {
+				if (!this.user) return;
+
+				this.user.setPresence({
+					status: 'online',
+					activities: [{
+						name: `Version ${packageData.version}`,
+						type:  ActivityType.Playing,
+					}],
+				});
+			}, 600_000);
+		}, +time - +new Date);
 	}
 }
 

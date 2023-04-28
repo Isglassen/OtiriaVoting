@@ -114,8 +114,8 @@ async function voteCreateMessage(client, guild_id, voteData, choiceList, disable
         { name: 'Rösträtt', value: `${await getRole(client, guild_id, voteData.can_vote_id)}`, inline: true },
         { name: 'Ping', value: voteData.mention_role_id ? `${await getRole(client, guild_id, voteData.mention_role_id)}` : '*Ingen*', inline: true },
         { name: 'Automatiska tider', value: 'Automatiska tider aktiveras som tidigast 10 minuter efter att boten startat efter t.ex. en krasch. Detta är så att det finns tid att ändra på dem' },
-        { name: 'Startar', value: voteData.start_time === null ? '*Manuellt*' : `<t:${voteData.start_time.substring(0, voteData.start_time.length - 3)}:f>`, inline: true },
-        { name: 'Slutar', value: voteData.end_time === null ? '*Manuellt*' : `<t:${voteData.end_time.substring(0, voteData.end_time.length - 3)}:f>`, inline: true },
+        { name: voteData.started ? 'Startade' : 'Startar', value: voteData.start_time === null ? '*Manuellt*' : `<t:${voteData.start_time.substring(0, voteData.start_time.length - 3)}:f>`, inline: true },
+        { name: voteData.ended ? 'Slutade' : 'Slutar', value: voteData.end_time === null ? '*Manuellt*' : `<t:${voteData.end_time.substring(0, voteData.end_time.length - 3)}:f>`, inline: true },
     ])
         .setFooter({ text: voteData.creation_time })
         .setTimestamp(new Date(parseInt(voteData.creation_time)));

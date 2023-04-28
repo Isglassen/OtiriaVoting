@@ -133,6 +133,40 @@ export async function getDone(client: CustomClient, guildId: string): Promise<se
 	return editable;
 }
 
+export async function getNotEnd(client: CustomClient, guildId: string): Promise<serverVoteData[]> {
+	const votes = (await client.database.pool.execute(
+		'SELECT * FROM guilds WHERE guild_id = ? AND ended = 0',
+		[guildId],
+	))[0];
+
+	const editable: serverVoteData[] = [];
+	if (!Array.isArray(votes)) return editable;
+
+	for (let i = 0; i < votes.length; i++) {
+		const data = votes[i];
+		if (!('creation_time' in data)) continue;
+
+		editable.push({
+			name: data.name,
+			description: data.description,
+			channel_id: data.channel_id,
+			message_id: data.message_id,
+			status_message_id: data.status_message_id,
+			status_message_channel_id: data.status_message_channel_id,
+			creation_time: data.creation_time,
+			started: !!data.started,
+			ended: !!data.ended,
+			can_vote_id: data.can_vote_id,
+			mention_role_id: data.mention_role_id,
+			live_result: !!data.live_result,
+			start_time: data.start_time,
+			end_time: data.end_time,
+		});
+	}
+
+	return editable;
+}
+
 export async function getAll(client: CustomClient): Promise<serverVoteData[]> {
 	const votes = (await client.database.pool.execute(
 		'SELECT * FROM guilds',

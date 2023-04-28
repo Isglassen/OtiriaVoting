@@ -55,12 +55,41 @@ class CustomClient extends discord_js_1.Client {
         clearInterval(this.updateTask);
         super.destroy();
     }
-    startUpdates() {
+    startUpdates(packageData) {
         const time = new Date;
         time.setMinutes(time.getMinutes() + 10);
         time.setSeconds(0);
         time.setMilliseconds(0);
-        setTimeout(() => { this.updateTask = setInterval(automaticActions_1.updateVotes, 30000, this), +time - +new Date; });
+        const timeString = (`${time.getUTCHours()}`.length < 2 ? '0' + time.getUTCHours() : `${time.getUTCHours()}`) +
+            ':' + (`${time.getUTCMinutes()}`.length < 2 ? '0' + time.getUTCMinutes() : `${time.getUTCMinutes()}`);
+        this.user.setPresence({
+            status: 'idle',
+            activities: [{
+                    name: `Startat om. Kör automatiska kommandon ${timeString} UTC`,
+                    type: discord_js_1.ActivityType.Playing,
+                }],
+        });
+        setTimeout(() => {
+            this.updateTask = setInterval(automaticActions_1.updateVotes, 30000, this);
+            this.user.setPresence({
+                status: 'online',
+                activities: [{
+                        name: `Version ${packageData.version}`,
+                        type: discord_js_1.ActivityType.Playing,
+                    }],
+            });
+            setInterval(() => {
+                if (!this.user)
+                    return;
+                this.user.setPresence({
+                    status: 'online',
+                    activities: [{
+                            name: `Version ${packageData.version}`,
+                            type: discord_js_1.ActivityType.Playing,
+                        }],
+                });
+            }, 600000);
+        }, +time - +new Date);
     }
 }
 exports.CustomClient = CustomClient;

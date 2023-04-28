@@ -7,15 +7,20 @@ const packageData = require('./package.json');
 const util = require('node:util');
 const winston = require('winston');
 
+const myFormat = winston.format.printf((info) => {
+	return `[${info.timestamp}] ${info.level}: ${info.message}`;
+});
+
 const logger = winston.createLogger({
-	format: winston.format.simple(),
+	format: winston.format.combine(
+		winston.format.timestamp({ format: 'isoDateTime' }),
+		winston.format.errors({ stack: true }),
+		myFormat,
+	),
 	transports: [
-		new winston.transports.Console(),
-		new winston.transports.File({ filename: 'combined.log' }),
-		new winston.transports.File({ filename: 'error.log', level: 'error', format: winston.format.combine(
-			winston.format.errors({ stack: true }),
-			winston.format.simple()),
-		}),
+		new winston.transports.Console({ handleExceptions: true, handleRejections: true }),
+		new winston.transports.File({ filename: 'combined.log', handleExceptions: true, handleRejections: true }),
+		new winston.transports.File({ filename: 'error.log', level: 'error', handleExceptions: true, handleRejections: true }),
 	],
 });
 
@@ -69,29 +74,9 @@ async function main() {
 	client.once(Events.ClientReady, () => {
 		if (!client.user) return;
 
-		logger.info(`Ready! Logged in as ${client.user.tag} at ${new Date().toUTCString()}`);
+		logger.info(`Ready! Logged in as ${client.user.tag}`);
 
-		client.startUpdates();
-
-		client.user.setPresence({
-			status: 'online',
-			activities: [{
-				name: `Version ${packageData.version}`,
-				type:  ActivityType.Playing,
-			}],
-		});
-
-		setInterval(() => {
-			if (!client.user) return;
-
-			client.user.setPresence({
-				status: 'online',
-				activities: [{
-					name: `Version ${packageData.version}`,
-					type:  ActivityType.Playing,
-				}],
-			});
-		}, 600_000);
+		client.startUpdates(packageData);
 	});
 
 	if ('bot' in config && typeof config.bot == 'object' && config.bot !== null && 'token' in config.bot && typeof config.bot.token == 'string') { client.login(config.bot.token); }
@@ -122,7 +107,7 @@ async function respondError(interaction, message) {
 }
 
 async function interactionHandling(interaction) {
-	logger.info(`${InteractionType[interaction.type]} interaction from ${interaction.user.tag} at ${new Date().toUTCString()}`);
+	logger.info(`${InteractionType[interaction.type]} interaction from ${interaction.user.tag}`);
 
 	/**
 		 * @type {import("./src/customClient").CustomInteraction}

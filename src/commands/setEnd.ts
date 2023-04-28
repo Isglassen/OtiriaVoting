@@ -1,7 +1,7 @@
 import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
 import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
 import { serverVoteData } from '../databaseActions';
-import idAutocorrect, { checkCreating, getCreating } from '../idAutocorrect';
+import idAutocorrect, { checkCreating, getCreating, getNotEnd } from '../idAutocorrect';
 import { checkCreateMessage, voteCreateMessage } from '../messageCreators';
 
 module.exports = new CommandData(
@@ -104,5 +104,5 @@ module.exports = new CommandData(
 
 		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, choices, false));
 	},
-	idAutocorrect(getCreating),
+	idAutocorrect(getNotEnd),
 );

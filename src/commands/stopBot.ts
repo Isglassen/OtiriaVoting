@@ -27,7 +27,7 @@ module.exports = new CommandData(
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 
-		interaction.client.logger.info(`Stoping for ${interaction.user.tag} at ${new Date().toUTCString()}`);
+		interaction.client.logger.info(`Stoping for ${interaction.user.tag}`);
 
 		process.emit('SIGINT');
 	},

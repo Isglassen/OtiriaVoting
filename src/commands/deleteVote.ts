@@ -42,7 +42,7 @@ module.exports = new CommandData(
 
 		await interaction.reply({ embeds: [embed], ephemeral: true });
 
-		interaction.client.logger.info(`Deleted vote ${vote_id} at ${new Date().toUTCString()}`);
+		interaction.client.logger.info(`Deleted vote ${vote_id}`);
 
 		const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
 

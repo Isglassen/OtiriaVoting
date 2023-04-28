@@ -33,7 +33,7 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
         .setDescription('Alla meddelanden relaterade till röstningen borde också vara borta')
         .setColor('Blurple');
     await interaction.reply({ embeds: [embed], ephemeral: true });
-    interaction.client.logger.info(`Deleted vote ${vote_id} at ${new Date().toUTCString()}`);
+    interaction.client.logger.info(`Deleted vote ${vote_id}`);
     const voteData = await interaction.client.customData.votes.getFull(interaction.client.database, args[0], args[1]);
     try {
         const channel = await interaction.client.channels.fetch(voteData.channel_id);

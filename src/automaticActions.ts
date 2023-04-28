@@ -9,14 +9,17 @@ export async function updateVotes(client: CustomClient) {
 	const now = `${+new Date}`;
 
 	const shouldStart = (await client.database.pool.execute(
-		'SELECT * FROM guilds WHERE started = ? AND ended = ? AND start_time < ?',
-		[0, 0, now],
+		'SELECT * FROM guilds WHERE started = 0 AND ended = 0 AND start_time < ?',
+		[now],
 	))[0];
 
 	if (Array.isArray(shouldStart)) {
 		for (let i = 0; i < shouldStart.length; i++) {
+
 			const data = shouldStart[i];
 			if (!('creation_time' in data)) continue;
+
+			client.logger.info(`Starting ${data.guild_id}.${data.creation_time}`);
 
 			startVote(client, data.guild_id, {
 				name: data.name,
@@ -38,14 +41,16 @@ export async function updateVotes(client: CustomClient) {
 	}
 
 	const shouldEnd = (await client.database.pool.execute(
-		'SELECT * FROM guilds WHERE started = ? AND ended = ? AND start_time < ?',
-		[0, 1, now],
+		'SELECT * FROM guilds WHERE started = 1 AND ended = 0 AND end_time < ?',
+		[now],
 	))[0];
 
 	if (Array.isArray(shouldEnd)) {
 		for (let i = 0; i < shouldEnd.length; i++) {
 			const data = shouldEnd[i];
 			if (!('creation_time' in data)) continue;
+
+			client.logger.info(`Ending ${data.guild_id}.${data.creation_time}`);
 
 			endVote(client, data.guild_id, {
 				name: data.name,

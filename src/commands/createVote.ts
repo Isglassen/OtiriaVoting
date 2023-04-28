@@ -100,11 +100,11 @@ module.exports = new CommandData(
 			end_time: end_time,
 		};
 
-		interaction.client.logger.info(`${interaction.user.tag} tried to created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(parseInt(voteData.creation_time)).toUTCString()}`);
+		interaction.client.logger.info(`${interaction.user.tag} tried to created vote ${interaction.guildId}.${voteData.creation_time}`);
 
 		if (!await checkCreateMessage(interaction)) return;
 
-		interaction.client.logger.info(`${interaction.user.tag} created vote ${interaction.guildId}.${voteData.creation_time} at ${new Date(parseInt(voteData.creation_time)).toUTCString()}`);
+		interaction.client.logger.info(`${interaction.user.tag} created vote ${interaction.guildId}.${voteData.creation_time}`);
 
 		// Respond so we can save the message id
 		const message = await interaction.reply({ ...await voteCreateMessage(interaction.client, interaction.guildId, voteData, [], true), fetchReply: true });

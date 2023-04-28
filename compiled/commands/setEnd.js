@@ -84,4 +84,4 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
         return;
     }
     await infoMessage.edit(await (0, messageCreators_1.voteCreateMessage)(interaction.client, args[0], newData, choices, false));
-}, (0, idAutocorrect_1.default)(idAutocorrect_1.getCreating));
+}, (0, idAutocorrect_1.default)(idAutocorrect_1.getNotEnd));
