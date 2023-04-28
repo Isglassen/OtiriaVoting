@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDone = exports.checkDone = exports.checkCreating = exports.getCreating = void 0;
+exports.getAll = exports.getDone = exports.checkDone = exports.checkCreating = exports.getCreating = void 0;
 const discord_js_1 = require("discord.js");
 function idAutocorrect(getPossibilities) {
     return async function (interaction) {
@@ -112,3 +112,32 @@ async function getDone(client, guildId) {
     return editable;
 }
 exports.getDone = getDone;
+async function getAll(client) {
+    const votes = (await client.database.pool.execute('SELECT * FROM guilds'))[0];
+    const editable = [];
+    if (!Array.isArray(votes))
+        return editable;
+    for (let i = 0; i < votes.length; i++) {
+        const data = votes[i];
+        if (!('creation_time' in data))
+            continue;
+        editable.push({
+            name: data.name,
+            description: data.description,
+            channel_id: data.channel_id,
+            message_id: data.message_id,
+            status_message_id: data.status_message_id,
+            status_message_channel_id: data.status_message_channel_id,
+            creation_time: data.creation_time,
+            started: !!data.started,
+            ended: !!data.ended,
+            can_vote_id: data.can_vote_id,
+            mention_role_id: data.mention_role_id,
+            live_result: !!data.live_result,
+            start_time: data.start_time,
+            end_time: data.end_time,
+        });
+    }
+    return editable;
+}
+exports.getAll = getAll;

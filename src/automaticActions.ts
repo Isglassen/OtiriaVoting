@@ -8,7 +8,63 @@ export async function updateVotes(client: CustomClient) {
 
 	const now = `${+new Date}`;
 
-	await client.database.pool.execute('SELECT * FROM guilds WHERE ');
+	const shouldStart = (await client.database.pool.execute(
+		'SELECT * FROM guilds WHERE started = ? AND ended = ? AND start_time < ?',
+		[0, 0, now],
+	))[0];
+
+	if (Array.isArray(shouldStart)) {
+		for (let i = 0; i < shouldStart.length; i++) {
+			const data = shouldStart[i];
+			if (!('creation_time' in data)) continue;
+
+			startVote(client, data.guild_id, {
+				name: data.name,
+				description: data.description,
+				channel_id: data.channel_id,
+				message_id: data.message_id,
+				status_message_id: data.status_message_id,
+				status_message_channel_id: data.status_message_channel_id,
+				creation_time: data.creation_time,
+				started: !!data.started,
+				ended: !!data.ended,
+				can_vote_id: data.can_vote_id,
+				mention_role_id: data.mention_role_id,
+				live_result: !!data.live_result,
+				start_time: data.start_time,
+				end_time: data.end_time,
+			});
+		}
+	}
+
+	const shouldEnd = (await client.database.pool.execute(
+		'SELECT * FROM guilds WHERE started = ? AND ended = ? AND start_time < ?',
+		[0, 1, now],
+	))[0];
+
+	if (Array.isArray(shouldEnd)) {
+		for (let i = 0; i < shouldEnd.length; i++) {
+			const data = shouldEnd[i];
+			if (!('creation_time' in data)) continue;
+
+			endVote(client, data.guild_id, {
+				name: data.name,
+				description: data.description,
+				channel_id: data.channel_id,
+				message_id: data.message_id,
+				status_message_id: data.status_message_id,
+				status_message_channel_id: data.status_message_channel_id,
+				creation_time: data.creation_time,
+				started: !!data.started,
+				ended: !!data.ended,
+				can_vote_id: data.can_vote_id,
+				mention_role_id: data.mention_role_id,
+				live_result: !!data.live_result,
+				start_time: data.start_time,
+				end_time: data.end_time,
+			});
+		}
+	}
 }
 
 export async function startVote(client: CustomClient, guild_id: string, voteData: serverVoteData): Promise<boolean> {
