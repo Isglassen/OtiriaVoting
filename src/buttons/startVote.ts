@@ -1,11 +1,11 @@
 import { EmbedBuilder, PermissionsBitField } from 'discord.js';
-import { ButtonData, CustomButtomInteraction } from '../customClient';
+import { ButtonData, CustomButtonInteraction } from '../customClient';
 import { checkCreateMessage, generateSummary, getRole, voteCreateMessage, voteMessage } from '../messageCreators';
 import { startVote } from '../automaticActions';
 
 module.exports = new ButtonData(
 	'start',
-	async function(interaction: CustomButtomInteraction) {
+	async function(interaction: CustomButtonInteraction) {
 		const args = interaction.customId.split('.');
 
 		const logger = interaction.client.logger;

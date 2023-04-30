@@ -37,8 +37,8 @@ export class SelectMenuData {
 
 export class ButtonData {
 	name: string;
-	execute: (interaction: CustomButtomInteraction) => Promise<void>;
-	constructor(name: string, execute: (interaction: CustomButtomInteraction) => Promise<void>) {
+	execute: (interaction: CustomButtonInteraction) => Promise<void>;
+	constructor(name: string, execute: (interaction: CustomButtonInteraction) => Promise<void>) {
 		this.name = name;
 		this.execute = execute;
 	}
@@ -127,7 +127,7 @@ export type CustomInteraction = Interaction & {
 	client: CustomClient;
 }
 
-export type CustomButtomInteraction =
+export type CustomButtonInteraction =
   & CustomInteraction
   & ButtonInteraction
 
