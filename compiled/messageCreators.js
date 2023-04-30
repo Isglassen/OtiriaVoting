@@ -6,7 +6,6 @@ const MESSAGE_CONTENT = `Skapa röstning
 
 Använd olika kommandon för att ändra på saker tills röstningen är som du vill ha den
 När du är klar kan du starta och sedan avsluta röstningen med knapparna nedan`;
-// TODO: Change start_time and end_time to the real time it happened
 async function getRole(client, guild_id, role_id) {
     const guild = await client.guilds.fetch(guild_id);
     if (typeof role_id != 'string')

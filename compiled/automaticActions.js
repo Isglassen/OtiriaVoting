@@ -4,7 +4,6 @@ exports.endVote = exports.startVote = exports.updateVotes = void 0;
 const discord_js_1 = require("discord.js");
 const messageCreators_1 = require("./messageCreators");
 async function updateVotes(client) {
-    // TODO: Use the times of votes to automatically start/end votes
     const now = `${+new Date}`;
     const shouldStart = (await client.database.pool.execute('SELECT * FROM guilds WHERE started = 0 AND ended = 0 AND start_time < ?', [now]))[0];
     if (Array.isArray(shouldStart)) {

@@ -4,8 +4,6 @@ import { serverVoteData } from './databaseActions';
 import { generateSummary, getRole, voteCreateMessage, voteMessage } from './messageCreators';
 
 export async function updateVotes(client: CustomClient) {
-	// TODO: Use the times of votes to automatically start/end votes
-
 	const now = `${+new Date}`;
 
 	const shouldStart = (await client.database.pool.execute(
