@@ -51,6 +51,8 @@ Databasen behöver följande tabeller:
   - `mention_role_id`: `BIGINT`, Den roll som ska nämnas när röstningen startar
   - `guild_id`: `BIGINT NOT NULL`, Den guild som röstningen är i
   - `live_result`: `BOOLEAN NOT NULL`, Ifall röstningens resultat ska uppdateras live
+  - `start_time`: `BIGINT`, Epoch timestamp i millisekunder för när röstningen ska starta/har startat
+  - `end_time`: `BIGINT`, Epoch timestamp i millisekunder för när röstningen ska sluta/har slutat
 - `choices`: Olika alternativ för röstningar
   - `guild_id`: `BIGINT NOT NULL`, den guild som alternativet hör till
   - `creation_time`: `BIGINT NOT NULL`, id till den röstning som alternativet hör till
@@ -66,14 +68,28 @@ Databasen behöver följande tabeller:
 
 Om du har source coden så kan du följa dessa stegen för att köra boten
 
-- Kör `npm install && npm run build` (samma sak som `npm install && rd /s /q compiled && npx tsc`) i root mappen
-  - Om du inte är på windows måste du manuelt ta bort compiled mappen om den finns, och sen köra `npm install && npx tsc`
-- Lägg till en `bot-config.json` fil (se ovan)
-- Kör `node ./deployCommands.js && node .` (kör `npm run build` igen om du ändrar på någon .ts fil)
+Du måste ha node.js installerat
+
+- Första gången
+  - Kör `npm install`
+  - Lägg till en `bot-config.json` fil (se ovan)
+- Efter ändringar (också första gången)
+  - Kör `npm run build` (samma sak som `rd /s /q compiled && npx tsc`) i root mappen
+    - Om du inte är på windows måste du manuelt ta bort compiled mappen om den finns, och sen köra `npx tsc`
+  - Kör `node ./deployCommands.js`
+- Varje start
+  - Starta boten med `node .`
 
 ### Använd compiled kod
 
-Om koden du har är kompiled så kan du följa dessa stegen
+Om koden du har är compiled så kan du följa dessa stegen
 
-- Lägg till en `bot-config.json` fil (se ovan)
-- Kör `node ./deployCommands.js && node .`
+Du måste ha node.js installerat
+
+- Första gången
+  - Kör `npm install`
+  - Lägg till en `bot-config.json` fil (se ovan)
+- Efter ändringar (också första gången)
+  - Kör `node ./deployCommands.js`
+- Varje start
+  - Starta boten med `node .`
