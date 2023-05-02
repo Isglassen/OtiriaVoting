@@ -2,7 +2,7 @@ import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.
 import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
 import { serverVoteData } from '../databaseActions';
 import idAutocorrect, { checkCreating, getCreating, getNotEnd } from '../idAutocorrect';
-import { checkCreateMessage, voteCreateMessage } from '../messageCreators';
+import { checkCreateMessage, generateSummary, voteCreateMessage, voteMessage } from '../messageCreators';
 
 module.exports = new CommandData(
 	new SlashCommandBuilder()
@@ -103,6 +103,31 @@ module.exports = new CommandData(
 		}
 
 		await infoMessage.edit(await voteCreateMessage(interaction.client, args[0], newData, choices, false));
+
+		if (newData.message_id === null) return;
+		const voteMessageChannel = await interaction.guild.channels.fetch(newData.channel_id);
+
+		if (!voteMessageChannel.isTextBased()) {
+			logger.warn(`Vote message channel ${newData.status_message_channel_id} is not text based for vote ${args.join('.')}`);
+			return;
+		}
+
+		if (!voteMessageChannel.permissionsFor(interaction.client.user).has('SendMessages')) {
+			logger.warn(`Vote message channel ${newData.status_message_channel_id} does not give permissions to send messages for vote ${args.join('.')}`);
+			return;
+		}
+
+		const voteMessageObj = await voteMessageChannel.messages.fetch(newData.message_id);
+
+		if (!voteMessageObj) {
+			logger.warn(`Vote message ${newData.status_message_channel_id}.${newData.status_message_id} does not exist for vote ${args.join('.')}`);
+			return;
+		}
+
+		const voteChoices = await interaction.client.customData.choices.getChoices(interaction.client.database, args[0], args[1]);
+		const votes = await interaction.client.customData.voteData.getVotes(interaction.client.database, args[0], args[1]);
+
+		await voteMessageObj.edit(await voteMessage(interaction.client, args[0], newData, voteChoices, false, generateSummary(voteChoices, votes)));
 	},
 	idAutocorrect(getNotEnd),
 );
