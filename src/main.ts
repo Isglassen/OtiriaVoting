@@ -201,6 +201,8 @@ function loadSelectMenus(client: CustomClient) {
 }
 
 export async function main(config: BotConfig, packageData: { version: string; }) {
+	logger.info(`Running version ${packageData.version}`);
+
 	const client = new CustomClient({ intents: [GatewayIntentBits.Guilds] }, config, logger, interactionHandling);
 
 	// TODO: Defer replies

@@ -179,6 +179,7 @@ function loadSelectMenus(client) {
     }
 }
 async function main(config, packageData) {
+    logger.info(`Running version ${packageData.version}`);
     const client = new customClient_1.CustomClient({ intents: [discord_js_1.GatewayIntentBits.Guilds] }, config, logger, interactionHandling);
     // TODO: Defer replies
     // TODO: Not ephemeral versions of some commands
