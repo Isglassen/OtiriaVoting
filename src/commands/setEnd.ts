@@ -21,9 +21,9 @@ module.exports = new CommandData(
 			.setAutocomplete(true))
 		.addIntegerOption(option => option
 			.setName('end-time')
-			.setDescription('The end time of the vote')
+			.setDescription('The end time of the vote. unixtimestamp.com')
 			.setNameLocalization('sv-SE', 'slut-tid')
-			.setDescriptionLocalization('sv-SE', 'Röstningens nya slut tid')
+			.setDescriptionLocalization('sv-SE', 'Röstningens nya slut tid. unixtimestamp.com')
 			.setRequired(false)
 			.setMinValue(-8_640_000_000_000)
 			.setMaxValue(8_640_000_000_000)),

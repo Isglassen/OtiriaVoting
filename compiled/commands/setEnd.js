@@ -20,9 +20,9 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     .setAutocomplete(true))
     .addIntegerOption(option => option
     .setName('end-time')
-    .setDescription('The end time of the vote')
+    .setDescription('The end time of the vote. unixtimestamp.com')
     .setNameLocalization('sv-SE', 'slut-tid')
-    .setDescriptionLocalization('sv-SE', 'Röstningens nya slut tid')
+    .setDescriptionLocalization('sv-SE', 'Röstningens nya slut tid. unixtimestamp.com')
     .setRequired(false)
     .setMinValue(-8640000000000)
     .setMaxValue(8640000000000)), async function (interaction) {

@@ -52,17 +52,17 @@ module.exports = new customClient_1.CommandData(new discord_js_1.SlashCommandBui
     .setRequired(false))
     .addIntegerOption(option => option
     .setName('start-time')
-    .setDescription('epochconverter.com to generate a timestamp.')
+    .setDescription('unixtimestamp.com to generate a timestamp.')
     .setNameLocalization('sv-SE', 'start-tid')
-    .setDescriptionLocalization('sv-SE', 'epochconverter.com för att generera en timestamp.')
+    .setDescriptionLocalization('sv-SE', 'unixtimestamp.com för att generera en timestamp.')
     .setRequired(false)
     .setMinValue(-8640000000000)
     .setMaxValue(8640000000000))
     .addIntegerOption(option => option
     .setName('end-time')
-    .setDescription('epochconverter.com to generate a timestamp.')
+    .setDescription('unixtimestamp.com to generate a timestamp.')
     .setNameLocalization('sv-SE', 'slut-tid')
-    .setDescriptionLocalization('sv-SE', 'epochconverter.com för att generera en timestamp.')
+    .setDescriptionLocalization('sv-SE', 'unixtimestamp.com för att generera en timestamp.')
     .setRequired(false)
     .setMinValue(-8640000000000)
     .setMaxValue(8640000000000)), async function (interaction) {
