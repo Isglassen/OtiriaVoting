@@ -1,7 +1,6 @@
 import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
-import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
-import { serverVoteData } from '../databaseActions';
-import idAutocorrect, { checkCreating, getCreating, getNotEnd } from '../idAutocorrect';
+import { CommandData, CustomCommandInteraction } from '../customClient';
+import idAutocorrect, { checkNotEnd, getNotEnd } from '../idAutocorrect';
 import { checkCreateMessage, generateSummary, voteCreateMessage, voteMessage } from '../messageCreators';
 
 module.exports = new CommandData(
@@ -63,7 +62,7 @@ module.exports = new CommandData(
 			return;
 		}
 
-		if (!await checkCreating(interaction, args[0], args[1])) return;
+		if (!await checkNotEnd(interaction, args[0], args[1])) return;
 
 		if (oldTime === end_time) {
 			logger.info(`${interaction.user.tag} didn't change end time of ${vote_id} because it already had the specified time`);

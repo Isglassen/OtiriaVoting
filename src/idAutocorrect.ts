@@ -86,6 +86,19 @@ export async function checkCreating(interaction: CustomCommandInteraction, guild
 	return false;
 }
 
+export async function checkNotEnd(interaction: CustomCommandInteraction, guild_id: string, creation_time: string) {
+	const ended = await interaction.client.customData.votes.getProperty(interaction.client.database, guild_id, creation_time, 'ended');
+	if (!ended) return true;
+
+	const embed = new EmbedBuilder()
+		.setTitle('Misslyckades')
+		.setDescription('Röstningen har redans avslutats')
+		.setColor('Red');
+
+	await interaction.reply({ embeds: [embed], ephemeral: true });
+	return false;
+}
+
 export async function checkDone(interaction: CustomCommandInteraction, guild_id: string, creation_time: string) {
 	const ended = await interaction.client.customData.votes.getProperty(interaction.client.database, guild_id, creation_time, 'ended');
 	if (ended) return true;

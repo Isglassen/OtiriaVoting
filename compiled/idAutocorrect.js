@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAll = exports.getNotEnd = exports.getDone = exports.checkDone = exports.checkCreating = exports.getCreating = void 0;
+exports.getAll = exports.getNotEnd = exports.getDone = exports.checkDone = exports.checkNotEnd = exports.checkCreating = exports.getCreating = void 0;
 const discord_js_1 = require("discord.js");
 function idAutocorrect(getPossibilities) {
     return async function (interaction) {
@@ -71,6 +71,18 @@ async function checkCreating(interaction, guild_id, creation_time) {
     return false;
 }
 exports.checkCreating = checkCreating;
+async function checkNotEnd(interaction, guild_id, creation_time) {
+    const ended = await interaction.client.customData.votes.getProperty(interaction.client.database, guild_id, creation_time, 'ended');
+    if (!ended)
+        return true;
+    const embed = new discord_js_1.EmbedBuilder()
+        .setTitle('Misslyckades')
+        .setDescription('Röstningen har redans avslutats')
+        .setColor('Red');
+    await interaction.reply({ embeds: [embed], ephemeral: true });
+    return false;
+}
+exports.checkNotEnd = checkNotEnd;
 async function checkDone(interaction, guild_id, creation_time) {
     const ended = await interaction.client.customData.votes.getProperty(interaction.client.database, guild_id, creation_time, 'ended');
     if (ended)

@@ -1,6 +1,5 @@
 import { EmbedBuilder, PermissionFlagsBits, SlashCommandBuilder } from 'discord.js';
-import { CommandData, CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from '../customClient';
-import { serverVoteData } from '../databaseActions';
+import { CommandData, CustomCommandInteraction } from '../customClient';
 import idAutocorrect, { checkCreating, getCreating } from '../idAutocorrect';
 import { checkCreateMessage, voteCreateMessage } from '../messageCreators';
 

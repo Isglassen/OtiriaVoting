@@ -1,6 +1,6 @@
 import { EmbedBuilder, PermissionsBitField } from 'discord.js';
 import { ButtonData, CustomButtonInteraction } from '../customClient';
-import { checkCreateMessage, generateSummary, voteCreateMessage, voteMessage } from '../messageCreators';
+import { checkCreateMessage } from '../messageCreators';
 import { endVote } from '../automaticActions';
 
 module.exports = new ButtonData(
