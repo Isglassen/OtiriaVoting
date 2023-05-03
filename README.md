@@ -44,15 +44,15 @@ Databasen behöver följande tabeller:
   - `message_id`: `BIGINT`, Meddelandet som röstingen är på
   - `status_message_id`: `BIGINT NOT NULL`, Meddelandet som visar röstningens status för skaparen
   - `status_message_channel_id`: `BIGINT NOT NULL`, Kanalen för ovan kollumn
-  - `creation_time`: `BIGINT NOT NULL`, Epoch timestamp i millisekunder för när röstningen skapades, och dens id
+  - `creation_time`: `BIGINT NOT NULL`, Unix timestamp i millisekunder för när röstningen skapades, och dens id
   - `started`: `BOOLEAN NOT NULL`, Ifall röstningen har startats eller inte
   - `ended`: `BOOLEAN NOT NULL`, Ifall röstningen har avslutats eller inte
   - `can_vote_id`: `BIGINT NOT NULL`, Den roll som krävs för att rösta
   - `mention_role_id`: `BIGINT`, Den roll som ska nämnas när röstningen startar
   - `guild_id`: `BIGINT NOT NULL`, Den guild som röstningen är i
   - `live_result`: `BOOLEAN NOT NULL`, Ifall röstningens resultat ska uppdateras live
-  - `start_time`: `BIGINT`, Epoch timestamp i millisekunder för när röstningen ska starta/har startat
-  - `end_time`: `BIGINT`, Epoch timestamp i millisekunder för när röstningen ska sluta/har slutat
+  - `start_time`: `BIGINT`, Unix timestamp i millisekunder för när röstningen ska starta/har startat
+  - `end_time`: `BIGINT`, Unix timestamp i millisekunder för när röstningen ska sluta/har slutat
 - `choices`: Olika alternativ för röstningar
   - `guild_id`: `BIGINT NOT NULL`, den guild som alternativet hör till
   - `creation_time`: `BIGINT NOT NULL`, id till den röstning som alternativet hör till
