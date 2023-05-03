@@ -1,6 +1,5 @@
-import { SlashCommandBuilder, EmbedBuilder, Events } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import { CommandData, CustomCommandInteraction } from '../customClient';
-import * as util from 'util';
 import idAutocorrect, { getAll } from '../idAutocorrect';
 
 module.exports = new CommandData(

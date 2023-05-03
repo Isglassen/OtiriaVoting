@@ -150,7 +150,7 @@ async function autocompleteHandling(interaction: CustomAutocompleteInteraction) 
 }
 
 function loadCommands(client: CustomClient) {
-	const commandsPath = path.join(__dirname, 'compiled/commands');
+	const commandsPath = path.join(__dirname, 'commands');
 	const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
 	for (const file of commandFiles) {
@@ -167,7 +167,7 @@ function loadCommands(client: CustomClient) {
 }
 
 function loadButtons(client: CustomClient) {
-	const buttonsPath = path.join(__dirname, 'compiled/buttons');
+	const buttonsPath = path.join(__dirname, 'buttons');
 	const buttonFiles = fs.readdirSync(buttonsPath).filter(file => file.endsWith('.js'));
 
 	for (const file of buttonFiles) {
@@ -184,7 +184,7 @@ function loadButtons(client: CustomClient) {
 }
 
 function loadSelectMenus(client: CustomClient) {
-	const selectMenusPath = path.join(__dirname, 'compiled/selectMenus');
+	const selectMenusPath = path.join(__dirname, 'selectMenus');
 	const selectMenuFiles = fs.readdirSync(selectMenusPath).filter(file => file.endsWith('.js'));
 
 	for (const file of selectMenuFiles) {
