@@ -36,7 +36,7 @@ exports.voteCreateButtons = voteCreateButtons;
 async function voteMessage(client, guild_id, voteData, choiceList, disableVoting = false, votes) {
     let total = 0;
     Object.values(votes).forEach(num => total += num);
-    const startSec = voteData.start_time.substring(0, voteData.start_time.length - 3);
+    const startSec = voteData.start_time !== null ? voteData.start_time.substring(0, voteData.start_time.length - 3) : Math.ceil(+new Date / 1000);
     const endSec = voteData.end_time !== null ? voteData.end_time.substring(0, voteData.end_time.length - 3) : '';
     const embed = new discord_js_1.EmbedBuilder()
         .setTitle(voteData.name)
