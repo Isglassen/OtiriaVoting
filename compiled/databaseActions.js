@@ -57,7 +57,6 @@ class Choices {
             return;
         this.data[guild_id][creation_time].push(data);
         await database.pool.execute('INSERT INTO choices (guild_id, creation_time, name, description) VALUES (?, ?, ?, ?)', [guild_id, creation_time, data.name, data.description]);
-        this.logger.info(JSON.stringify(this.data));
     }
     async getChoices(database, guild_id, creation_time) {
         // Fetch everything if it is not in the cache

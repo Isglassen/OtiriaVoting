@@ -98,8 +98,6 @@ export class Choices {
 			'INSERT INTO choices (guild_id, creation_time, name, description) VALUES (?, ?, ?, ?)',
 			[guild_id, creation_time, data.name, data.description],
 		);
-
-		this.logger.info(JSON.stringify(this.data));
 	}
 
 	async getChoices(database: BotDatabase, guild_id: string, creation_time: string): Promise<choiceData[]> {
