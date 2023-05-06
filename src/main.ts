@@ -6,13 +6,17 @@ import * as util from 'node:util';
 import * as winston from 'winston';
 
 const myFormat = winston.format.printf((info) => {
+	if (typeof info.stack == 'string') {
+		return `[${info.timestamp}] ${info.stack}`;
+	}
 	return `[${info.timestamp}] ${info.level}: ${info.message}`;
 });
 
 const logger = winston.createLogger({
+	level: 'debug',
 	format: winston.format.combine(
-		winston.format.timestamp({ format: 'isoDateTime' }),
 		winston.format.errors({ stack: true }),
+		winston.format.timestamp({ format: 'isoDateTime' }),
 		myFormat,
 	),
 	transports: [

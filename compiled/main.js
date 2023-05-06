@@ -8,10 +8,14 @@ const path = require("node:path");
 const util = require("node:util");
 const winston = require("winston");
 const myFormat = winston.format.printf((info) => {
+    if (typeof info.stack == 'string') {
+        return `[${info.timestamp}] ${info.stack}`;
+    }
     return `[${info.timestamp}] ${info.level}: ${info.message}`;
 });
 const logger = winston.createLogger({
-    format: winston.format.combine(winston.format.timestamp({ format: 'isoDateTime' }), winston.format.errors({ stack: true }), myFormat),
+    level: 'debug',
+    format: winston.format.combine(winston.format.errors({ stack: true }), winston.format.timestamp({ format: 'isoDateTime' }), myFormat),
     transports: [
         new winston.transports.Console({ handleExceptions: true, handleRejections: true }),
         new winston.transports.File({ filename: 'combined.log', level: 'info', handleExceptions: true, handleRejections: true }),
