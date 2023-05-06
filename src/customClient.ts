@@ -98,6 +98,7 @@ export class CustomClient extends Client {
 		});
 
 		setTimeout(() => {
+			updateVotes(this);
 			this.updateTask = setInterval(updateVotes, 30_000, this);
 
 			this.user.setPresence({

@@ -70,6 +70,7 @@ class CustomClient extends discord_js_1.Client {
                 }],
         });
         setTimeout(() => {
+            (0, automaticActions_1.updateVotes)(this);
             this.updateTask = setInterval(automaticActions_1.updateVotes, 30000, this);
             this.user.setPresence({
                 status: 'online',
