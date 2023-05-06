@@ -16,7 +16,7 @@ const logger = winston.createLogger({
 	level: 'debug',
 	format: winston.format.combine(
 		winston.format.errors({ stack: true }),
-		winston.format.timestamp({ format: 'isoDateTime' }),
+		winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss Z' }),
 		myFormat,
 	),
 	transports: [

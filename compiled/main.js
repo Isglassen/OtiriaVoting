@@ -15,7 +15,7 @@ const myFormat = winston.format.printf((info) => {
 });
 const logger = winston.createLogger({
     level: 'debug',
-    format: winston.format.combine(winston.format.errors({ stack: true }), winston.format.timestamp({ format: 'isoDateTime' }), myFormat),
+    format: winston.format.combine(winston.format.errors({ stack: true }), winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss Z' }), myFormat),
     transports: [
         new winston.transports.Console({ handleExceptions: true, handleRejections: true }),
         new winston.transports.File({ filename: 'combined.log', level: 'info', handleExceptions: true, handleRejections: true }),
