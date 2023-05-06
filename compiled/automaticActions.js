@@ -12,7 +12,7 @@ async function updateVotes(client) {
         logMessage.push(`Starting: ${shouldStart.length}`);
     }
     if (Array.isArray(shouldEnd)) {
-        logMessage.push(`Starting: ${shouldEnd.length}`);
+        logMessage.push(`Ending: ${shouldEnd.length}`);
     }
     client.logger.debug(logMessage.join('. '));
     if (Array.isArray(shouldStart)) {

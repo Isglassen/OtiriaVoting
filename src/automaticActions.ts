@@ -23,7 +23,7 @@ export async function updateVotes(client: CustomClient) {
 	}
 
 	if (Array.isArray(shouldEnd)) {
-		logMessage.push(`Starting: ${shouldEnd.length}`);
+		logMessage.push(`Ending: ${shouldEnd.length}`);
 	}
 
 	client.logger.debug(logMessage.join('. '));
