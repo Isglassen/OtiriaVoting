@@ -6,10 +6,28 @@ import { generateSummary, getRole, voteCreateMessage, voteMessage } from './mess
 export async function updateVotes(client: CustomClient) {
 	const now = `${+new Date}`;
 
+
 	const shouldStart = (await client.database.pool.execute(
 		'SELECT * FROM guilds WHERE started = 0 AND ended = 0 AND start_time < ?',
 		[now],
 	))[0];
+
+	const shouldEnd = (await client.database.pool.execute(
+		'SELECT * FROM guilds WHERE started = 1 AND ended = 0 AND end_time < ?',
+		[now],
+	))[0];
+
+	const logMessage = ['Updating votes'];
+
+	if (Array.isArray(shouldStart)) {
+		logMessage.push(`Starting: ${shouldStart.length}`);
+	}
+
+	if (Array.isArray(shouldEnd)) {
+		logMessage.push(`Starting: ${shouldEnd.length}`);
+	}
+
+	client.logger.info(logMessage.join('. '));
 
 	if (Array.isArray(shouldStart)) {
 		for (let i = 0; i < shouldStart.length; i++) {
@@ -37,11 +55,6 @@ export async function updateVotes(client: CustomClient) {
 			});
 		}
 	}
-
-	const shouldEnd = (await client.database.pool.execute(
-		'SELECT * FROM guilds WHERE started = 1 AND ended = 0 AND end_time < ?',
-		[now],
-	))[0];
 
 	if (Array.isArray(shouldEnd)) {
 		for (let i = 0; i < shouldEnd.length; i++) {
