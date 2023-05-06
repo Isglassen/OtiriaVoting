@@ -14,7 +14,7 @@ const logger = winston.createLogger({
     format: winston.format.combine(winston.format.timestamp({ format: 'isoDateTime' }), winston.format.errors({ stack: true }), myFormat),
     transports: [
         new winston.transports.Console({ handleExceptions: true, handleRejections: true }),
-        new winston.transports.File({ filename: 'combined.log', handleExceptions: true, handleRejections: true }),
+        new winston.transports.File({ filename: 'combined.log', level: 'info', handleExceptions: true, handleRejections: true }),
         new winston.transports.File({ filename: 'error.log', level: 'error', handleExceptions: true, handleRejections: true }),
     ],
 });

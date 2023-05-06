@@ -14,7 +14,7 @@ async function updateVotes(client) {
     if (Array.isArray(shouldEnd)) {
         logMessage.push(`Starting: ${shouldEnd.length}`);
     }
-    client.logger.info(logMessage.join('. '));
+    client.logger.debug(logMessage.join('. '));
     if (Array.isArray(shouldStart)) {
         for (let i = 0; i < shouldStart.length; i++) {
             const data = shouldStart[i];

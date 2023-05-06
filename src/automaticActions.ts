@@ -6,7 +6,6 @@ import { generateSummary, getRole, voteCreateMessage, voteMessage } from './mess
 export async function updateVotes(client: CustomClient) {
 	const now = `${+new Date}`;
 
-
 	const shouldStart = (await client.database.pool.execute(
 		'SELECT * FROM guilds WHERE started = 0 AND ended = 0 AND start_time < ?',
 		[now],
@@ -27,7 +26,7 @@ export async function updateVotes(client: CustomClient) {
 		logMessage.push(`Starting: ${shouldEnd.length}`);
 	}
 
-	client.logger.info(logMessage.join('. '));
+	client.logger.debug(logMessage.join('. '));
 
 	if (Array.isArray(shouldStart)) {
 		for (let i = 0; i < shouldStart.length; i++) {
