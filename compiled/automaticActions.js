@@ -119,7 +119,7 @@ async function endVote(client, guild_id, voteData) {
     const resultStrings = [];
     function getPlacement(array, index) {
         for (let i = index; i > 0; i--) {
-            if (array[i] < array[i - 1])
+            if (summary[array[i]] < summary[array[i - 1]])
                 return i + 1;
         }
         return 1;

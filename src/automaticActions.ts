@@ -157,9 +157,9 @@ export async function endVote(client: CustomClient, guild_id: string, voteData: 
 
 	const resultStrings = [];
 
-	function getPlacement(array, index): number {
+	function getPlacement(array: string[], index: number): number {
 		for (let i = index; i > 0; i--) {
-			if (array[i] < array[i - 1]) return i + 1;
+			if (summary[array[i]] < summary[array[i - 1]]) return i + 1;
 		}
 
 		return 1;

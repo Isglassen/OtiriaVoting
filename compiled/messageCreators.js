@@ -70,8 +70,9 @@ async function voteMessage(client, guild_id, voteData, choiceList, disableVoting
     choiceList.forEach((candidate) => {
         embed.addFields({ name: candidate.name + (voteData.ended || voteData.live_result ? (': ' + votes[candidate.name]) : ''), value: candidate.description });
         selectMenu.addOptions({
-            label: candidate.name,
+            label: candidate.name + (voteData.ended || voteData.live_result ? (': ' + votes[candidate.name]) : ''),
             value: candidate.name,
+            // TODO: Replace mention format with @name in description
             description: candidate.description,
         });
     });
