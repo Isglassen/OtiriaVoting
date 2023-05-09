@@ -6,8 +6,9 @@ function idAutocorrect(getPossibilities) {
     return async function (interaction) {
         const focusedOption = interaction.options.getFocused();
         const choices = await getPossibilities(interaction.client, interaction.guildId);
+        const trueId = (guild_id) => guild_id === undefined ? interaction.guildId : guild_id;
         const filters = [
-            choice => `${interaction.guildId}.${choice.creation_time}`.startsWith(focusedOption),
+            choice => `${trueId(choice.guild_id)}.${choice.creation_time}`.startsWith(focusedOption),
             choice => `${choice.creation_time}`.startsWith(focusedOption),
             choice => choice.name.startsWith(focusedOption),
         ];
@@ -26,7 +27,7 @@ function idAutocorrect(getPossibilities) {
             return `${choice.name}: ${choiceDate.getFullYear()}-${lead0(choiceDate.getMonth() + 1)}-${lead0(choiceDate.getDate())} ${lead0(choiceDate.getHours())}:${lead0(choiceDate.getMinutes())}:${lead0(choiceDate.getSeconds())} (${lead0(choiceDate.getMilliseconds(), 3)})`;
         };
         interaction.client.logger.info(`Responding with votes: ${filtered.map(choice => choiceName(choice))}`);
-        await interaction.respond(filtered.map(choice => ({ name: choiceName(choice), value: `${interaction.guildId}.${choice.creation_time}` })));
+        await interaction.respond(filtered.map(choice => ({ name: choiceName(choice), value: `${trueId(choice.guild_id)}.${choice.creation_time}` })));
     };
 }
 exports.default = idAutocorrect;
@@ -163,6 +164,7 @@ async function getAll(client) {
         if (!('creation_time' in data))
             continue;
         editable.push({
+            guild_id: data.guild_id,
             name: data.name,
             description: data.description,
             channel_id: data.channel_id,
