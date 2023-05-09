@@ -2,14 +2,16 @@ import { EmbedBuilder } from 'discord.js';
 import { CustomAutocompleteInteraction, CustomClient, CustomCommandInteraction } from './customClient';
 import { serverVoteData } from './databaseActions';
 
-export default function idAutocorrect(getPossibilities: (client: CustomClient, guildId: string) => Promise<serverVoteData[]>) {
+export default function idAutocorrect(getPossibilities: (client: CustomClient, guildId: string) => Promise<(serverVoteData & {guild_id?: string})[]>) {
 	return async function(interaction: CustomAutocompleteInteraction) {
 		const focusedOption = interaction.options.getFocused();
 
 		const choices = await getPossibilities(interaction.client, interaction.guildId);
 
-		const filters: ((choice: serverVoteData) => boolean)[] = [
-			choice => `${interaction.guildId}.${choice.creation_time}`.startsWith(focusedOption),
+		const trueId = (guild_id?: string) => guild_id === undefined ? interaction.guildId : guild_id;
+
+		const filters: ((choice: (serverVoteData & {guild_id?: string})) => boolean)[] = [
+			choice => `${trueId(choice.guild_id)}.${choice.creation_time}`.startsWith(focusedOption),
 			choice => `${choice.creation_time}`.startsWith(focusedOption),
 			choice => choice.name.startsWith(focusedOption),
 		];
@@ -23,7 +25,7 @@ export default function idAutocorrect(getPossibilities: (client: CustomClient, g
 
 		const filtered = choices.filter(filterFn);
 
-		const choiceName = (choice: serverVoteData) => {
+		const choiceName = (choice: (serverVoteData & {guild_id?: string})) => {
 			const choiceDate = new Date(parseInt(choice.creation_time));
 			// Add repeating lead 0 (min - `${val}`.length) times to start of `${val}` and return it
 			const lead0 = (val:any, min:number = 2) => '0'.repeat(Math.max(min - `${val}`.length, 0)) + `${val}`;
@@ -34,7 +36,7 @@ export default function idAutocorrect(getPossibilities: (client: CustomClient, g
 		interaction.client.logger.info(`Responding with votes: ${filtered.map(choice => choiceName(choice))}`);
 
 		await interaction.respond(
-			filtered.map(choice => ({ name: choiceName(choice), value: `${interaction.guildId}.${choice.creation_time}` })),
+			filtered.map(choice => ({ name: choiceName(choice), value: `${trueId(choice.guild_id)}.${choice.creation_time}` })),
 		);
 	};
 }
@@ -180,12 +182,12 @@ export async function getNotEnd(client: CustomClient, guildId: string): Promise<
 	return editable;
 }
 
-export async function getAll(client: CustomClient): Promise<serverVoteData[]> {
+export async function getAll(client: CustomClient): Promise<(serverVoteData & {guild_id: string})[]> {
 	const votes = (await client.database.pool.execute(
 		'SELECT * FROM guilds',
 	))[0];
 
-	const editable: serverVoteData[] = [];
+	const editable: (serverVoteData & {guild_id: string})[] = [];
 	if (!Array.isArray(votes)) return editable;
 
 	for (let i = 0; i < votes.length; i++) {
@@ -193,6 +195,7 @@ export async function getAll(client: CustomClient): Promise<serverVoteData[]> {
 		if (!('creation_time' in data)) continue;
 
 		editable.push({
+			guild_id: data.guild_id,
 			name: data.name,
 			description: data.description,
 			channel_id: data.channel_id,
