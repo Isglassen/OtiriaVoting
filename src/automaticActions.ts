@@ -4,81 +4,86 @@ import { serverVoteData } from './databaseActions';
 import { generateSummary, getRole, voteCreateMessage, voteMessage } from './messageCreators';
 
 export async function updateVotes(client: CustomClient) {
-	const now = `${+new Date}`;
+	try {
+		const now = `${+new Date}`;
 
-	const shouldStart = (await client.database.pool.execute(
-		'SELECT * FROM guilds WHERE started = 0 AND ended = 0 AND start_time < ?',
-		[now],
-	))[0];
+		const shouldStart = (await client.database.pool.execute(
+			'SELECT * FROM guilds WHERE started = 0 AND ended = 0 AND start_time < ?',
+			[now],
+		))[0];
 
-	const shouldEnd = (await client.database.pool.execute(
-		'SELECT * FROM guilds WHERE started = 1 AND ended = 0 AND end_time < ?',
-		[now],
-	))[0];
+		const shouldEnd = (await client.database.pool.execute(
+			'SELECT * FROM guilds WHERE started = 1 AND ended = 0 AND end_time < ?',
+			[now],
+		))[0];
 
-	const logMessage = ['Updating votes'];
+		const logMessage = ['Updating votes'];
 
-	if (Array.isArray(shouldStart)) {
-		logMessage.push(`Starting: ${shouldStart.length}`);
-	}
+		if (Array.isArray(shouldStart)) {
+			logMessage.push(`Starting: ${shouldStart.length}`);
+		}
 
-	if (Array.isArray(shouldEnd)) {
-		logMessage.push(`Ending: ${shouldEnd.length}`);
-	}
+		if (Array.isArray(shouldEnd)) {
+			logMessage.push(`Ending: ${shouldEnd.length}`);
+		}
 
-	client.logger.debug(logMessage.join('. '));
+		client.logger.debug(logMessage.join('. '));
 
-	if (Array.isArray(shouldStart)) {
-		for (let i = 0; i < shouldStart.length; i++) {
+		if (Array.isArray(shouldStart)) {
+			for (let i = 0; i < shouldStart.length; i++) {
 
-			const data = shouldStart[i];
-			if (!('creation_time' in data)) continue;
+				const data = shouldStart[i];
+				if (!('creation_time' in data)) continue;
 
-			client.logger.info(`Starting ${data.guild_id}.${data.creation_time}`);
+				client.logger.info(`Starting ${data.guild_id}.${data.creation_time}`);
 
-			startVote(client, data.guild_id, {
-				name: data.name,
-				description: data.description,
-				channel_id: data.channel_id,
-				message_id: data.message_id,
-				status_message_id: data.status_message_id,
-				status_message_channel_id: data.status_message_channel_id,
-				creation_time: data.creation_time,
-				started: !!data.started,
-				ended: !!data.ended,
-				can_vote_id: data.can_vote_id,
-				mention_role_id: data.mention_role_id,
-				live_result: !!data.live_result,
-				start_time: data.start_time,
-				end_time: data.end_time,
-			});
+				startVote(client, data.guild_id, {
+					name: data.name,
+					description: data.description,
+					channel_id: data.channel_id,
+					message_id: data.message_id,
+					status_message_id: data.status_message_id,
+					status_message_channel_id: data.status_message_channel_id,
+					creation_time: data.creation_time,
+					started: !!data.started,
+					ended: !!data.ended,
+					can_vote_id: data.can_vote_id,
+					mention_role_id: data.mention_role_id,
+					live_result: !!data.live_result,
+					start_time: data.start_time,
+					end_time: data.end_time,
+				});
+			}
+		}
+
+		if (Array.isArray(shouldEnd)) {
+			for (let i = 0; i < shouldEnd.length; i++) {
+				const data = shouldEnd[i];
+				if (!('creation_time' in data)) continue;
+
+				client.logger.info(`Ending ${data.guild_id}.${data.creation_time}`);
+
+				endVote(client, data.guild_id, {
+					name: data.name,
+					description: data.description,
+					channel_id: data.channel_id,
+					message_id: data.message_id,
+					status_message_id: data.status_message_id,
+					status_message_channel_id: data.status_message_channel_id,
+					creation_time: data.creation_time,
+					started: !!data.started,
+					ended: !!data.ended,
+					can_vote_id: data.can_vote_id,
+					mention_role_id: data.mention_role_id,
+					live_result: !!data.live_result,
+					start_time: data.start_time,
+					end_time: data.end_time,
+				});
+			}
 		}
 	}
-
-	if (Array.isArray(shouldEnd)) {
-		for (let i = 0; i < shouldEnd.length; i++) {
-			const data = shouldEnd[i];
-			if (!('creation_time' in data)) continue;
-
-			client.logger.info(`Ending ${data.guild_id}.${data.creation_time}`);
-
-			endVote(client, data.guild_id, {
-				name: data.name,
-				description: data.description,
-				channel_id: data.channel_id,
-				message_id: data.message_id,
-				status_message_id: data.status_message_id,
-				status_message_channel_id: data.status_message_channel_id,
-				creation_time: data.creation_time,
-				started: !!data.started,
-				ended: !!data.ended,
-				can_vote_id: data.can_vote_id,
-				mention_role_id: data.mention_role_id,
-				live_result: !!data.live_result,
-				start_time: data.start_time,
-				end_time: data.end_time,
-			});
-		}
+	catch (err) {
+		client.logger.error(err);
 	}
 }
 

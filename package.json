@@ -12,10 +12,10 @@
   },
   "type": "commonjs",
   "scripts": {
-    "start": "npm install && npm run build && npm run run",
-    "build": "rd /s /q compiled && npx tsc",
+    "start": "npm run build && npm run run",
+    "build": "npm install && rd /s /q compiled && npx tsc",
     "run": "node .",
     "deploy": "npm run build && node ./deployCommands.js",
-    "deployStart": "npm install && npm run deploy && npm run run"
+    "deployStart": "npm run deploy && npm run run"
   }
 }
